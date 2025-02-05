@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sale {
+  id           Int          @id @default(autoincrement())
+  user         User         @relation(fields: [user_id], references: [id])
+  user_id      String
+  saleDetails  SaleDetail[]
+  total_amount Int
+  created_at   DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model SaleDetail {
+  id           Int      @id @default(autoincrement())
+  sale         Sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  sale_id      Int
+  product      Product  @relation(fields: [product_id], references: [id])
+  product_id   String
+  unit_price   Int
+  quantity     Int
+  total_amount Int
+  created_at   DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id                  String          @id @default(uuid())
+  saleDetails         SaleDetail[]
+  category            ProductCategory @relation(fields: [category_id], references: [id])
+  purchases           Purchase[]
+  category_id         String
+  name                String          @unique
+  description         String?
+  image               String?
+  quantity            Int
+  purchase_price      Int
+  selling_price       Int
+  low_stock_threshold Int             @default(10)
+  created_at          DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+}
+
+model Purchase {
+  id         String   @id @default(uuid())
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id String
+  quantity   Int
+  created_at DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ProductCategory {
+  id          String    @id @default(uuid())
+  products    Product[]
+  name        String
+  description String?
+  created_at  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model User {
+  id              String                @id @default(uuid())
+  dailySales      DailySale[]
+  Sales           Sale[]
+  names           String
+  date_of_birth   DateTime
+  username        String                @unique
+  gender          Gender
+  phone           String
+  salary          Int
+  godfather_phone String
+  localisation    String?
+  email           String?
+  password_hash   String?
+  CNI_number      String
+  profile_picture String?
+  messages        MessageNotification[]
+  role            Role                  @default(USER)
+  created_at      DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  USER
+  ADMIN
+  SALE
+  PUMPIST
+}
+
+model DailySale {
+  id                   Int      @id @default(autoincrement())
+  user                 User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id              String
+  amount_sold          Float
+  amount_given         Float
+  difference           Float
+  start_count_gasoil_1 Int?
+  stop_count_gasoil_1  Int?
+  start_count_fuel_1   Int?
+  stop_count_fuel_1    Int?
+  start_count_gasoil_2 Int?
+  stop_count_gasoil_2  Int?
+  start_count_fuel_2   Int?
+  stop_count_fuel_2    Int?
+  start_count_gasoil_3 Int?
+  stop_count_gasoil_3  Int?
+  start_count_fuel_3   Int?
+  stop_count_fuel_3    Int?
+  start_count_gaz      Int?
+  stop_count_gaz       Int?
+  date_of_sale_start   DateTime @default(now())
+  date_of_sale_stop    DateTime @default(now())
+  created_at           DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+enum FuelType {
+  FUEL
+  GASOIL
+  PETROL
+  GAS_BOTTLE
+}
+
+model Fuel {
+  id              Int       @id @default(autoincrement())
+  name            String
+  purchase_price  Float
+  selling_price   Float
+  quantity_theory Float
+  quantity_actual Float
+  description     String
+  tank            Tank?     @relation(fields: [tank_id], references: [id])
+  tank_id         Int?      @unique
+  created_at      DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+}
+
+model Tank {
+  id         Int       @id @default(autoincrement())
+  fuel       Fuel?
+  name       String
+  capacity   Int
+  created_at DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+model MessageNotification {
+  id         Int      @id @default(autoincrement())
+  message    String
+  title      String
+  read       Boolean
+  users      User[]
+  created_at DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

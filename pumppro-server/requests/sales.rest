@@ -1,0 +1,149 @@
+GET http://localhost:5000/api/students HTTP/1.1
+
+###
+
+GET http://localhost:5000/api/students/3c311739-65b0-4039-9d95-113dc42cc1d7 HTTP/1.1
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Fally",
+    "lastName": "Ipupa",
+    "dateOfBirth": "Fri Apr 01 2002",
+    "gender": "Male",
+    "classCode": "F3",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Samuel",
+    "lastName": "Eto'o",
+    "dateOfBirth": "Thu May 01 2010",
+    "gender": "Male",
+    "classCode": "F1",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Bikim",
+    "lastName": "Adele",
+    "dateOfBirth": "Fri Apr 01 2012",
+    "gender": "Female",
+    "classCode": "F2",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Decca",
+    "lastName": "Grace",
+    "dateOfBirth": "Fri Jan 01 2000",
+    "gender": "Female",
+    "classCode": "F5",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Neymar",
+    "lastName": "Junior",
+    "dateOfBirth": "Mon Jan 21 2004",
+    "gender": "Male",
+    "classCode": "F3",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Daphne",
+    "lastName": "Nanji",
+    "dateOfBirth": "Fri Jan 01 2000",
+    "gender": "Female",
+    "classCode": "F5",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Beko",
+    "lastName": "Sade",
+    "dateOfBirth": "Fri Jan 01 2000",
+    "gender": "Female",
+    "classCode": "L6",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}
+
+###
+POST http://localhost:5000/api/students HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Fopoussi",
+    "lastName": "Eric",
+    "dateOfBirth": "Fri Jan 01 2000",
+    "gender": "Male",
+    "classCode": "U6",
+    "fathersName": "ABC DEF",
+    "fathersPhone": "123456789",
+    "fathersOccupation": "Worker",
+    "mothersName": "Ijk Lmn",
+    "mothersPhone": "12315262",
+    "mothersOccupation": "Worker"
+}

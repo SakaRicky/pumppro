@@ -1,0 +1,27 @@
+POST http://localhost:5001/auth HTTP/1.1
+content-type: application/json
+
+{
+    "username": "johndoe",
+    "password": "12345678"
+}
+
+###
+
+POST http://localhost:5001/auth HTTP/1.1
+content-type: application/json
+
+{
+    "username": "kimkard",
+    "password": "melodie8"
+}
+
+###
+
+POST http://localhost:5000/api/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "teacherb@school.com",
+    "password": "teacherb"
+}

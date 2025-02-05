@@ -1,0 +1,109 @@
+###
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpZCI6IjI4ZWM5ZWFmLTExMzQtNGE0Mi04MjFjLTY4NTIyNmQ3MzBjOSIsImlhdCI6MTY3NDIxMjI1MSwiZXhwIjoxNjc0MjE1ODUxfQ.s8KRvSy9-AW3PQEbn_xhSXYC1Bz2kOQfPGy02vhSuhU"
+###
+
+GET http://localhost:5001/users HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpZCI6IjI4ZWM5ZWFmLTExMzQtNGE0Mi04MjFjLTY4NTIyNmQ3MzBjOSIsImlhdCI6MTY3NDIxMjI1MSwiZXhwIjoxNjc0MjE1ODUxfQ.s8KRvSy9-AW3PQEbn_xhSXYC1Bz2kOQfPGy02vhSuhU"
+
+###
+
+GET http://localhost:5001/users/84ecb353-38a4-4e6d-802d-fa2cd1fb2b94 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpZCI6IjI4ZWM5ZWFmLTExMzQtNGE0Mi04MjFjLTY4NTIyNmQ3MzBjOSIsImlhdCI6MTY3NDIxMjI1MSwiZXhwIjoxNjc0MjE1ODUxfQ.s8KRvSy9-AW3PQEbn_xhSXYC1Bz2kOQfPGy02vhSuhU"
+
+###
+POST http://localhost:5001/users HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpZCI6IjI4ZWM5ZWFmLTExMzQtNGE0Mi04MjFjLTY4NTIyNmQ3MzBjOSIsImlhdCI6MTY3NDIxMjI1MSwiZXhwIjoxNjc0MjE1ODUxfQ.s8KRvSy9-AW3PQEbn_xhSXYC1Bz2kOQfPGy02vhSuhU"
+
+{
+    "username": "saleuser",
+    "name": "Sale User",
+    "email": "",
+    "gender": "Male",
+    "phone": "123-456-789",
+    "godfather_phone": "369-865-876",
+    "laclisation": "Akwa",
+    "password": "saleuser",
+    "roles": "SALE"
+}
+
+POST http://localhost:5001/users HTTP/1.1
+content-type: multipart/form-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6ImZjZDI3NGQwLTYwMmUtNGQ4Yy1hNDI3LWU0Y2I4Yjg4MGNlNiIsImlhdCI6MTY3NDU4NzgzNywiZXhwIjoxNjc0Njc0MjM3fQ.FUKBeoshRstq7oebGaXD8bA1nJVRov5u45pBSttmNyQ
+
+@FormData
+username: pumpuser
+names: Pump User
+email: pumpuser@gmail.com
+gender: Female
+phone: 987-456-123
+godfather_phone: 567-865-396
+localisation: Village
+password: pumpuser
+role: PUMPIST
+
+
+###
+POST http://localhost:5000/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Teacher",
+    "lastName": "C",
+    "dateOfBirth": "Fri Apr 01 2022",
+    "gender": "Female",
+    "phone": "123-456-789",
+    "email": "teacherC@school.com",
+    "subjectIds": ["3"],
+    "password": "teachera",
+    "roles": ["3"]
+}
+
+###
+POST http://localhost:5000/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Teacher",
+    "lastName": "D",
+    "dateOfBirth": "Fri Apr 01 1999",
+    "gender": "Female",
+    "phone": "123-456-789",
+    "email": "teacherd@gmail.com",
+    "subjectIds": ["2"],
+    "password": "teachera",
+    "roles": ["3"]
+}
+
+###
+POST http://localhost:5000/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Teacher",
+    "lastName": "E",
+    "dateOfBirth": "Fri Apr 01 1999",
+    "gender": "Male",
+    "phone": "123-456-789",
+    "email": "teacherE@gmail.com",
+    "subjectIds": ["1","2"],
+    "password": "teachere",
+    "roles": ["3"]
+}
+
+###
+DELETE  http://localhost:5000/api/users/c673f975-0d0e-4e04-be52-5bf96c7bb094 HTTP/1.1
+
+###
+PUT http://localhost:5000/api/users/65982c4c-5721-4cd5-9b58-88df3a7a35f2 HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "Teacher modified",
+    "lastName": "d modified",
+    "dateOfBirth": "Fri Apr 01 1999",
+    "gender": "Female",
+    "phone": "123-456-789",
+    "email": "teacherd@gmail.com",
+    "subjectIds": ["2", "3"]
+}

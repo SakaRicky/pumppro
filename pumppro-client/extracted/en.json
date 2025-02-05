@@ -1,0 +1,160 @@
+{
+  "addDailySale": {
+    "defaultMessage": "Add Daily Sale"
+  },
+  "cart.sale": {
+    "defaultMessage": "Save Sale"
+  },
+  "cartitem.delete": {
+    "defaultMessage": "Delete"
+  },
+  "dailySale": {
+    "defaultMessage": "Daily Sale"
+  },
+  "dashboard": {
+    "defaultMessage": "Dashboard",
+    "description": "Main title for the Dashboard page"
+  },
+  "dateError": {
+    "defaultMessage": "Start and end dates must be different"
+  },
+  "form.fuel.heading": {
+  },
+  "form.worker.heading": {
+  },
+  "from": {
+    "defaultMessage": "From"
+  },
+  "fuels": {
+    "defaultMessage": "Fuels"
+  },
+  "lacking": {
+    "defaultMessage": "Lacking"
+  },
+  "login": {
+    "defaultMessage": "Login"
+  },
+  "login.error.password": {
+  },
+  "login.error.phone": {
+  },
+  "login.error.username": {
+  },
+  "login.welcome": {
+    "defaultMessage": "Welcome to PumpPro"
+  },
+  "newDailySale": {
+    "defaultMessage": "New Daily Sale"
+  },
+  "perfomance": {
+    "defaultMessage": "Perfomance"
+  },
+  "performances": {
+    "defaultMessage": "Performances"
+  },
+  "product.card.addToCart": {
+    "defaultMessage": "Add To Chart"
+  },
+  "products": {
+    "defaultMessage": "Products"
+  },
+  "products.delete.fuel": {
+    "defaultMessage": "Delete Fuel"
+  },
+  "products.delete.product": {
+    "defaultMessage": "Delete Product"
+  },
+  "profits": {
+    "defaultMessage": "Profit"
+  },
+  "refillFuel": {
+    "defaultMessage": "Refill Fuel"
+  },
+  "role": {
+    "defaultMessage": "Role"
+  },
+  "salary": {
+    "defaultMessage": "Salary"
+  },
+  "salary.title": {
+    "defaultMessage": "Worker Salary"
+  },
+  "sale": {
+    "defaultMessage": "Sale"
+  },
+  "salebyform": {
+    "defaultMessage": "Sales By Form"
+  },
+  "sales": {
+    "defaultMessage": "Sales"
+  },
+  "salesdetailpage.doneby": {
+    "defaultMessage": "Done by"
+  },
+  "salesdetailpage.on": {
+    "defaultMessage": "On the"
+  },
+  "salesdetailpage.total": {
+    "defaultMessage": "For a total of"
+  },
+  "salesform": {
+    "defaultMessage": "Sale Form"
+  },
+  "shop": {
+    "defaultMessage": "Shop"
+  },
+  "shopping.cart.amount.given": {
+    "defaultMessage": "Amount Given"
+  },
+  "shopping.cart.change": {
+    "defaultMessage": "Change"
+  },
+  "to": {
+    "defaultMessage": "To"
+  },
+  "total.sold": {
+    "defaultMessage": "Total Sold"
+  },
+  "upload.upload": {
+    "defaultMessage": "Upload Picture"
+  },
+  "user.info.cni_number": {
+    "defaultMessage": "CNI Number"
+  },
+  "user.info.date_of_birth": {
+    "defaultMessage": "Date of Birth"
+  },
+  "user.info.gender": {
+    "defaultMessage": "Gender"
+  },
+  "user.info.godfather_phone": {
+    "defaultMessage": "Godfather Phone Number"
+  },
+  "user.info.localisation": {
+    "defaultMessage": "Localisation"
+  },
+  "user.info.names": {
+    "defaultMessage": "Names"
+  },
+  "user.info.phone": {
+    "defaultMessage": "Phone Number"
+  },
+  "user.info.role": {
+    "defaultMessage": "Role"
+  },
+  "user.info.salary": {
+    "defaultMessage": "Salary"
+  },
+  "worker.card.menu.delete": {
+    "defaultMessage": "Delete Worker"
+  },
+  "worker.card.menu.edit": {
+    "defaultMessage": "Edit Worker"
+  },
+  "worker.card.menu.salary": {
+    "defaultMessage": "View Salary"
+  },
+  "workers": {
+    "defaultMessage": "Workers"
+  }
+}

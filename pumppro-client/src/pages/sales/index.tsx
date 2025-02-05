@@ -91,7 +91,7 @@ const Sales = () => {
 					{selectedSale ? (
 						<SaleDetailsPage sale={selectedSale} />
 					) : (
-						<p>Now Sale Selected</p>
+						<p>No Sale Selected</p>
 					)}
 				</>
 			</Modal>

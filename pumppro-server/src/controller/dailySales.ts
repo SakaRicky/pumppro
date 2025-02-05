@@ -96,6 +96,10 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		where: { id: newDailySale.user_id }
 	});
 
+	if (!user) {
+		throw new Error("This worker couldn't be found");
+	}
+
 	// remove seconds to have fix hours intervals
 	const savedDailySaleStartDate = new Date(
 		newDailySale.date_of_sale_start.getTime()
@@ -115,10 +119,6 @@ export const saveDailySale = async (req: Request, res: Response) => {
 	const dailySale = await prisma.dailySale.findFirst({
 		where: where
 	});
-
-	if (!user) {
-		throw new Error("This worker couldn't be found");
-	}
 
 	if (dailySale) {
 		throw new Error("This worker already have a saved sale in this period");

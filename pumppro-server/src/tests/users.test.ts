@@ -58,7 +58,6 @@ describe.only("Test the users route", () => {
 		const deleteProducts = prisma.product.deleteMany();
 		const deleteusers = prisma.user.deleteMany();
 		const deletedailySales = prisma.dailySale.deleteMany();
-		const deletePetrolSales = prisma.petrolSale.deleteMany();
 		const deleteProductsCategory = prisma.productCategory.deleteMany();
 
 		await prisma.$transaction([
@@ -67,7 +66,6 @@ describe.only("Test the users route", () => {
 			deleteProducts,
 			deleteusers,
 			deletedailySales,
-			deletePetrolSales,
 			deleteProductsCategory
 		]);
 

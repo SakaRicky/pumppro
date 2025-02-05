@@ -107,9 +107,6 @@ export const saveUser = async (req: RequestWithToken, res: Response) => {
 export const updateUser = async (req: RequestWithToken, res: Response) => {
 	const editedUser = validateEditedUser(req.body) as NewUser & { id: string };
 
-	const reqFile = req.file as Express.Multer.File;
-	const imageURL = req.file ? await uploadImage(reqFile, "users") : "";
-
 	const existingUser = await prisma.user.findUnique({
 		where: { id: editedUser.id }
 	});
@@ -117,6 +114,9 @@ export const updateUser = async (req: RequestWithToken, res: Response) => {
 	if (editedUser) {
 		const saltRounds = 10;
 		let password_hash = "";
+		const reqFile = req.file as Express.Multer.File;
+		const imageURL = req.file ? await uploadImage(reqFile, "users") : existingUser?.profile_picture;
+
 		if (editedUser?.password) {
 			password_hash = await bcrypt.hash(editedUser?.password, saltRounds);
 		}

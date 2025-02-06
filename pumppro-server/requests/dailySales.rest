@@ -1,1 +1,17 @@
-GET http://localhost:5000/api/teachers
+###
+POST http://localhost:5001/daily-sales HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6IjkxNzBmN2FjLWQzNjEtNGFiMC04OTViLTM3NTQ5OGU2ZmIxMSIsImlhdCI6MTczODg3NDU1MSwiZXhwIjoxNzM4OTYwOTUxfQ.DAtqSfVZZ1g0DPT1uCX8sPBSVCV-ykOQMi3QcSHIqW4
+
+{
+  "user_id": "9170f7ac-d361-4ab0-895b-375498e6fb11",
+  "amount_sold": 500,
+  "amount_given": 480,
+  "difference": 20,
+  "date_of_sale_start": "2024-02-06T10:00:00Z",
+  "date_of_sale_stop": "2024-02-06T20:00:00Z",
+  "fuelCounts": [
+    { "fuel_type": "GASOIL", "start_count": 1000, "stop_count": 1200 },
+    { "fuel_type": "FUEL", "start_count": 800, "stop_count": 950 }
+  ]
+}

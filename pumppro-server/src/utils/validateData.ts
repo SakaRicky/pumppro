@@ -1,6 +1,7 @@
 import { Fuel, Gender, Role } from "@prisma/client";
 import { z } from "zod";
 import {
+	FuelType,
 	NewDailySale,
 	NewFuel,
 	NewProduct,
@@ -133,55 +134,43 @@ export const validateNewSale = (data: any[]): SaleItem[] | undefined => {
 	return parsedData;
 };
 
+// Define the FuelCount schema
+const FuelCountSchema = z.object({
+  fuel_type: z.enum([FuelType.FUEL, FuelType.GASOIL, FuelType.GAS_BOTTLE, FuelType.PETROL]), // Assuming it's a string, update if it's an enum
+  start_count: z.number(),
+  stop_count: z.number()
+});
+
+// Define the NewDailySale schema with FuelCounts
 const NewDailySaleSchema = z.object({
-	user_id: z.string(),
-	amount_sold: z.number(),
-	amount_given: z.number(),
-	difference: z.number(),
-	date_of_sale_start: z.date(),
-	date_of_sale_stop: z.date(),
-	start_count_fuel_1: z.number().nullable(),
-	stop_count_fuel_1: z.number().nullable(),
-	start_count_gasoil_1: z.number().nullable(),
-	stop_count_gasoil_1: z.number().nullable(),
-	start_count_fuel_2: z.number().nullable(),
-	stop_count_fuel_2: z.number().nullable(),
-	start_count_gasoil_2: z.number().nullable(),
-	stop_count_gasoil_2: z.number().nullable(),
-	start_count_fuel_3: z.number().nullable(),
-	stop_count_fuel_3: z.number().nullable(),
-	start_count_gasoil_3: z.number().nullable(),
-	stop_count_gasoil_3: z.number().nullable(),
-	start_count_gaz: z.number().nullable(),
-	stop_count_gaz: z.number().nullable()
+  user_id: z.string(),
+  amount_sold: z.number(),
+  amount_given: z.number(),
+  difference: z.number(),
+  date_of_sale_start: z.date(),
+  date_of_sale_stop: z.date(),
+  FuelCounts: z.array(FuelCountSchema) // Adding FuelCounts array validation
 });
 
 export const validateNewDailySale = (data: any): NewDailySale | undefined => {
-	const transformedData = {
-		...data,
-		amount_sold: Number.parseInt(data.amount_sold),
-		amount_given: Number.parseInt(data.amount_given),
-		date_of_sale_start: new Date(data.date_of_sale_start),
-		date_of_sale_stop: new Date(data.date_of_sale_stop),
-		start_count_fuel_1: Number.parseInt(data.start_count_fuel_1),
-		stop_count_fuel_1: Number.parseInt(data.stop_count_fuel_1),
-		start_count_gasoil_1: Number.parseInt(data.start_count_gasoil_1),
-		stop_count_gasoil_1: Number.parseInt(data.stop_count_gasoil_1),
-		start_count_fuel_2: Number.parseInt(data.start_count_fuel_2),
-		stop_count_fuel_2: Number.parseInt(data.stop_count_fuel_2),
-		start_count_gasoil_2: Number.parseInt(data.start_count_gasoil_2),
-		stop_count_gasoil_2: Number.parseInt(data.stop_count_gasoil_2),
-		start_count_fuel_3: Number.parseInt(data.start_count_fuel_3),
-		stop_count_fuel_3: Number.parseInt(data.stop_count_fuel_3),
-		start_count_gasoil_3: Number.parseInt(data.start_count_gasoil_3),
-		stop_count_gasoil_3: Number.parseInt(data.stop_count_gasoil_3),
-		start_count_gaz: Number.parseInt(data.start_count_gaz),
-		stop_count_gaz: Number.parseInt(data.stop_count_gaz)
-	};
-	const parsedData = NewDailySaleSchema.parse(transformedData);
+  const transformedData = {
+    ...data,
+    amount_sold: Number(data.amount_sold), // Use `Number()` to support decimals
+    amount_given: Number(data.amount_given),
+    date_of_sale_start: new Date(data.date_of_sale_start),
+    date_of_sale_stop: new Date(data.date_of_sale_stop),
+    fuelCounts: data.FuelCounts?.map((fuel: any) => ({
+      fuel_type: fuel.fuel_type,
+      start_count: Number(fuel.start_count),
+      stop_count: Number(fuel.stop_count)
+    })) ?? []
+  };
 
-	return parsedData;
+  const parsedData = NewDailySaleSchema.parse(transformedData);
+
+  return parsedData;
 };
+
 
 const FuelTankUpdateSchema = z.object({
 	id: z.number(),

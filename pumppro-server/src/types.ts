@@ -4,11 +4,11 @@ import {
 	Role,
 	Product,
 	SaleDetail,
-	DailySale,
 	Tank,
 	Fuel,
 	FuelCount,
-	MessageNotification
+	MessageNotification,
+	DailySale
 } from "@prisma/client";
 
 export type User = {
@@ -81,12 +81,17 @@ export type NewSaleDetails = Omit<
 	"id" | "sale_id" | "created_at" | "updatedAt"
 >;
 
-export type DailySaleType = DailySale;
+export type NewFuelCount = Omit<
+FuelCount,
+	"id" | "daily_sale_id"
+>
 
 export type NewDailySale = Omit<
-	DailySaleType,
+DailySale,
 	"id" | "difference" | "created_at" | "updatedAt"
->;
+>  & {
+	FuelCounts: NewFuelCount[]; 
+}
 
 export enum FuelType {
 	FUEL = "FUEL",

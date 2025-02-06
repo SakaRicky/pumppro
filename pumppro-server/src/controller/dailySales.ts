@@ -62,7 +62,7 @@ export const getDailySales = async (
 			difference: true,
 			date_of_sale_start: true,
 			date_of_sale_stop: true,
-			FuelCount: true,
+			fuelCounts: true,
 			user: true,
 			created_at: true
 		},
@@ -142,8 +142,6 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		}
 	} else {
 		try {
-			const fuelCounts = [{start1: newDailySale.}]
-
 			await prisma.dailySale.create({
 				data: {
 					amount_sold: newDailySale.amount_sold,
@@ -151,7 +149,15 @@ export const saveDailySale = async (req: Request, res: Response) => {
 					date_of_sale_start: newDailySaleStartDate,
 					date_of_sale_stop: newDailySaleStopDate,
 					difference: newDailySale.amount_given - newDailySale.amount_sold,
-					FuelCount,
+					fuelCounts: { 
+						createMany: {
+						  data: newDailySale.FuelCounts.map(fuel => ({
+							fuel_type: fuel.fuel_type,
+							start_count: fuel.start_count,
+							stop_count: fuel.stop_count
+						  }))
+						}
+					  },
 					user: { connect: { id: user.id } }
 				}
 			});

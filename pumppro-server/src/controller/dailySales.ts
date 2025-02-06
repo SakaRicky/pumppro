@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Prisma, PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import { validateNewDailySale } from "../utils/validateData";
 
@@ -62,20 +62,7 @@ export const getDailySales = async (
 			difference: true,
 			date_of_sale_start: true,
 			date_of_sale_stop: true,
-			start_count_fuel_1: true,
-			stop_count_fuel_1: true,
-			start_count_gasoil_1: true,
-			stop_count_gasoil_1: true,
-			start_count_fuel_2: true,
-			stop_count_fuel_2: true,
-			start_count_gasoil_2: true,
-			stop_count_gasoil_2: true,
-			start_count_fuel_3: true,
-			stop_count_fuel_3: true,
-			start_count_gasoil_3: true,
-			stop_count_gasoil_3: true,
-			start_count_gaz: true,
-			stop_count_gaz: true,
+			FuelCount: true,
 			user: true,
 			created_at: true
 		},
@@ -131,41 +118,54 @@ export const saveDailySale = async (req: Request, res: Response) => {
 	newDailySaleStopDate.setSeconds(0);
 
 	if (user.role === Role.SALE) {
-		await prisma.dailySale.create({
-			data: {
-				amount_sold: newDailySale.amount_sold,
-				amount_given: newDailySale.amount_given,
-				difference: newDailySale.amount_given - newDailySale.amount_sold,
-				date_of_sale_start: newDailySale.date_of_sale_start,
-				date_of_sale_stop: newDailySale.date_of_sale_stop,
-				user: { connect: { id: user.id } }
+		try {
+			await prisma.dailySale.create({
+				data: {
+					amount_sold: newDailySale.amount_sold,
+					amount_given: newDailySale.amount_given,
+					difference: newDailySale.amount_given - newDailySale.amount_sold,
+					date_of_sale_start: newDailySale.date_of_sale_start,
+					date_of_sale_stop: newDailySale.date_of_sale_stop,
+					user: { connect: { id: user.id } }
+				}
+			});
+		} catch (error) {
+			if (error instanceof Prisma.PrismaClientKnownRequestError) {
+				if (error.code === 'P2002') {
+					console.error('Unique constraint violation:', error);
+				} else if (error.code === 'P2003') {
+					console.error('Foreign key constraint violation:', error);
+				} else {
+					console.error('Prisma error:', error);
+				}
 			}
-		});
+		}
 	} else {
-		await prisma.dailySale.create({
-			data: {
-				amount_sold: newDailySale.amount_sold,
-				amount_given: newDailySale.amount_given,
-				date_of_sale_start: newDailySaleStartDate,
-				date_of_sale_stop: newDailySaleStopDate,
-				difference: newDailySale.amount_given - newDailySale.amount_sold,
-				start_count_fuel_1: newDailySale.start_count_fuel_1,
-				stop_count_fuel_1: newDailySale.stop_count_fuel_1,
-				start_count_gasoil_1: newDailySale.start_count_gasoil_1,
-				stop_count_gasoil_1: newDailySale.stop_count_gasoil_1,
-				start_count_fuel_2: newDailySale.start_count_fuel_2,
-				stop_count_fuel_2: newDailySale.stop_count_fuel_2,
-				start_count_gasoil_2: newDailySale.start_count_gasoil_2,
-				stop_count_gasoil_2: newDailySale.stop_count_gasoil_2,
-				start_count_fuel_3: newDailySale.start_count_fuel_3,
-				stop_count_fuel_3: newDailySale.stop_count_fuel_3,
-				start_count_gasoil_3: newDailySale.start_count_gasoil_3,
-				stop_count_gasoil_3: newDailySale.stop_count_gasoil_3,
-				start_count_gaz: newDailySale.start_count_gaz,
-				stop_count_gaz: newDailySale.stop_count_gaz,
-				user: { connect: { id: user.id } }
+		try {
+			const fuelCounts = [{start1: newDailySale.}]
+
+			await prisma.dailySale.create({
+				data: {
+					amount_sold: newDailySale.amount_sold,
+					amount_given: newDailySale.amount_given,
+					date_of_sale_start: newDailySaleStartDate,
+					date_of_sale_stop: newDailySaleStopDate,
+					difference: newDailySale.amount_given - newDailySale.amount_sold,
+					FuelCount,
+					user: { connect: { id: user.id } }
+				}
+			});
+		} catch (error) {
+			if (error instanceof Prisma.PrismaClientKnownRequestError) {
+				if (error.code === 'P2002') {
+					console.error('Unique constraint violation:', error);
+				} else if (error.code === 'P2003') {
+					console.error('Foreign key constraint violation:', error);
+				} else {
+					console.error('Prisma error:', error);
+				}
 			}
-		});
+		}
 	}
 
 	return res.sendStatus(200);

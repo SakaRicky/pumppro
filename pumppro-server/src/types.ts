@@ -7,7 +7,8 @@ import {
 	DailySale,
 	Tank,
 	Fuel,
-	Message
+	FuelCount,
+	MessageNotification
 } from "@prisma/client";
 
 export type User = {
@@ -60,7 +61,7 @@ export type Sale = {
 	id: string;
 	total_amount: number;
 	user_id: string;
-	saleDetails: Prisma.SaleDetailArgs[];
+	saleDetails: Prisma.Sale$saleDetailsArgs[];
 };
 
 // 1: Define a type that includes the relation to `Post`
@@ -98,4 +99,4 @@ export type NewTank = Omit<Tank, "id" | "created_at" | "updatedAt">;
 
 export type NewFuel = Omit<Fuel, "id" | "created_at" | "updatedAt">;
 
-export type NewMessage = Omit<Message, "id" | "created_at" | "updatedAt">;
+export type NewMessage = Omit<MessageNotification, "id" | "created_at" | "updatedAt">;

@@ -126,9 +126,9 @@ async function seed() {
 		data: {
 			user_id: user2.id,
 			total_amount:
-				product1.selling_price * 2 +
-				product2.selling_price * 1 +
-				product3.selling_price * 14,
+				(product1.selling_price * 2) +
+				(product2.selling_price * 1) +
+				(product3.selling_price * 14),
 			saleDetails: {
 				createMany: {
 					data: [
@@ -281,7 +281,7 @@ async function seed() {
 		}
 	});
 
-	await prisma.fuel.create({
+	const fuel1 = await prisma.fuel.create({
 		data: {
 			name: "Fuel",
 			description: "Fuel for normal petrol engines",
@@ -293,7 +293,7 @@ async function seed() {
 		}
 	});
 
-	await prisma.fuel.create({
+	const fuel2 = await prisma.fuel.create({
 		data: {
 			name: "Gasoil",
 			description: "Fuel for Diesel engines",
@@ -305,7 +305,7 @@ async function seed() {
 		}
 	});
 
-	await prisma.fuel.create({
+	const fuel3 = await prisma.fuel.create({
 		data: {
 			name: "Petrol",
 			description: "Petrol to be burnt of traditional Lamps",
@@ -317,7 +317,7 @@ async function seed() {
 		}
 	});
 
-	await prisma.fuel.create({
+	const fuel4 = await prisma.fuel.create({
 		data: {
 			name: "Gaz Bottle",
 			description: "Domestic Gaz Bottle",
@@ -328,6 +328,25 @@ async function seed() {
 			tank_id: tank4.id
 		}
 	});
+
+	const pumps = [
+		{ name: "Pump A", fuel: fuel1 },
+		{ name: "Pump B", fuel: fuel2 },
+		{ name: "Pump C", fuel: fuel3 },
+		{ name: "Pump D", fuel: fuel1 },
+		{ name: "Pump E", fuel: fuel2 },
+		{ name: "Pump F", fuel: fuel3 },
+		{ name: "Gaz Bottles", fuel: fuel4 },
+	];
+
+	pumps.forEach(async(pump) => {
+		await prisma.pump.create({
+			data: {
+				name: pump.name,
+				fuel: { connect: {id: pump.fuel.id}}
+			}
+		});
+	})
 
 	await prisma.messageNotification.create({
 		data: {

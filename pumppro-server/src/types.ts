@@ -90,7 +90,7 @@ export type NewDailySale = Omit<
 DailySale,
 	"id" | "difference" | "created_at" | "updatedAt"
 >  & {
-	FuelCounts: NewFuelCount[]; 
+	fuelCounts: NewFuelCount[]; 
 }
 
 export enum FuelType {

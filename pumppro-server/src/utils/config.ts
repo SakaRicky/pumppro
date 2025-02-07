@@ -1,11 +1,13 @@
 import "dotenv/config";
 import dotenv from "dotenv";
 
-dotenv.config({ path: `.env` });
+delete process.env.DATABASE_URL; // Ensure it's not set before loading dotenv
+
+dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : ".env" });
 
 type Config = {
 	PORT: string | number;
-	DATABASE_URL: string;
+	DATABASE_URL: string | undefined;
 	SECRET: string | undefined;
 	SESSION_SECRET: string;
 	JWT_SECRET: string;
@@ -18,7 +20,7 @@ type Config = {
 
 const config: Config = {
 	PORT: process.env.PORT || 5000,
-	DATABASE_URL: process.env.DATABASE_URL || "",
+	DATABASE_URL: process.env.DATABASE_URL,
 	SECRET: process.env.SECRET,
 	SESSION_SECRET: process.env.SESSION_SECRET || "",
 	JWT_SECRET: process.env.JWT_SECRET || "",

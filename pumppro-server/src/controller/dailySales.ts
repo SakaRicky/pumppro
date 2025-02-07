@@ -74,6 +74,7 @@ export const getDailySales = async (
 
 export const saveDailySale = async (req: Request, res: Response) => {
 	const newDailySale = validateNewDailySale(req.body);
+	let savedDailySale = {};
 
 	if (!newDailySale) {
 		throw new Error("No Sale to be save");
@@ -142,7 +143,7 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		}
 	} else {
 		try {
-			await prisma.dailySale.create({
+			savedDailySale = await prisma.dailySale.create({
 				data: {
 					amount_sold: newDailySale.amount_sold,
 					amount_given: newDailySale.amount_given,
@@ -151,16 +152,16 @@ export const saveDailySale = async (req: Request, res: Response) => {
 					difference: newDailySale.amount_given - newDailySale.amount_sold,
 					fuelCounts: { 
 						createMany: {
-						  data: newDailySale.FuelCounts.map(fuel => ({
-							fuel_type: fuel.fuel_type,
-							start_count: fuel.start_count,
-							stop_count: fuel.stop_count
-						  }))
+						  data: newDailySale.fuelCounts
 						}
 					  },
 					user: { connect: { id: user.id } }
+				},
+				include: {
+				  fuelCounts: true // Include the nested FuelCounts relation
 				}
 			});
+
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientKnownRequestError) {
 				if (error.code === 'P2002') {
@@ -174,7 +175,7 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		}
 	}
 
-	return res.sendStatus(200);
+	return res.send(savedDailySale);
 };
 
 export const getDailySale = async (req: Request, res: Response) => {

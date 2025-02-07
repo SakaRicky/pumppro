@@ -149,7 +149,7 @@ const NewDailySaleSchema = z.object({
   difference: z.number(),
   date_of_sale_start: z.date(),
   date_of_sale_stop: z.date(),
-  FuelCounts: z.array(FuelCountSchema) // Adding FuelCounts array validation
+  fuelCounts: z.array(FuelCountSchema) // Adding FuelCounts array validation
 });
 
 export const validateNewDailySale = (data: any): NewDailySale | undefined => {
@@ -159,7 +159,7 @@ export const validateNewDailySale = (data: any): NewDailySale | undefined => {
     amount_given: Number(data.amount_given),
     date_of_sale_start: new Date(data.date_of_sale_start),
     date_of_sale_stop: new Date(data.date_of_sale_stop),
-    fuelCounts: data.FuelCounts?.map((fuel: any) => ({
+    fuelCounts: data.fuelCounts?.map((fuel: any) => ({
       fuel_type: fuel.fuel_type,
       start_count: Number(fuel.start_count),
       stop_count: Number(fuel.stop_count)

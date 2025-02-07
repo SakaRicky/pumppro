@@ -8,12 +8,13 @@
 	},
 	"scripts": {
 		"tsc": "tsc",
-		"migrate:postgres": "dotenv -e .env -- npx prisma migrate dev --name postgres-init",
-		"migrate:postgres_test": "dotenv -e .env.test -- npx prisma migrate dev --name postgres-init",
+		"migrate:dev": "dotenv -e .env -- npx prisma migrate dev --name postgres-init",
+		"migrate:test": "dotenv -e .env.test -- npx prisma migrate dev --name postgres-init",
 		"dev": "cross-env NODE_ENV=development ts-node-dev --exit-child src/index.ts",
+		"local_test": "cross-env NODE_ENV=test ts-node-dev --exit-child src/index.ts",
 		"start": "ts-node src/index.ts",
 		"lint": "eslint --ext .ts .",
-		"test": "dotenv -e .env.test jest --verbose --runInBand",
+		"test": "cross-env  NODE_ENV=test node --test",
 		"build:ui": "rm -rf dist && cd ../client && npm run build && cp -r dist ../server"
 	},
 	"author": "Ricky Saka",

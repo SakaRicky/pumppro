@@ -7,9 +7,9 @@ export const requestLogger = (
 	_response: Response,
 	next: NextFunction
 ) => {
-	logger.info("Method: " + request.method);
-	logger.info("Path: " + request.path);
-	logger.info("Body: " + request.body);
+	logger.info("Method: ", request.method);
+	logger.info("Path: ", request.path);
+	logger.info("Body: ", request.body);
 	logger.info("---------");
 	next();
 };

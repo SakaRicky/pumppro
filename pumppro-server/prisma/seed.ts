@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { PrismaClient } from "@prisma/client";
+import { FuelType, PrismaClient } from "@prisma/client";
 import { getProducts } from "./products";
 
 const prisma = new PrismaClient();
@@ -284,6 +284,7 @@ async function seed() {
 	const fuel1 = await prisma.fuel.create({
 		data: {
 			name: "Fuel",
+			fuel_type: FuelType.FUEL,
 			description: "Fuel for normal petrol engines",
 			purchase_price: 650,
 			selling_price: 700,
@@ -296,6 +297,7 @@ async function seed() {
 	const fuel2 = await prisma.fuel.create({
 		data: {
 			name: "Gasoil",
+			fuel_type: FuelType.GASOIL,
 			description: "Fuel for Diesel engines",
 			purchase_price: 600,
 			selling_price: 650,
@@ -308,6 +310,7 @@ async function seed() {
 	const fuel3 = await prisma.fuel.create({
 		data: {
 			name: "Petrol",
+			fuel_type: FuelType.PETROL,
 			description: "Petrol to be burnt of traditional Lamps",
 			purchase_price: 200,
 			selling_price: 250,
@@ -320,6 +323,7 @@ async function seed() {
 	const fuel4 = await prisma.fuel.create({
 		data: {
 			name: "Gaz Bottle",
+			fuel_type: FuelType.GAS_BOTTLE,
 			description: "Domestic Gaz Bottle",
 			purchase_price: 6500,
 			selling_price: 7000,

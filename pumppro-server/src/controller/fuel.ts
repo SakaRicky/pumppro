@@ -35,6 +35,7 @@ export const saveFuel = async (req: Request, res: Response) => {
 		await prisma.fuel.create({
 			data: {
 				name: newFuel.name,
+				fuel_type: newFuel.fuel_type,
 				purchase_price: newFuel.purchase_price,
 				selling_price: newFuel.selling_price,
 				quantity_theory: newFuel.quantity_theory,

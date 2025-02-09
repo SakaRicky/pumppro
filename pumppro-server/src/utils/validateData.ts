@@ -134,70 +134,20 @@ export const validateNewSale = (data: any[]): SaleItem[] | undefined => {
 	return parsedData;
 };
 
-// Define the FuelCount schema
-const FuelCountSchema = z.object({
-  fuel_type: z.enum([FuelType.FUEL, FuelType.GASOIL, FuelType.GAS_BOTTLE, FuelType.PETROL]), // Assuming it's a string, update if it's an enum
-  start_count: z.number(),
-  stop_count: z.number()
-});
-
-// Define the NewDailySale schema with FuelCounts
-const NewDailySaleSchema = z.object({
-  user_id: z.string(),
-  amount_sold: z.number(),
-  amount_given: z.number(),
-  difference: z.number(),
-  date_of_sale_start: z.date(),
-  date_of_sale_stop: z.date(),
-  fuelCounts: z.array(FuelCountSchema) // Adding FuelCounts array validation
-});
-
-export const validateNewDailySale = (data: any): NewDailySale | undefined => {
-  const transformedData = {
-    ...data,
-    amount_sold: Number(data.amount_sold), // Use `Number()` to support decimals
-    amount_given: Number(data.amount_given),
-    date_of_sale_start: new Date(data.date_of_sale_start),
-    date_of_sale_stop: new Date(data.date_of_sale_stop),
-    fuelCounts: data.fuelCounts?.map((fuel: any) => ({
-      fuel_type: fuel.fuel_type,
-      start_count: Number(fuel.start_count),
-      stop_count: Number(fuel.stop_count)
-    })) ?? []
-  };
-
-  const parsedData = NewDailySaleSchema.parse(transformedData);
-
-  return parsedData;
-};
-
-
-const FuelTankUpdateSchema = z.object({
-	id: z.number(),
-	quantity: z.number()
-});
-
-export const validateFuelTankUpdate = (
-	data: any
-): { id: number; quantity: number } | undefined => {
-	const transformedData = {
-		id: Number.parseInt(data.id),
-		quantity: Number.parseInt(data.quantity)
-	};
-	const parsedData = FuelTankUpdateSchema.parse(transformedData);
-
-	return parsedData;
-};
-
 const NewFuelSchema = z.object({
 	name: z.string().min(3),
 	purchase_price: z.number(),
 	selling_price: z.number(),
 	quantity_theory: z.number(),
 	quantity_actual: z.number(),
+	fuel_type: z.enum([FuelType.FUEL, FuelType.GASOIL, FuelType.GAS_BOTTLE, FuelType.PETROL]),
 	description: z.string().min(3),
 	tank_id: z.number()
 });
+
+// const FuelSchema = NewFuelSchema.extend({
+//     id: z.number(),
+// });
 
 export const validateNewFuel = (data: any): NewFuel | undefined => {
 	data.quantity = Number.parseInt(data.quantity);
@@ -231,3 +181,59 @@ export const validateEditedFuel = (data: any): Fuel | undefined => {
 		updatedAt: new Date(data.updatedAt)
 	};
 };
+
+// Define the FuelCount schema
+const FuelCountSchema = z.object({
+  fuel_id: z.number(),
+  start_count: z.number(),
+  stop_count: z.number()
+});
+
+// Define the NewDailySale schema with FuelCounts
+const NewDailySaleSchema = z.object({
+  user_id: z.string(),
+  amount_sold: z.number(),
+  amount_given: z.number(),
+  date_of_sale_start: z.date(),
+  date_of_sale_stop: z.date(),
+  fuelCounts: z.array(FuelCountSchema) // Adding FuelCounts array validation
+});
+
+export const validateNewDailySale = (data: any): NewDailySale | undefined => {
+
+	const transformedData = {
+    ...data,
+    amount_sold: Number(data.amount_sold), // Use `Number()` to support decimals
+    amount_given: Number(data.amount_given),
+    date_of_sale_start: new Date(data.date_of_sale_start),
+    date_of_sale_stop: new Date(data.date_of_sale_stop),
+    fuelCounts: data.fuelCounts?.map((fuel: any) => ({
+      fuel_id: Number(fuel.fuel_id),
+      start_count: Number(fuel.start_count),
+      stop_count: Number(fuel.stop_count)
+    })) ?? []
+  };
+
+  const parsedData = NewDailySaleSchema.parse(transformedData);
+
+  return parsedData;
+};
+
+
+const FuelTankUpdateSchema = z.object({
+	id: z.number(),
+	quantity: z.number()
+});
+
+export const validateFuelTankUpdate = (
+	data: any
+): { id: number; quantity: number } | undefined => {
+	const transformedData = {
+		id: Number.parseInt(data.id),
+		quantity: Number.parseInt(data.quantity)
+	};
+	const parsedData = FuelTankUpdateSchema.parse(transformedData);
+
+	return parsedData;
+};
+

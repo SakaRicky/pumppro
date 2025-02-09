@@ -9,7 +9,9 @@
 	"scripts": {
 		"tsc": "tsc",
 		"migrate:dev": "dotenv -e .env -- npx prisma migrate dev --name postgres-init",
+		"migrate:dev:reset": "dotenv -e .env -- npx prisma migrate reset",
 		"migrate:test": "dotenv -e .env.test -- npx prisma migrate dev --name postgres-init",
+		"migrate:test:reset": "dotenv -e .env.test -- npx prisma migrate reset",
 		"dev": "cross-env NODE_ENV=development ts-node-dev --exit-child src/index.ts",
 		"local_test": "cross-env NODE_ENV=test ts-node-dev --exit-child src/index.ts",
 		"start": "ts-node src/index.ts",

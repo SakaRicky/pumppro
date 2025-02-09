@@ -2,7 +2,7 @@ import express, { RequestHandler } from "express";
 
 import asyncHandler from "express-async-handler";
 import { checkIfAdmin } from "../../middlewares/jwt";
-import { getDailySales, saveDailySale } from "../controller/dailySales";
+import { getDailySales, saveDailySale } from "../controller/dailySales/dailySales";
 
 const dailySalesRoutes = express.Router();
 

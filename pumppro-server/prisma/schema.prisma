@@ -103,16 +103,16 @@ enum Role {
 }
 
 model DailySale {
-  id                   Int      @id @default(autoincrement())
-  user                 User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id              String
-  amount_sold          Float
-  amount_given         Float
-  difference           Float
-  date_of_sale_start   DateTime @default(now())
-  date_of_sale_stop    DateTime @default(now())
-  created_at           DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                 Int      @id @default(autoincrement())
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id            String
+  amount_sold        Float
+  amount_given       Float
+  difference         Float
+  date_of_sale_start DateTime @default(now())
+  date_of_sale_stop  DateTime @default(now())
+  created_at         DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   fuelCounts FuelCount[]
 }
@@ -136,24 +136,27 @@ model Fuel {
   tank_id         Int?      @unique
   created_at      DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
+  fuel_type       FuelType
+  pump            Pump[]
 
-  Pump Pump[]
-}
-
-model Pump {
-  id              Int       @id @default(autoincrement())
-  name            String
-  fuel            Fuel? @relation(fields: [fuelid], references: [id])
-  fuelid Int?
+  fuelCount FuelCount[]
 }
 
 model FuelCount {
-  id          Int      @id @default(autoincrement())
-  daily_sale  DailySale @relation(fields: [daily_sale_id], references: [id])
+  id            Int       @id @default(autoincrement())
+  daily_sale    DailySale @relation(fields: [daily_sale_id], references: [id])
   daily_sale_id Int
-  fuel_type    FuelType
-  start_count  Int
-  stop_count   Int
+  fuel          Fuel      @relation(fields: [fuel_id], references: [id])
+  fuel_id       Int
+  start_count   Int
+  stop_count    Int
+}
+
+model Pump {
+  id     Int    @id @default(autoincrement())
+  name   String
+  fuel   Fuel?  @relation(fields: [fuelid], references: [id])
+  fuelid Int?
 }
 
 model Tank {

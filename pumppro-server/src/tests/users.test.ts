@@ -63,7 +63,7 @@ describe.only("Test the users route", () => {
 		await prisma.$transaction([
 			deleteSales,
 			deleteSaleDetails,
-			deleteProducts,
+			deleteProducts, 
 			deleteusers,
 			deletedailySales,
 			deleteProductsCategory

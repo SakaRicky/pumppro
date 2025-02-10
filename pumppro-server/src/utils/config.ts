@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 delete process.env.DATABASE_URL; // Ensure it's not set before loading dotenv
 
-dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : ".env" });
+dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : process.env.NODE_ENV === "development" ? ".env.dev" : ".env" });
 
 type Config = {
 	PORT: string | number;

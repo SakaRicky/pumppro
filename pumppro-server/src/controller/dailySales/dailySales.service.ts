@@ -23,10 +23,10 @@ const checkForDuplicate = async (userId: string, startDate: Date, stopDate: Date
 /**
  * 
  * @param tx the prisma transaction
- * @param fuelCounts 
+ * @param fuel_counts 
  */
-const updateFuelQuantity = async (tx: any, fuelCounts: NewFuelCount[]) => {
-    for (const fuelCount of fuelCounts) {
+const updateFuelQuantity = async (tx: any, fuel_counts: NewFuelCount[]) => {
+    for (const fuelCount of fuel_counts) {
         await tx.fuel.update({
             where: { id: fuelCount.fuel_id },
             data: {
@@ -65,7 +65,7 @@ export const createDailySale = async (newDailySale: NewDailySale) => {
 
     return await prisma.$transaction(async (tx) => {
         let savedDailySale = {}
-        if (newDailySale.fuelCounts && newDailySale.fuelCounts.length > 0) {
+        if (newDailySale.fuel_counts && newDailySale.fuel_counts.length > 0) {
             // Create Daily Sale and FuelCounts
             savedDailySale = await tx.dailySale.create({
                 data: {
@@ -73,15 +73,14 @@ export const createDailySale = async (newDailySale: NewDailySale) => {
                     amount_given: newDailySale.amount_given,
                     date_of_sale_start: newDailySale.date_of_sale_start,
                     date_of_sale_stop: newDailySale.date_of_sale_stop,
-                    difference: newDailySale.amount_given - newDailySale.amount_sold,
-                    fuelCounts: { createMany: { data: newDailySale.fuelCounts } },
+                    fuel_counts: { createMany: { data: newDailySale.fuel_counts } },
                     user: { connect: { id: user.id } }
                 },
-                include: { fuelCounts: true }
+                include: { fuel_counts: true }
             });
 
             // Update Fuel quantities based on the recorded FuelCounts
-            await updateFuelQuantity(tx, newDailySale.fuelCounts)
+            await updateFuelQuantity(tx, newDailySale.fuel_counts)
 
         } else {
             savedDailySale = await tx.dailySale.create({
@@ -90,10 +89,9 @@ export const createDailySale = async (newDailySale: NewDailySale) => {
                     amount_given: newDailySale.amount_given,
                     date_of_sale_start: newDailySale.date_of_sale_start,
                     date_of_sale_stop: newDailySale.date_of_sale_stop,
-                    difference: newDailySale.amount_given - newDailySale.amount_sold,
                     user: { connect: { id: user.id } }
                 },
-                include: { fuelCounts: true }
+                include: { fuel_counts: true }
             });
         }
         return savedDailySale;

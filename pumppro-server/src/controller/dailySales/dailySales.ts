@@ -60,10 +60,9 @@ export const getDailySales = async (
 			id: true,
 			amount_sold: true,
 			amount_given: true,
-			difference: true,
 			date_of_sale_start: true,
 			date_of_sale_stop: true,
-			fuelCounts: true,
+			fuel_counts: true,
 			user: true,
 			created_at: true
 		},

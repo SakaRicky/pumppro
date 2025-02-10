@@ -61,11 +61,9 @@ export const getSales = async (
 					profile_picture: true
 				}
 			},
-			total_amount: true,
-			saleDetails: {
+			sale_details: {
 				select: {
 					id: true,
-					total_amount: true,
 					quantity: true,
 					product: {
 						select: {
@@ -120,8 +118,7 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 	}
 	const userToken = req.token;
 	const decodedToken = verifyToken(userToken || "");
-	let totalAmount = 0;
-	const saleDetails: NewSaleDetails[] = [];
+	const sale_details: NewSaleDetails[] = [];
 
 	for (const saleItem of newSale) {
 		const product = await prisma.product.findUnique({
@@ -155,13 +152,10 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 				await createNotificationForAdmins(updatedProduct);
 			}
 
-			totalAmount += saleItem.quantity * product.selling_price;
-
-			saleDetails.push({
+			sale_details.push({
 				product_id: product.id,
 				unit_price: product.selling_price,
 				quantity: saleItem.quantity,
-				total_amount: product.selling_price * saleItem.quantity
 			});
 		}
 	}
@@ -169,10 +163,9 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 	await prisma.sale.create({
 		data: {
 			user_id: decodedToken.id,
-			total_amount: totalAmount,
-			saleDetails: {
+			sale_details: {
 				createMany: {
-					data: saleDetails
+					data: sale_details
 				}
 			}
 		}

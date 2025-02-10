@@ -86,7 +86,7 @@ enum UserType {
 model User {
   id              String                @id @default(uuid())
   type            UserType   @default(WORKER)
-  daily_sales      DailySale[]
+  daily_sales     DailySale[]
   sales           Sale[]
   names           String
   date_of_birth   DateTime
@@ -97,7 +97,7 @@ model User {
   godfather_phone String
   localisation    String?
   email           String?
-  password_hash   String
+  password_hash   String?
   cni_number      String
   profile_picture String?
   messages        MessageNotification[]
@@ -130,7 +130,7 @@ model DailySale {
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
 
-  fuelCounts FuelCount[]
+  fuel_counts FuelCount[]
 }
 
 enum FuelType {

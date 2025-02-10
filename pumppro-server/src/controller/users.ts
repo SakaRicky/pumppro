@@ -38,7 +38,7 @@ export const getUsers = async (
 			salary: true,
 			profile_picture: true,
 			role: true,
-			CNI_number: true,
+			cni_number: true,
 			localisation: true,
 			created_at: true
 		},
@@ -94,7 +94,7 @@ export const saveUser = async (req: RequestWithToken, res: Response) => {
 				salary: newUser.salary,
 				godfather_phone: newUser.godfather_phone,
 				localisation: newUser.localisation,
-				CNI_number: newUser.CNI_number,
+				cni_number: newUser.cni_number,
 				password_hash: password_hash,
 				role: newUser.role,
 				profile_picture: imageURL
@@ -133,7 +133,7 @@ export const updateUser = async (req: RequestWithToken, res: Response) => {
 				salary: editedUser.salary,
 				godfather_phone: editedUser.godfather_phone,
 				localisation: editedUser.localisation,
-				CNI_number: editedUser.CNI_number,
+				cni_number: editedUser.cni_number,
 				password_hash: password_hash
 					? password_hash
 					: existingUser?.password_hash,

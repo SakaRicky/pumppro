@@ -18,6 +18,7 @@ type Config = {
 	};
 };
 
+
 const config: Config = {
 	PORT: process.env.PORT || 5000,
 	DATABASE_URL: process.env.DATABASE_URL,
@@ -30,5 +31,7 @@ const config: Config = {
 		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || ""
 	}
 };
+
+console.log("Connected to the database: ", config.DATABASE_URL);
 
 export default config;

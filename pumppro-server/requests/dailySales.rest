@@ -1,14 +1,14 @@
 ###
 POST http://localhost:5001/daily-sales HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6ImRhYWE4ZmNjLTNjYTktNGY0Mi05NWI1LWQxNDE3ZjlhZjdlYSIsImlhdCI6MTczOTE0MjI1OSwiZXhwIjoxNzM5MjI4NjU5fQ.X7Gea0Lc16k4Id8447sZC4SR7eAdNyLp5D7eo6ojyzs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6IjEzYWJlZGY1LTE2ZTAtNDI4Ny04NGQ0LTVlYmNhZGU0ZjcyOSIsImlhdCI6MTczOTI5NDY4MSwiZXhwIjoxNzM5MzgxMDgxfQ.HsECApykgesrKsUcBH1nwuQ_XVV-7Ch1pffzsGA3eN0
 
 {
-  "user_id": "e466ba30-3e57-4c30-99cf-9f53c2157050",
+  "user_id": "08b147f2-d7dc-43f8-8172-dd7ec0af7fe5",
   "amount_sold": 500.0,
   "amount_given": 480.0,
-  "date_of_sale_start": "2024-04-06T10:00:00Z",
-  "date_of_sale_stop": "2024-04-06T20:00:00Z",
+  "date_of_sale_start": "2024-04-08T10:00:00Z",
+  "date_of_sale_stop": "2024-04-08T20:00:00Z",
   "fuel_counts": [
     { "fuel_id": 1, "start_count": 1000, "stop_count": 1200 },
     { "fuel_id": 2, "start_count": 800, "stop_count": 950 }

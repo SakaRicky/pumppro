@@ -8,7 +8,7 @@ import {
 	Fuel,
 	FuelCount,
 	MessageNotification,
-	DailySale
+	DailySale as PrismaDailySale
 } from "@prisma/client";
 
 export type User = {
@@ -99,6 +99,10 @@ export type NewDailySale = Omit<
 DailySale,
 	"id" | "difference" | "created_at" | "updated_at"
 >  & {
+	fuel_counts?: NewFuelCount[]; 
+}
+
+export type DailySale = PrismaDailySale & {
 	fuel_counts?: NewFuelCount[]; 
 }
 

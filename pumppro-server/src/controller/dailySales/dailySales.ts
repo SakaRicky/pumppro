@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { validateNewDailySale } from "../../utils/validateData";
-import { createDailySale } from "./dailySales.service";
+import { validateExistingDailySale, validateNewDailySale } from "../../utils/validateData";
+import { createDailySaleInDB, deleteDailySaleInDB, updateDailySaleInDB } from "./dailySales.service";
 
 const prisma = new PrismaClient();
 
@@ -80,9 +80,33 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		throw new Error("No Sale to be save");
 	}
 
-	savedDailySale = await createDailySale(newDailySale);
+	savedDailySale = await createDailySaleInDB(newDailySale);
 
 	return res.send(savedDailySale);
+};
+
+export const updateDailySale = async (req: Request, res: Response) => {
+	const dailySaleToUpdate = validateExistingDailySale(req.body);
+
+	if (!dailySaleToUpdate) {
+		throw new Error("No Sale to be updated");
+	}
+
+	const updatedDailySale = await updateDailySaleInDB(dailySaleToUpdate);
+
+	return res.send(updatedDailySale);
+};
+
+export const deleteDailySale = async (req: Request, res: Response) => {
+	const dailySaleToDelete = validateExistingDailySale(req.body);
+
+	if (!dailySaleToDelete) {
+		throw new Error("No Sale to be deleted");
+	}
+
+	const deletedDailySale = await deleteDailySaleInDB(dailySaleToDelete);
+
+	return res.send(deletedDailySale);
 };
 
 export const getDailySale = async (req: Request, res: Response) => {

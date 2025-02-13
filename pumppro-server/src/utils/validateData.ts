@@ -1,6 +1,7 @@
 import { Fuel, Gender, Role } from "@prisma/client";
 import { z } from "zod";
 import {
+	DailySale,
 	FuelType,
 	NewDailySale,
 	NewFuel,
@@ -200,6 +201,12 @@ const NewDailySaleSchema = z.object({
   fuel_counts: z.array(FuelCountSchema) // Adding FuelCounts array validation
 });
 
+const ExistingDailySaleSchema = NewDailySaleSchema.extend({
+	id: z.number(),
+	created_at: z.date(),
+	updated_at: z.date(),
+});
+
 export const validateNewDailySale = (data: any): NewDailySale | undefined => {
 
 	const transformedData = {
@@ -216,6 +223,29 @@ export const validateNewDailySale = (data: any): NewDailySale | undefined => {
   };
 
   const parsedData = NewDailySaleSchema.parse(transformedData);
+
+  return parsedData;
+};
+
+export const validateExistingDailySale = (data: any): DailySale | undefined => {
+
+	const transformedData = {
+    ...data,
+	id: Number(data.id),
+    amount_sold: new Decimal(data.amount_sold),
+    amount_given: new Decimal(data.amount_given),
+    date_of_sale_start: new Date(data.date_of_sale_start),
+    date_of_sale_stop: new Date(data.date_of_sale_stop),
+    fuel_counts: data.fuel_counts?.map((fuel: any) => ({
+      fuel_id: Number(fuel.fuel_id),
+      start_count: Number(fuel.start_count),
+      stop_count: Number(fuel.stop_count)
+    })) ?? [],
+	created_at: new Date(data.created_at),
+	updated_at: new Date(data.updated_at),
+  };
+
+  const parsedData = ExistingDailySaleSchema.parse(transformedData);
 
   return parsedData;
 };

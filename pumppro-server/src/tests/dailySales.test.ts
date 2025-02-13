@@ -2,8 +2,9 @@ import { test, describe, beforeEach } from "node:test";
 import { authToken, dailySaleToPost, testApi } from "./helper/setupTestDB";
 import { dailySaleData, initialDailySales } from "../../prisma/seed";
 import assert from "assert";
-import { getAllDailySales } from "./helper/testsHelperFunctions";
+import { getAllDailySales, getDailySaleFromID } from "./helper/testsHelperFunctions";
 import { DailySale } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 describe("getDailysales", async () => {
     test("get daily sales without an auth token", async () => {
@@ -66,5 +67,78 @@ describe("Save a new daily sale", () => {
         const dailySalTotal = initialDailySales.reduce((acc, curr) => acc + curr.amount_sold.toNumber(), 0);
 
         assert.strictEqual(initialTotal, dailySalTotal)
+    })
+})
+
+describe("Update an existing daily sale", () => {
+
+    let allDailySales: DailySale[] = [];
+    let dailySaleToUpdate: DailySale;
+    const newGivenAmount = new Decimal(1.1);
+    const newAmountSold = new Decimal(1.1);
+
+    beforeEach(async () => {
+        allDailySales = await getAllDailySales();
+        dailySaleToUpdate = allDailySales[0];
+        dailySaleToUpdate.amount_given = newGivenAmount;
+        dailySaleToUpdate.amount_sold = newAmountSold;
+    })
+
+    test("without a token, should not update", async () => {
+
+        const dailySales = await testApi.patch("/daily-sales").send(dailySaleToUpdate).expect(401);
+
+
+        assert.strictEqual(dailySales.status, 401);
+        assert(dailySales.headers['content-type'], "application.json");
+    })
+
+    test("with a token, it updates a new daily post", async () => {
+        const savedDailySales = await testApi
+                                            .patch("/daily-sales")
+                                            .send(dailySaleToUpdate)
+                                            .set("Authorization", `Bearer ${authToken}`);
+        
+        // Since in this test I save a new daily sale
+        const updatedDailySales = await getDailySaleFromID(dailySaleToUpdate.id);
+        assert.strictEqual(savedDailySales.status, 200);
+        assert(savedDailySales.headers['content-type'], "application.json");
+        assert.strictEqual(updatedDailySales?.amount_given.toNumber(), dailySaleToUpdate.amount_given.toNumber());
+        assert.strictEqual(updatedDailySales?.amount_sold.toNumber(), dailySaleToUpdate.amount_sold.toNumber());
+    })
+})
+
+describe("Delete a daily sale", () => {
+
+    let allDailySales: DailySale[] = [];
+    let dailySaleToDelete: DailySale;
+
+    beforeEach(async () => {
+        allDailySales = await getAllDailySales();
+        dailySaleToDelete = allDailySales[0];
+    })
+
+    test("without a token, should not update", async () => {
+
+        const dailySales = await testApi.delete("/daily-sales").send(dailySaleToDelete).expect(401);
+
+
+        assert.strictEqual(dailySales.status, 401);
+        assert(dailySales.headers['content-type'], "application.json");
+    })
+
+    test("with a token, it updates a new daily post", async () => {
+        const savedDailySales = await testApi
+                                            .delete("/daily-sales")
+                                            .send(dailySaleToDelete)
+                                            .set("Authorization", `Bearer ${authToken}`);
+        
+        // Since in this test I save a new daily sale
+        const deletedDailySale = await getDailySaleFromID(dailySaleToDelete.id);
+        const newAllDailySales = await getAllDailySales();
+        assert.strictEqual(savedDailySales.status, 200);
+        assert(savedDailySales.headers['content-type'], "application.json");
+        assert.equal(deletedDailySale, null);
+        assert.strictEqual(newAllDailySales.length, allDailySales.length - 1);
     })
 })

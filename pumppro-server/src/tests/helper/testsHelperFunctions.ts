@@ -17,3 +17,20 @@ export const getAllDailySales = async (): Promise<DailySale[]> => {
         },
     });
 }
+
+export const getDailySaleFromID = async (id: number): Promise<DailySale | null> => {
+    return await prisma.dailySale.findUnique({where: {id: id},
+        select: {
+            id: true,
+            user_id: true,
+            amount_sold: true,
+            amount_given: true,
+            date_of_sale_start: true,
+            date_of_sale_stop: true,
+            fuel_counts: true,
+            user: true,
+            created_at: true,
+            updated_at: true
+        },
+    });
+}

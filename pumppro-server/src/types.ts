@@ -8,7 +8,7 @@ import {
 	Fuel,
 	FuelCount,
 	MessageNotification,
-	DailySale
+	DailySale as PrismaDailySale
 } from "@prisma/client";
 
 export type User = {
@@ -21,7 +21,7 @@ export type User = {
 	salary: number;
 	godfather_phone: string;
 	localisation?: string;
-	CNI_number: string;
+	cni_number: string;
 	email?: string;
 	password_hash?: string;
 	profile_picture?: string;
@@ -32,9 +32,18 @@ export type NewUser = Omit<User, "id" | "password_hash"> & {
 	password?: string;
 };
 
-export type LogginUser = {
+export type UserToAuth = {
 	username: string;
 	password: string;
+};
+
+export type AuthenticatedUSer = {
+	id: string;
+	username: string;
+	role: string;
+	profilePicture?: string | null;
+	token: string;
+	messages: MessageNotification[];
 };
 
 export type ProductType = Omit<Product, "description" | "image"> & {
@@ -42,7 +51,7 @@ export type ProductType = Omit<Product, "description" | "image"> & {
 	image?: string | null;
 };
 
-export type NewProduct = Omit<ProductType, "id" | "created_at" | "updatedAt">;
+export type NewProduct = Omit<ProductType, "id" | "created_at" | "updated_at">;
 
 export type ProductCategory = {
 	id: string;
@@ -61,7 +70,7 @@ export type Sale = {
 	id: string;
 	total_amount: number;
 	user_id: string;
-	saleDetails: Prisma.Sale$saleDetailsArgs[];
+	sale_details: Prisma.Sale$sale_detailsArgs[];
 };
 
 // 1: Define a type that includes the relation to `Post`
@@ -78,7 +87,7 @@ export type SaleDetailType = SaleDetail;
 
 export type NewSaleDetails = Omit<
 	SaleDetailType,
-	"id" | "sale_id" | "created_at" | "updatedAt"
+	"id" | "sale_id" | "created_at" | "updated_at"
 >;
 
 export type NewFuelCount = Omit<
@@ -88,9 +97,13 @@ FuelCount,
 
 export type NewDailySale = Omit<
 DailySale,
-	"id" | "difference" | "created_at" | "updatedAt"
+	"id" | "difference" | "created_at" | "updated_at"
 >  & {
-	fuelCounts?: NewFuelCount[]; 
+	fuel_counts?: NewFuelCount[]; 
+}
+
+export type DailySale = PrismaDailySale & {
+	fuel_counts?: NewFuelCount[]; 
 }
 
 export enum FuelType {
@@ -100,8 +113,8 @@ export enum FuelType {
 	GAS_BOTTLE = "GAS_BOTTLE"
 }
 
-export type NewTank = Omit<Tank, "id" | "created_at" | "updatedAt">;
+export type NewTank = Omit<Tank, "id" | "created_at" | "updated_at">;
 
-export type NewFuel = Omit<Fuel, "id" | "created_at" | "updatedAt">;
+export type NewFuel = Omit<Fuel, "id" | "created_at" | "updated_at">;
 
-export type NewMessage = Omit<MessageNotification, "id" | "created_at" | "updatedAt">;
+export type NewMessage = Omit<MessageNotification, "id" | "created_at" | "updated_at">;

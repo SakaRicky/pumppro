@@ -21,7 +21,7 @@ export const getFuels = async (_req: Request, res: Response) => {
 			quantity_theory: true,
 			quantity_actual: true,
 			created_at: true,
-			updatedAt: true
+			updated_at: true
 		}
 	});
 

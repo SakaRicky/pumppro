@@ -1,4 +1,17 @@
-import { ProductCategory } from "@prisma/client";
+import { FuelType, ProductCategory } from "@prisma/client";
+
+export const productCategories = [
+	{ name: "Bottle biere", description: "Biere being sold in bottles" },
+	{ name: "Can biere", description: "Biere being sold in cans" },
+	{
+		name: "Sweet bottle drinks",
+		description: "Sweet drinks being sold in bottles"
+	},
+	{ name: "Sweet bottle cans", description: "Sweet drinks being sold in cans" },
+	{ name: "Mineral Water bottle", description: "Mineral water sold in bottle" },
+	{ name: "Mineral Water sachet", description: "Mineral water sold in sachet" },
+	{ name: "Tinned cans", description: "Food items in tinned cans" }
+];
 
 export const getProducts = (categories: ProductCategory[]) => {
 	return [
@@ -296,3 +309,86 @@ export const getProducts = (categories: ProductCategory[]) => {
 		}
 	];
 };
+
+export const tanksToCreate = [
+	{
+		name: "Tank A",
+		capacity: 40000
+	},
+	{
+		name: "Tank B",
+		capacity: 15000
+	},
+	{
+		name: "Tank C",
+		capacity: 15000
+	},
+	{
+		name: "Tank D",
+		capacity: 0
+	}
+]
+
+export const fuelsToCreate = [
+	{
+		name: "Fuel",
+		fuel_type: FuelType.FUEL,
+		description: "Fuel for normal petrol engines",
+		purchase_price: 650,
+		selling_price: 700,
+		quantity_theory: 5250,
+		quantity_actual: 5250,
+		tank_id: 0 // 0 for now as the tank don't exist yet
+	},
+	{
+		name: "Gasoil",
+		fuel_type: FuelType.GASOIL,
+		description: "Fuel for Diesel engines",
+		purchase_price: 600,
+		selling_price: 650,
+		quantity_theory: 11400,
+		quantity_actual: 11400,
+		tank_id: 0 // 0 for now as the tank don't exist yet
+	},
+	{
+		name: "Petrol",
+		fuel_type: FuelType.PETROL,
+		description: "Petrol to be burnt of traditional Lamps",
+		purchase_price: 200,
+		selling_price: 250,
+		quantity_theory: 8700,
+		quantity_actual: 8700,
+		tank_id: 0 // 0 for now as the tank don't exist yet
+	},
+	{
+		name: "Gaz Bottle",
+		fuel_type: FuelType.GAS_BOTTLE,
+		description: "Domestic Gaz Bottle",
+		purchase_price: 6500,
+		selling_price: 7000,
+		quantity_theory: 150,
+		quantity_actual: 150,
+		tank_id: 0 // 0 for now as the tank don't exist yet
+	}
+]
+
+export const initialMessageNotifications = [
+	{
+		title: "For Jogn doe",
+		message: "Initial message for Jogn doe",
+		read: false,
+		users: [0]
+	},
+	{
+		title: "For Neymar Junior",
+		message: "Initial message Neymar Junior",
+		read: false,
+		users: [1]
+	},
+	{
+		title: "For many users",
+		message: "Initial message many users",
+		read: false,
+		users: [0, 1, 3]
+	}
+]

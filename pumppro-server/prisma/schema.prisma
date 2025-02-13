@@ -10,32 +10,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// A sale being done. It's for sales made in the shop only. Doesn't conatin fuel
 model Sale {
   id           Int          @id @default(autoincrement())
   user         User         @relation(fields: [user_id], references: [id])
   user_id      String
-  saleDetails  SaleDetail[]
-  total_amount Float
+  sale_details  SaleDetail[]
   created_at   DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  updated_at   DateTime     @updatedAt
+
+  @@index([user_id])
 }
 
+// For each sold item. It keeps details as price and quantity. total amount can be calculated on the fly.
 model SaleDetail {
   id           Int      @id @default(autoincrement())
   sale         Sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
   sale_id      Int
   product      Product  @relation(fields: [product_id], references: [id])
   product_id   String
-  unit_price   Float
   quantity     Int
-  total_amount Float
+  unit_price   Decimal
   created_at   DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updated_at   DateTime @updatedAt
+
+  @@index([sale_id])
+  @@index([product_id])
 }
 
+// Each store product. Might not have description and image
 model Product {
   id                  String          @id @default(uuid())
-  saleDetails         SaleDetail[]
+  sale_details         SaleDetail[]
   category            ProductCategory @relation(fields: [category_id], references: [id])
   purchases           Purchase[]
   category_id         String
@@ -43,51 +49,61 @@ model Product {
   description         String?
   image               String?
   quantity            Int
-  purchase_price      Float
-  selling_price       Float
+  purchase_price      Decimal
+  selling_price       Decimal
   low_stock_threshold Int             @default(10)
   created_at          DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  updated_at          DateTime        @updatedAt
 }
 
+// Tracks down product and fuel purchases.
 model Purchase {
   id         String   @id @default(uuid())
   product    Product  @relation(fields: [product_id], references: [id])
   product_id String
   quantity   Int
   created_at DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updated_at DateTime @updatedAt
 }
 
 model ProductCategory {
   id          String    @id @default(uuid())
   products    Product[]
-  name        String
+  name        String    @unique
   description String?
   created_at  DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updated_at  DateTime  @updatedAt
 }
 
+// Not all workers use the system
+enum UserType {
+  SYSTEM_USER
+  WORKER
+}
+
+// A seller of the shop. Email and password are optional because not all sellers use the system.
+// The admin could enter the data in their place.
 model User {
   id              String                @id @default(uuid())
-  dailySales      DailySale[]
-  Sales           Sale[]
+  type            UserType   @default(WORKER)
+  daily_sales     DailySale[]
+  sales           Sale[]
   names           String
   date_of_birth   DateTime
   username        String                @unique
   gender          Gender
   phone           String
-  salary          Float
+  salary          Decimal
   godfather_phone String
   localisation    String?
   email           String?
   password_hash   String?
-  CNI_number      String
+  cni_number      String
   profile_picture String?
   messages        MessageNotification[]
   role            Role                  @default(USER)
   created_at      DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  updated_at      DateTime              @updatedAt
 }
 
 enum Gender {
@@ -102,19 +118,19 @@ enum Role {
   PUMPIST
 }
 
+// Used to track how much cash each person hand in compared to the sale they made, hence tracking the differences that may be there
 model DailySale {
   id                 Int      @id @default(autoincrement())
   user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id            String
-  amount_sold        Float
-  amount_given       Float
-  difference         Float
+  amount_sold        Decimal
+  amount_given       Decimal
   date_of_sale_start DateTime @default(now())
   date_of_sale_stop  DateTime @default(now())
   created_at         DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  updated_at         DateTime @updatedAt
 
-  fuelCounts FuelCount[]
+  fuel_counts FuelCount[]
 }
 
 enum FuelType {
@@ -124,27 +140,30 @@ enum FuelType {
   GAS_BOTTLE
 }
 
+// Could be a product but have it's own section in the shop.
 model Fuel {
   id              Int       @id @default(autoincrement())
   name            String
-  purchase_price  Float
-  selling_price   Float
+  purchase_price  Decimal
+  selling_price   Decimal
   quantity_theory Float
   quantity_actual Float
   description     String
-  tank            Tank?     @relation(fields: [tank_id], references: [id])
-  tank_id         Int?      @unique
+  tank            Tank     @relation("FuelTank", fields: [tank_id], references: [id])
+  tank_id          Int      @unique
   created_at      DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
+  updated_at      DateTime? @updatedAt
   fuel_type       FuelType
   pump            Pump[]
 
-  fuelCount FuelCount[]
+  fuel_counts FuelCount[]
 }
 
+// Tracks down how much fuel was sold by PUMPIST each day when they hand in the cash money of their 
+// daily sale
 model FuelCount {
   id            Int       @id @default(autoincrement())
-  daily_sale    DailySale @relation(fields: [daily_sale_id], references: [id])
+  daily_sale    DailySale @relation(fields: [daily_sale_id], references: [id], onDelete: Cascade)
   daily_sale_id Int
   fuel          Fuel      @relation(fields: [fuel_id], references: [id])
   fuel_id       Int
@@ -152,28 +171,31 @@ model FuelCount {
   stop_count    Int
 }
 
+// It contains the fuel and 1 tank can only have 1 fuel.
+model Tank {
+  id         Int       @id @default(autoincrement())
+  fuel       Fuel?     @relation("FuelTank")
+  name       String    @unique
+  capacity   Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+}
+
+// Used to sell the fuel. Mainly for visual purposes.
 model Pump {
   id     Int    @id @default(autoincrement())
   name   String
-  fuel   Fuel?  @relation(fields: [fuelid], references: [id])
-  fuelid Int?
+  fuel   Fuel?  @relation(fields: [fuel_id], references: [id])
+  fuel_id  Int?
 }
 
-model Tank {
-  id         Int       @id @default(autoincrement())
-  fuel       Fuel?
-  name       String
-  capacity   Int
-  created_at DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
-}
-
+// Used to send system notifications to the concerned users
 model MessageNotification {
   id         Int      @id @default(autoincrement())
   message    String
   title      String
-  read       Boolean
+  read       Boolean @default(false)
   users      User[]
   created_at DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updated_at DateTime @updatedAt
 }

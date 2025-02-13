@@ -1,11 +1,49 @@
 import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { LogginUser } from "../types";
+import { AuthenticatedUSer, UserToAuth } from "../types";
 import bcrypt from "bcrypt";
 import { createJWTToken, verifyToken } from "../utils/jwt";
 import { RequestWithToken } from "../utils/middleware";
 
 const prisma = new PrismaClient();
+
+export const findUserAndCreateAuthUser = async (userToAuth: UserToAuth): Promise<AuthenticatedUSer> => {
+	const user = await prisma.user.findUnique({
+		where: { username: userToAuth.username },
+		include: {
+			messages: true
+		}
+	});
+
+	const allowedRoles = ["ADMIN", "SALE"];
+	if (user && !allowedRoles.includes(user.role)) {
+		throw new Error("You are not allowed to use this platform")
+	}
+
+	const passwordCorrect =
+		user === null
+			? false
+			: await bcrypt.compare(
+				userToAuth.password,
+					(user.password_hash as string) || ""
+			  );
+
+	// If there is no user and no password, auth fail and return message to indicate that
+	if (!(user && passwordCorrect)) {
+		throw new Error("Invalid username or password")
+	}
+
+	const token = createJWTToken(user);
+
+	return {
+		id: user?.id,
+		username: user.username,
+		role: user.role,
+		profilePicture: user.profile_picture,
+		token: token,
+		messages: user.messages
+	};
+}
 
 export const authenticateUser = async (
 	req: Request,
@@ -13,47 +51,23 @@ export const authenticateUser = async (
 	next: NextFunction
 ) => {
 	try {
-		const body = req.body as LogginUser;
-		const user = await prisma.user.findUnique({
-			where: { username: body.username },
-			include: {
-				messages: true
-			}
-		});
+		const body = req.body as UserToAuth;
+		const authenticatedUser = await findUserAndCreateAuthUser(body);
 
-		const allowedRoles = ["ADMIN", "SALE"];
-		if (user && !allowedRoles.includes(user.role)) {
+		return res.status(200).json(authenticatedUser)
+	} catch (error: any) {
+		if (error instanceof Error && error.message.includes("not allowed")) {
 			return res.status(401).json({
 				error: "You are not allowed to use this platform"
 			});
-		}
-
-		const passwordCorrect =
-			user === null
-				? false
-				: await bcrypt.compare(
-						body.password,
-						(user.password_hash as string) || ""
-				  );
-
-		// If there is no user and no password, auth fail and return message to indicate that
-		if (!(user && passwordCorrect)) {
+		} else if (error.message.includes("invalid")) {
 			return res.status(401).json({
 				error: "invalid username or password"
 			});
+		} else {
+			next(error);
 		}
-
-		const token = createJWTToken(user);
-		return res.status(200).send({
-			id: user?.id,
-			username: user.username,
-			role: user.role,
-			profilePicture: user.profile_picture,
-			token: token,
-			messages: user.messages
-		});
-	} catch (error) {
-		next(error);
+		
 	}
 };
 

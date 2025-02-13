@@ -13,7 +13,7 @@ export const getTanks = async (_req: Request, res: Response) => {
 			name: true,
 			capacity: true,
 			created_at: true,
-			updatedAt: true
+			updated_at: true
 		}
 	});
 

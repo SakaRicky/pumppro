@@ -37,7 +37,7 @@ export const getProducts = async (
 			category: true,
 			image: true,
 			created_at: true,
-			updatedAt: true
+			updated_at: true
 		},
 		where: where
 	});
@@ -63,7 +63,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 			category: true,
 			image: true,
 			created_at: true,
-			updatedAt: true
+			updated_at: true
 		}
 	});
 	return res.send(productFound);

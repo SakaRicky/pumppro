@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { SaleDetailWithProduct } from "../types";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
@@ -11,13 +12,18 @@ interface RequestQuery {
 	userID: string | undefined;
 }
 
-const productWithCategory = Prisma.validator<Prisma.ProductArgs>()({
+const productWithCategory = Prisma.validator<Prisma.ProductDefaultArgs >()({
 	include: { category: true }
 });
 
 export type ProductWithCategory = Prisma.ProductGetPayload<
 	typeof productWithCategory
 >;
+
+// Assuming SaleDetailWithProduct is your type for sale details that includes the related product
+export interface SaleDetailComputed extends SaleDetailWithProduct {
+	total_amount: Decimal;
+  }
 
 const createWhereObject = (
 	startDate: string | undefined,
@@ -61,8 +67,7 @@ const getAllSales = async (where: {}, categoryWhere?: {}) => {
 					profile_picture: true
 				}
 			},
-			total_amount: true,
-			saleDetails: {
+			sale_details: {
 				select: {
 					id: true,
 					sale: true,
@@ -71,9 +76,8 @@ const getAllSales = async (where: {}, categoryWhere?: {}) => {
 					product_id: true,
 					unit_price: true,
 					quantity: true,
-					total_amount: true,
 					created_at: true,
-					updatedAt: true
+					updated_at: true
 				},
 				where: categoryWhere
 			},
@@ -133,21 +137,26 @@ export const getSalesSummary = async (
 		});
 
 	const allSalesDetailsForThisCategory = allSalesForThisCategory
-		.map(sale => sale.saleDetails)
+		.map(sale => sale.sale_details)
 		.flat()
 		.filter(detail =>
 			productsInThisCategory
 				.map(product => product.id)
 				.includes(detail.product.id)
 		);
+	
+	const saleDetailsWithComputedTotal: SaleDetailComputed[] = allSalesDetailsForThisCategory.map(detail => ({
+			...detail,
+			total_amount: detail.unit_price.mul(detail.quantity) // Using Decimal's multiplication
+		  }));
 
 	// accumulate the sale details (this is for products sold) and get an overall
 	const accumulatedSoldProductSaleDetails =
-		allSalesDetailsForThisCategory.reduce(
-			(acc: SaleDetailWithProduct[], curr) => {
+	saleDetailsWithComputedTotal.reduce(
+			(acc: SaleDetailComputed[], curr) => {
 				const found = acc.find(item => item.product_id === curr.product.id);
 				if (found) {
-					found.total_amount += curr.total_amount;
+					found.total_amount = found.unit_price.mul(found.quantity);
 					found.quantity += curr.quantity;
 				} else {
 					acc.push(curr);
@@ -169,9 +178,9 @@ export const getSalesSummary = async (
 	let benefitsForThisPeriodInThisCategory = 0;
 
 	for (const detail of accumulatedSoldProductSaleDetails) {
-		totalAmountSoldForThisPeriodInThisCategory += detail.total_amount;
+		totalAmountSoldForThisPeriodInThisCategory += detail.total_amount.toNumber();
 		benefitsForThisPeriodInThisCategory +=
-			detail.total_amount - detail.product.purchase_price * detail.quantity;
+			detail.total_amount.toNumber() - detail.product.purchase_price.toNumber() * detail.quantity;
 		allProductSaleDetails.push({
 			id: detail.product_id,
 			name: detail.product.name,
@@ -179,7 +188,7 @@ export const getSalesSummary = async (
 			quantity_in_stock: detail.product.quantity,
 			purchase_price: detail.product.purchase_price,
 			selling_price: detail.product.selling_price,
-			amount: detail.total_amount,
+			amount: detail.total_amount.toNumber(),
 			number_sold: detail.quantity
 		});
 	}
@@ -190,7 +199,7 @@ export const getSalesSummary = async (
 	let totalAmountSoldAllCategories = 0;
 
 	for (const sale of allSalesAllCategories) {
-		totalAmountSoldAllCategories += sale.total_amount;
+		totalAmountSoldAllCategories += sale.sale_details.map(s => s.quantity * s.unit_price.toNumber()).reduce((acc, val) => acc + val, 0);
 	}
 
 	return res.send({

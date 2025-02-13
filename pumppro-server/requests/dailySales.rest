@@ -1,15 +1,15 @@
 ###
 POST http://localhost:5001/daily-sales HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6IjRlZDkzNDdjLWZiYjQtNDA5Mi05NGM5LWJkZDY5ODY0MDRkYyIsImlhdCI6MTczOTA0NDE1NCwiZXhwIjoxNzM5MTMwNTU0fQ.pDb1_l7WKVWnQtu9DiWgwGvL_rgjPU2zNt89drf5SQ8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6IjEzYWJlZGY1LTE2ZTAtNDI4Ny04NGQ0LTVlYmNhZGU0ZjcyOSIsImlhdCI6MTczOTI5NDY4MSwiZXhwIjoxNzM5MzgxMDgxfQ.HsECApykgesrKsUcBH1nwuQ_XVV-7Ch1pffzsGA3eN0
 
 {
-  "user_id": "3e679b08-44bb-48e6-8f98-c6aca1b3b08c",
-  "amount_sold": 500,
-  "amount_given": 480,
-  "date_of_sale_start": "2024-03-06T10:00:00Z",
-  "date_of_sale_stop": "2024-03-06T20:00:00Z",
-  "fuelCounts": [
+  "user_id": "08b147f2-d7dc-43f8-8172-dd7ec0af7fe5",
+  "amount_sold": 500.0,
+  "amount_given": 480.0,
+  "date_of_sale_start": "2024-04-08T10:00:00Z",
+  "date_of_sale_stop": "2024-04-08T20:00:00Z",
+  "fuel_counts": [
     { "fuel_id": 1, "start_count": 1000, "stop_count": 1200 },
     { "fuel_id": 2, "start_count": 800, "stop_count": 950 }
   ]
@@ -18,4 +18,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Impva
 ###
 
 GET http://localhost:5001/daily-sales HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6IjFhMTA5MGNlLWE2NjktNDM1ZS1hM2M0LTE0OTVjYmUzZDEwYiIsImlhdCI6MTczODg5OTQ0MSwiZXhwIjoxNzM4OTg1ODQxfQ.GFWDIGNY4pPbRx1hcI8hpbKXtER6ZoE_O6hFbnSWL9w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6ImRhYWE4ZmNjLTNjYTktNGY0Mi05NWI1LWQxNDE3ZjlhZjdlYSIsImlhdCI6MTczOTE0MjI1OSwiZXhwIjoxNzM5MjI4NjU5fQ.X7Gea0Lc16k4Id8447sZC4SR7eAdNyLp5D7eo6ojyzs

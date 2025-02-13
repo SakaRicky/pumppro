@@ -80,8 +80,6 @@ export const saveDailySale = async (req: Request, res: Response) => {
 		throw new Error("No Sale to be save");
 	}
 
-	
-
 	savedDailySale = await createDailySale(newDailySale);
 
 	return res.send(savedDailySale);

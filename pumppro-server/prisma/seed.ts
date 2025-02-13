@@ -133,23 +133,23 @@ const createCategories = async () => {
 
 const saveDailySale = async (user: User, productSoldByUser: Product[], quantitiesSoldByUser: number[]) => {
 
-	let expextedMoneyInUser = new Decimal(0);
+	let expextedMoneyInUser = 0;
 
 	for (let i = 0; i < productSoldByUser.length; i++) {
-		expextedMoneyInUser.add(productSoldByUser[i].selling_price.toNumber() * quantitiesSoldByUser[i]);
+		expextedMoneyInUser += (productSoldByUser[i].selling_price.toNumber() * quantitiesSoldByUser[i]);
 	}
 
-	let amountGivenUser = new Decimal(0);
+	let amountGivenUser = 0;
 
 	// amount given is calculated as if the seller kept the money for 1 product
 	for (let i = 0; i < productSoldByUser.length - 1; i++) {
-		amountGivenUser.add(productSoldByUser[i].selling_price.toNumber() * quantitiesSoldByUser[i]);
+		amountGivenUser += (productSoldByUser[i].selling_price.toNumber() * quantitiesSoldByUser[i]);
 	}
 
 	const dailySale = {
 		user_id: user.id,
-		amount_sold: expextedMoneyInUser,
-		amount_given: amountGivenUser,
+		amount_sold: new Decimal(expextedMoneyInUser),
+		amount_given: new Decimal(amountGivenUser),
 		date_of_sale_start: new Date("2023/04/21 07:00"),
 		date_of_sale_stop: new Date("2023/04/21 17:00")
 	}

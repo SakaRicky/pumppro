@@ -2,7 +2,7 @@ import { before, after } from "node:test";
 import supertest from "supertest";
 import app from "../../app";
 import prisma from "../../../client";
-import { createdUsers, fuels, seed } from "../../../prisma/seed";
+import { createdUsers, createdFuels, seed } from "../../../prisma/seed";
 import { findUserAndCreateAuthUser } from "../../controller/auth";
 import { AuthenticatedUSer, UserToAuth } from "../../types";
 
@@ -25,8 +25,10 @@ const AuthenticateTestUser = async (userToAuth: UserToAuth): Promise<Authenticat
 	return authenticatedUser;
 }
 
+// I do this here because I need this dailySale for more than 1 test.
 export let dailySaleToPost = {}
 
+// This before is like beforeAll
 before(async () => {
 	console.log("Seeding the test db before all the tests...");
 	await seed();
@@ -39,8 +41,8 @@ before(async () => {
 		date_of_sale_start: "2024-04-06T10:00:00Z",
 		date_of_sale_stop: "2024-04-06T20:00:00Z",
 		fuel_counts: [
-			{ fuel_id: fuels.find(f => f.fuel_type == "FUEL")?.id, start_count: 1000, "stop_count": 1200 },
-			{ fuel_id: fuels.find(f => f.fuel_type == "GASOIL")?.id, start_count: 800, "stop_count": 950 }
+			{ fuel_id: createdFuels.find(f => f.fuel_type == "FUEL")?.id, start_count: 1000, "stop_count": 1200 },
+			{ fuel_id: createdFuels.find(f => f.fuel_type == "GASOIL")?.id, start_count: 800, "stop_count": 950 }
 		]
 	}
 

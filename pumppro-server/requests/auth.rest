@@ -22,6 +22,6 @@ POST http://localhost:5001/auth HTTP/1.1
 content-type: application/json
 
 {
-    "username": "teacherb@school.com",
-    "password": "teacherb"
+    "username": "neymarjunior",
+    "password": "12345678"
 }

@@ -38,7 +38,7 @@ export const errorHandler = (
 	}
 
 	if (error instanceof Error) {
-		console.log("Error happened with message: ", error.message);
+		console.log("file errors/index.ts line 41 Error happened with message: ", error);
 
 		return response.status(400).send({ error: error.message });
 	}

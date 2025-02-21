@@ -26,7 +26,7 @@ const NewUserSchema = z.object({
 	cni_number: z.string(),
 	email: z.string().optional(),
 	password: z.string().optional(),
-	profile_picture: z.string().url().optional(),
+	profile_picture: z.union([z.string().url(), z.literal("")]).optional(),
 	role: z.enum([Role.ADMIN, Role.PUMPIST, Role.SALE, Role.USER])
 });
 

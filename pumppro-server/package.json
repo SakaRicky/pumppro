@@ -23,7 +23,7 @@
 		"local_test": "cross-env NODE_ENV=test ts-node-dev --exit-child src/index.ts",
 		"start": "ts-node src/index.ts",
 		"lint": "eslint --ext .ts .",
-		"test": "cross-env NODE_ENV=test tsx --test src/tests/dailySales.test.ts",
+		"test": "cross-env NODE_ENV=test tsx --test src/tests/users.test.ts",
 		"build:ui": "rm -rf dist && cd ../client && npm run build && cp -r dist ../server"
 	},
 	"author": "Ricky Saka",

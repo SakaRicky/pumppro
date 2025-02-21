@@ -1,278 +1,198 @@
-// import supertest from "supertest";
-// import prisma from "../../client";
-// import app from "../app";
+import { test, describe, beforeEach } from "node:test";
+import prisma from "../../client";
+import { testApi, authToken } from "./helper/setupTestDB";
+import { AuthenticatedUSer, NewUser, User } from "../types";
+import { createdUsers } from "../../prisma/seed";
+import assert from "assert";
 
-// const api = supertest(app);
+const userToSave: NewUser = {
+    names: "New John Doe Test",
+    username: "newjohndoetest",
+    gender: "MALE",
+    phone: "123456789",
+    godfather_phone: "253142542",
+    date_of_birth: new Date(2000, 0o2, 15),
+    salary: 80000,
+    email: "newjohndoe@gmail.com",
+    cni_number: "0024585",
+    password: "12345678",
+    role: "ADMIN",
+    localisation: "",
+    profile_picture: "",
+}
 
-// let token: string;
+describe("Test the users route", () => {
 
-// describe.only("Test the users route", () => {
-// 	beforeEach(async () => {
-// 		console.log("Before all users-test");
-// 		await prisma.user.createMany({
-// 			data: [
-// 				{
-// 					names: "John Doe Test",
-// 					username: "johndoetest",
-// 					gender: "MALE",
-// 					phone: "123456789",
-// 					godfather_phone: "253142542",
-// 					date_of_birth: new Date(2000, 0o2, 15),
-// 					salary: 80000,
-// 					email: "johndoe@gmail.com",
-// 					CNI_number: "0024585",
-// 					password_hash:
-// 						"$2a$12$TCL9gaFusbLlVRk.o47Z6.u13X/EmQlZFARCBC9ZOehLVo050QOje",
-// 					role: "ADMIN"
-// 				},
-// 				{
-// 					names: "Neymar Test",
-// 					username: "neymartest",
-// 					gender: "MALE",
-// 					phone: "213452642",
-// 					date_of_birth: "1995-09-25T00:00:00.000Z",
-// 					salary: 85000,
-// 					godfather_phone: "253142542",
-// 					localisation: "Yassa",
-// 					CNI_number: "0024585",
-// 					password_hash:
-// 						"$2a$12$TCL9gaFusbLlVRk.o47Z6.u13X/EmQlZFARCBC9ZOehLVo050QOje",
-// 					profile_picture:
-// 						"https://images.unsplash.com/photo-1596077058573-d3d8281a190f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-// 					role: "SALE"
-// 				}
-// 			]
-// 		});
+    describe("CRUD operation by ADMIN", () => {
 
-// 		const res = await api
-// 			.post("/auth")
-// 			.send({ username: "johndoetest", password: "12345678" });
-// 		token = res.body.token as string;
-// 	});
+        
+        test("should create a new user when posted by admin", async () => {
 
-// 	afterEach(async () => {
-// 		console.log("After all");
+            const res = await testApi
+                .post("/users")
+                .send(userToSave)
+                .set({
+                    authorization: `bearer ${authToken}`
+                });
+            
+            const savedUser = res.body as User;            
 
-// 		const deleteSales = prisma.sale.deleteMany();
-// 		const deleteSaleDetails = prisma.saleDetail.deleteMany();
-// 		const deleteProducts = prisma.product.deleteMany();
-// 		const deleteusers = prisma.user.deleteMany();
-// 		const deletedailySales = prisma.dailySale.deleteMany();
-// 		const deleteProductsCategory = prisma.productCategory.deleteMany();
+            assert.strictEqual(res.status, 200);
+            const users = await prisma.user.findMany();
+            assert.strictEqual(users.length, createdUsers.length + 1);
+            
+            // deleting this user so it doesn't mess up the DB
+            await prisma.user.delete({where: {id: savedUser.id}})
+        });
 
-// 		await prisma.$transaction([
-// 			deleteSales,
-// 			deleteSaleDetails,
-// 			deleteProducts, 
-// 			deleteusers,
-// 			deletedailySales,
-// 			deleteProductsCategory
-// 		]);
+        test("should return users when authToken is given", async () => {
+            const res = await testApi.get("/users").set({
+                authorization: `bearer ${authToken}`
+            });
+            const users = res.body as User[];
 
-// 		await prisma.$disconnect();
-// 	});
+            assert.strictEqual(res.status, 200);
+            assert.strictEqual(users.length, createdUsers.length);
+        });
 
-// 	describe("CRUD operation by ADMIN", () => {
-// 		it("should create a new user when posted by admin", async () => {
-// 			const res = await api
-// 				.post("/users")
-// 				.field("names", "New John User")
-// 				.field("username", "newjohnuser")
-// 				.field("gender", "MALE")
-// 				.field("phone", "123456789")
-// 				.field("godfather_phone", "123456789")
-// 				.field("date_of_birth", new Date(2000, 0o2, 15).toISOString())
-// 				.field("salary", "80000")
-// 				.field("email", "newjohndoe@gmail.com")
-// 				.field("password", "12345678")
-// 				.field("role", "USER")
-// 				.field("CNI_number", "12345678")
-// 				.set({
-// 					authorization: `bearer ${token}`
-// 				});
+        test("should update existing user", async () => {
 
-// 			expect(res.status).toBe(200);
-// 			const users = await prisma.user.findMany();
-// 			expect(users.length).toBe(3);
-// 		});
+            const userToEdit = await prisma.user.findUnique({
+                where: { username: "newjohndoetest" }
+            });
 
-// 		it("should return users when token is given", async () => {
-// 			const res = await api.get("/users").set({
-// 				authorization: `bearer ${token}`
-// 			});
-// 			const users = JSON.parse(res.text) as any[];
+            if (userToEdit) {
+                const res = await testApi
+                    .put("/users")
+                    .send({ ...userToEdit, names: userToEdit.names + " EDITED" })
+                    .set({
+                        authorization: `bearer ${authToken}`
+                    });
 
-// 			expect(res.status).toBe(200);
-// 			expect(users.length).toBe(2);
-// 		});
+                assert.strictEqual(res.status, 200);
 
-// 		it("should update existing user", async () => {
-// 			const user = await prisma.user.findUnique({
-// 				where: { username: "johndoetest" }
-// 			});
-// 			if (user) {
-// 				const res = await api
-// 					.put("/users")
-// 					.field("id", user.id)
-// 					.field("names", user.names + " Edited")
-// 					.field("username", user.username + "edited")
-// 					.field("gender", user.gender)
-// 					.field("phone", user.phone)
-// 					.field("godfather_phone", user.godfather_phone || "")
-// 					.field("date_of_birth", user.date_of_birth.toISOString())
-// 					.field("salary", "90000")
-// 					.field("email", user.email || "")
-// 					.field("password", "12345678")
-// 					.field("role", user.role)
-// 					.field("CNI_number", user.CNI_number || "")
-// 					.set({
-// 						authorization: `bearer ${token}`
-// 					});
+                const updatedUser = await prisma.user.findUnique({where: {id: userToEdit.id}});
+                assert.ok(updatedUser && updatedUser.names.includes("EDITED"), "User was not updated");
 
-// 				expect(res.status).toBe(200);
-// 				const users = await prisma.user.findMany();
-// 				expect(users.length).toBe(2);
-// 				const editedUser = prisma.user.findUnique({
-// 					where: { username: user.username + "edited" }
-// 				});
-// 				expect(editedUser).toBeDefined();
-// 			}
-// 		});
+                const users = await prisma.user.findMany();
+                assert.strictEqual(users.length, createdUsers.length)
 
-// 		it("should delete existing user", async () => {
-// 			const user = await prisma.user.findUnique({
-// 				where: { username: "neymartest" }
-// 			});
-// 			if (user) {
-// 				const res = await api
-// 					.delete("/users")
-// 					.send({ id: user.id })
-// 					.set({
-// 						authorization: `bearer ${token}`
-// 					});
+                const editedUser = prisma.user.findUnique({
+                    where: { username: userToEdit.username + "EDITED" }
+                });
+                // check if object is defined
+                assert.ok(editedUser, 'editedUser is not defined')
+            }
+        });
 
-// 				expect(res.status).toBe(200);
-// 				const users = await prisma.user.findMany();
-// 				expect(users.length).toBe(1);
-// 			}
-// 		});
-// 	});
+        test("should delete existing user", async () => {
+            const userToDelete = await prisma.user.findUnique({
+                where: { username: "neymartest" }
+            });
+            if (userToDelete) {
+                const res = await testApi
+                    .delete("/users")
+                    .send({ id: userToDelete.id })
+                    .set({
+                        authorization: `bearer ${authToken}`
+                    });
 
-// 	describe("CRUD from non admin", () => {
-// 		beforeEach(async () => {
-// 			const res = await api
-// 				.post("/auth")
-// 				.send({ username: "neymartest", password: "12345678" });
-// 			token = res.body.token as string;
-// 		});
-// 		it("shouldn't create a new user when posted by non ADMIN", async () => {
-// 			const res = await api
-// 				.post("/users")
-// 				.field("names", "New John User")
-// 				.field("username", "newjohnuser")
-// 				.field("gender", "MALE")
-// 				.field("phone", "123456789")
-// 				.field("godfather_phone", "123456789")
-// 				.field("date_of_birth", new Date(2000, 0o2, 15).toISOString())
-// 				.field("salary", "80000")
-// 				.field("email", "newjohndoe@gmail.com")
-// 				.field("password", "12345678")
-// 				.field("role", "USER")
-// 				.field("CNI_number", "12345678")
-// 				.set({
-// 					authorization: `bearer ${token}`
-// 				});
+                assert.strictEqual(res.status, 200);
+                const users = await prisma.user.findMany();
+                assert.strictEqual(users.length, createdUsers.length - 1);
+            }
+        });
+    });
 
-// 			expect(res.status).toBe(401);
-// 			const users = await prisma.user.findMany();
-// 			expect(users.length).toBe(2);
-// 		});
+    describe("CRUD from non admin", () => {
+        let nonAdminAuthUser: AuthenticatedUSer;
 
-// 		it("should return users when token is given", async () => {
-// 			const res = await api.get("/users").set({
-// 				authorization: `bearer ${token}`
-// 			});
-// 			const users = JSON.parse(res.text) as any[];
+        beforeEach(async () => {
+            const res = await testApi.post("/auth").send({
+                username: "neymarjunior",
+                password: "12345678"
+            });
 
-// 			expect(res.status).toBe(200);
-// 			expect(users.length).toBe(2);
-// 		});
+            nonAdminAuthUser = res.body as AuthenticatedUSer
+        })
 
-// 		it("shouldn't update existing user", async () => {
-// 			const user = await prisma.user.findUnique({
-// 				where: { username: "johndoetest" }
-// 			});
-// 			if (user) {
-// 				const res = await api
-// 					.put("/users")
-// 					.field("id", user.id)
-// 					.field("names", user.names + " Edited")
-// 					.field("username", user.username + "edited")
-// 					.field("gender", user.gender)
-// 					.field("phone", user.phone)
-// 					.field("godfather_phone", user.godfather_phone || "")
-// 					.field("date_of_birth", user.date_of_birth.toISOString())
-// 					.field("salary", "90000")
-// 					.field("email", user.email || "")
-// 					.field("password", "12345678")
-// 					.field("role", user.role)
-// 					.field("CNI_number", user.CNI_number || "")
-// 					.set({
-// 						authorization: `bearer ${token}`
-// 					});
+        test("shouldn't create a new user when posted by non ADMIN", async () => {
 
-// 				expect(res.status).toBe(401);
-// 				const users = await prisma.user.findMany();
-// 				expect(users.length).toBe(2);
-// 				const editedUser = await prisma.user.findUnique({
-// 					where: { username: user.username + "edited" }
-// 				});
-// 				expect(editedUser).toBeNull();
-// 			}
-// 		});
+            const res = await testApi
+                .post("/users")
+                .send(userToSave)
+                .set({
+                    authorization: `bearer ${nonAdminAuthUser.token}`
+                });
 
-// 		it("shouldn't delete existing user", async () => {
-// 			const user = await prisma.user.findUnique({
-// 				where: { username: "neymartest" }
-// 			});
-// 			if (user) {
-// 				const res = await api
-// 					.delete("/users")
-// 					.send({ id: user.id })
-// 					.set({
-// 						authorization: `bearer ${token}`
-// 					});
+            assert.strictEqual(res.status, 401);
+            const users = await prisma.user.findMany();
 
-// 				expect(res.status).toBe(401);
-// 				const users = await prisma.user.findMany();
-// 				expect(users.length).toBe(2);
-// 			}
-// 		});
-// 	});
+            // This test isn't working because the test "should create a new user when posted by admin"
+            // added a new user to the DB and for 
+            assert.strictEqual(users.length, createdUsers.length);
+        });
 
-// 	describe("When no token is given", () => {
-// 		it("shouldn't return users if no token is given", async () => {
-// 			const res = await api.get("/users");
+        test("should return users when authToken is given", async () => {
+            const res = await testApi.get("/users").set({
+                authorization: `bearer ${authToken}`
+            });
 
-// 			expect(res.status).toBe(401);
-// 			expect(res.text).toContain("token missing or invalid");
-// 		});
-// 	});
-// 	// it("should fail and return 401 when given either wrong username or password", async () => {
-// 	// 	const res = await api
-// 	// 		.post("/auth")
-// 	// 		.send({ username: "johndoe", password: "validpassword" });
+            const users = res.body as User[];
 
-// 	// 	expect(res.status).toBe(401);
-// 	// 	expect(res.text).toContain("invalid username or password");
-// 	// });
+            assert.strictEqual(res.status, 200);
+            assert.strictEqual(users.length, createdUsers.length);
+        });
 
-// 	// it("should return a JWT token when providing valid credentials", async () => {
-// 	// 	const res = await api
-// 	// 		.post("/auth")
-// 	// 		.send({ username: "johndoetest", password: "12345678" });
+        test("shouldn't update existing user", async () => {
+            const user = await prisma.user.findUnique({
+                where: { username: "johndoetest" }
+            });
+            if (user) {
+                const res = await testApi
+                    .put("/users")
+                    .send({ ...user, names: user.names + "EDITED" })
+                    .set({
+                        authorization: `bearer ${authToken}`
+                    });
 
-// 	// 	expect(res.status).toBe(200);
-// 	// 	expect(res.body).toHaveProperty("token");
-// 	// });
-// });
+                assert.strictEqual(res.status, 401);
+                const users = await prisma.user.findMany();
+                assert.strictEqual(users.length, createdUsers.length);
+                const editedUser = await prisma.user.findUnique({
+                    where: { username: user.username + "EDITED" }
+                });
+                // check if editedUser is null
+                assert.strictEqual(editedUser, null, 'editedUser is not null');
+            }
+        });
+
+        test("shouldn't delete existing user", async () => {
+            const user = await prisma.user.findUnique({
+                where: { username: "neymartest" }
+            });
+            if (user) {
+                const res = await testApi
+                    .delete("/users")
+                    .send({ id: user.id })
+                    .set({
+                        authorization: `bearer ${authToken}`
+                    });
+
+                assert.strictEqual(res.status, 401);
+                const users = await prisma.user.findMany();
+                assert.strictEqual(users.length, 2);
+            }
+        });
+    });
+
+    describe("When no authToken is given", () => {
+        test("shouldn't return users if no authToken is given", async () => {
+            const res = await testApi.get("/users");
+
+            assert.strictEqual(res.status, 401);
+            // Check if text contains the substring
+            assert.ok(res.text.includes("token missing or invalid"), `"${res.text}" does not contain "${"token missing or invalid"}"`);
+        });
+    });
+});

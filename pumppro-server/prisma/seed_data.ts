@@ -1,4 +1,4 @@
-import { FuelType, ProductCategory } from "@prisma/client";
+import { FuelType, Gender, ProductCategory, Role } from "@prisma/client";
 
 export const productCategories = [
 	{ name: "Bottle biere", description: "Biere being sold in bottles" },
@@ -13,7 +13,68 @@ export const productCategories = [
 	{ name: "Tinned cans", description: "Food items in tinned cans" }
 ];
 
-export const getProducts = (categories: ProductCategory[]) => {
+export const initialUsersData = [
+	{
+		names: "John Doe",
+		username: "johndoe",
+		gender: Gender.MALE,
+		phone: "237123456789",
+		godfather_phone: "237253142542",
+		date_of_birth: new Date(2000, 0o2, 15),
+		salary: 80000,
+		cni_number: "1234567890",
+		email: "johndoe@gmail.com",
+		password_hash:
+			"$2a$12$TCL9gaFusbLlVRk.o47Z6.u13X/EmQlZFARCBC9ZOehLVo050QOje",
+		role: Role.ADMIN
+	},
+	{
+		names: "Neymar Junior",
+		username: "neymarjunior",
+		gender: Gender.MALE,
+		phone: "237213452642",
+		date_of_birth: "1995-09-25T00:00:00.000Z",
+		salary: 85000,
+		godfather_phone: "237253142542",
+		localisation: "Yassa",
+		cni_number: "0024585",
+		password_hash:
+			"$2a$12$TCL9gaFusbLlVRk.o47Z6.u13X/EmQlZFARCBC9ZOehLVo050QOje",
+		profile_picture:
+			"https://res.cloudinary.com/rickysaka/image/upload/v1704234935/pumppro/users/qgbhukpnskvikw1moqbi.avif",
+		role: Role.SALE
+	},
+	{
+		names: "Kim Kard",
+		username: "kimkard",
+		gender: Gender.FEMALE,
+		phone: "23798685745",
+		date_of_birth: "1989-12-05T00:00:00.000Z",
+		salary: 75000,
+		cni_number: "1234567890",
+		godfather_phone: "237253142542",
+		localisation: "Ndogbong",
+		email: "kimkard@hotmail.com",
+		role: Role.PUMPIST
+	},
+	{
+		names: "Mary Takam",
+		username: "takammary",
+		gender: Gender.FEMALE,
+		phone: "237776699885",
+		salary: 70000,
+		date_of_birth: new Date(2002, 0o7, 19),
+		godfather_phone: "23789658965",
+		localisation: "Bonaberi",
+		cni_number: "13254",
+		password_hash:
+			"$2a$12$TCL9gaFusbLlVRk.o47Z6.u13X/EmQlZFARCBC9ZOehLVo050QOje",
+		profile_picture:
+			"https://res.cloudinary.com/rickysaka/image/upload/v1704234936/pumppro/users/oiwkqxy53xjvfcpyulyz.avif",
+		role: Role.SALE
+	}]
+
+export const initialUnSavedProducts = (categories: ProductCategory[]) => {
 	return [
 		{
 			name: "Mambo PM 25g",
@@ -38,7 +99,7 @@ export const getProducts = (categories: ProductCategory[]) => {
 				"https://res.cloudinary.com/rickysaka/image/upload/v1704262267/pumppro/products/aqamczmtz5b87zvmbdv9.jpg"
 		},
 		{
-			name: "Guiness GM 30CL",
+			name: "Guiness GM 60CL",
 			description: "Guiness Grand model",
 			quantity: 130,
 			purchase_price: 900,

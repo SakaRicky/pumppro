@@ -94,10 +94,12 @@ export const saveProduct = async (req: RequestWithToken, res: Response) => {
 		await prisma.purchase.create({
 			data: {
 				product_id: savedProduct.id,
-				quantity: savedProduct.quantity
+				quantity: savedProduct.quantity,
+				purchase_price: savedProduct.purchase_price,
+				purchase_date: new Date()
 			}
 		});
-		return res.sendStatus(200);
+		return res.status(200).send(savedProduct);
 	}
 };
 

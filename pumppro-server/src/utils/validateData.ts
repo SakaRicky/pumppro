@@ -1,10 +1,11 @@
-import { Fuel, Gender, Role } from "@prisma/client";
+import { Fuel, FuelSale, Gender, Role } from "@prisma/client";
 import { z } from "zod";
 import {
-	DailySale,
+	DailySaleSummary,
 	FuelType,
-	NewDailySale,
+	NewDailySaleSummary,
 	NewFuel,
+	NewFuelSale,
 	NewProduct,
 	NewProductCategory,
 	NewUser,
@@ -136,12 +137,31 @@ export const validateNewSale = (data: any[]): SaleItem[] | undefined => {
 	return parsedData;
 };
 
+const NewFuelSaleSchema = z.object({
+	fuel_id: z.number(),
+	user_id: z.string(),
+	start_reading: z.instanceof(Decimal),
+	end_reading: z.instanceof(Decimal),
+});
+
+export const validateNewFuelSale = (data: any): NewFuelSale | undefined => {
+	const formattedData = data.map(d => ({
+		...d,
+		start_reading: new Decimal(data.start_reading),
+		end_reading: new Decimal(data.start_reading),
+	}));
+
+	const parsedData = NewFuelSaleSchema.parse(formattedData);
+
+	return parsedData;
+};
+
 const NewFuelSchema = z.object({
 	name: z.string().min(3),
 	purchase_price: z.instanceof(Decimal),
 	selling_price: z.instanceof(Decimal),
-	quantity_theory: z.number(),
-	quantity_actual: z.number(),
+	quantity_theory: z.instanceof(Decimal),
+	quantity_actual: z.instanceof(Decimal),
 	fuel_type: z.enum([FuelType.FUEL, FuelType.GASOIL, FuelType.GAS_BOTTLE, FuelType.PETROL]),
 	description: z.string().min(3),
 	tank_id: z.number()
@@ -184,70 +204,93 @@ export const validateEditedFuel = (data: any): Fuel | undefined => {
 	};
 };
 
-// Define the FuelCount schema
-const FuelCountSchema = z.object({
-  fuel_id: z.number(),
-  start_count: z.number(),
-  stop_count: z.number()
+
+const FuelSaleSchema = z.object({
+	id: z.number(),
+	fuel_id: z.number(),
+	user_id: z.string(),
+	start_reading: z.instanceof(Decimal),
+	end_reading: z.instanceof(Decimal),
+	quantity_sold: z.instanceof(Decimal),
+	total_amount: z.instanceof(Decimal),
+	created_at: z.date(),
+	updated_at: z.date(),
 });
 
-// Define the NewDailySale schema with FuelCounts
-const NewDailySaleSchema = z.object({
-  user_id: z.string(),
-  amount_sold: z.instanceof(Decimal),
-  amount_given: z.instanceof(Decimal),
-  date_of_sale_start: z.date(),
-  date_of_sale_stop: z.date(),
-  fuel_counts: z.array(FuelCountSchema) // Adding FuelCounts array validation
+export const validateExistingFuelSale = (data: any): FuelSale | undefined => {
+
+	const transformedData = {
+		...data,
+		id: Number(data.id),
+		user_id: Number(data.user_id),
+		fuel_id: Number(data.fuel_id),
+		start_reading: new Decimal(data.start_reading),
+		end_reading: new Decimal(data.end_reading),
+		quantity_sold: new Decimal(data.quantity_sold),
+		total_amount: new Decimal(data.total_amount),
+	};
+	const parsedData = FuelSaleSchema.parse(transformedData);
+
+	return parsedData;
+};
+
+
+// Define the NewDailySaleSummary schema with FuelCounts
+const NewDailySaleSummarySchema = z.object({
+	user_id: z.string(),
+	amount_sold: z.instanceof(Decimal),
+	amount_given: z.instanceof(Decimal),
+	date_of_sale_start: z.date(),
+	date_of_sale_stop: z.date(),
 });
 
-const ExistingDailySaleSchema = NewDailySaleSchema.extend({
+const ExistingDailySaleSchema = NewDailySaleSummarySchema.extend({
 	id: z.number(),
 	created_at: z.date(),
 	updated_at: z.date(),
 });
 
-export const validateNewDailySale = (data: any): NewDailySale | undefined => {
+export const validateNewDailySaleSummary = (data: any): NewDailySaleSummary | undefined => {
 
 	const transformedData = {
-    ...data,
-    amount_sold: new Decimal(data.amount_sold), // Use `Number()` to support decimals
-    amount_given: new Decimal(data.amount_given),
-    date_of_sale_start: new Date(data.date_of_sale_start),
-    date_of_sale_stop: new Date(data.date_of_sale_stop),
-    fuel_counts: data.fuel_counts?.map((fuel: any) => ({
-      fuel_id: Number(fuel.fuel_id),
-      start_count: Number(fuel.start_count),
-      stop_count: Number(fuel.stop_count)
-    })) ?? []
-  };
+		...data,
+		amount_sold: new Decimal(data.amount_sold), // Use `Number()` to support decimals
+		amount_given: new Decimal(data.amount_given),
+		date_of_sale_start: new Date(data.date_of_sale_start),
+		date_of_sale_stop: new Date(data.date_of_sale_stop),
+		fuel_sales: data.fuel_sales?.map((fuel: any) => ({
+			fuel_id: Number(fuel.fuel_id),
+			start_reading: Number(fuel.start_reading),
+			end_reading: Number(fuel.end_reading)
+		})) ?? []
+	};
 
-  const parsedData = NewDailySaleSchema.parse(transformedData);
+	const parsedData = NewDailySaleSummarySchema.parse(transformedData);
 
-  return parsedData;
+	return parsedData;
 };
 
-export const validateExistingDailySale = (data: any): DailySale | undefined => {
+export const validateExistingDailySale = (data: any): DailySaleSummary | undefined => {
 
 	const transformedData = {
-    ...data,
-	id: Number(data.id),
-    amount_sold: new Decimal(data.amount_sold),
-    amount_given: new Decimal(data.amount_given),
-    date_of_sale_start: new Date(data.date_of_sale_start),
-    date_of_sale_stop: new Date(data.date_of_sale_stop),
-    fuel_counts: data.fuel_counts?.map((fuel: any) => ({
-      fuel_id: Number(fuel.fuel_id),
-      start_count: Number(fuel.start_count),
-      stop_count: Number(fuel.stop_count)
-    })) ?? [],
-	created_at: new Date(data.created_at),
-	updated_at: new Date(data.updated_at),
-  };
+		...data,
+		id: Number(data.id),
+		amount_sold: new Decimal(data.amount_sold),
+		amount_given: new Decimal(data.amount_given),
+		date_of_sale_start: new Date(data.date_of_sale_start),
+		date_of_sale_stop: new Date(data.date_of_sale_stop),
+		fuel_counts: data.fuel_counts?.map((fuel: any) => ({
+			fuel_id: Number(fuel.fuel_id),
+			start_reading: Number(fuel.start_reading),
+			end_reading: Number(fuel.end_reading)
+		})) ?? [],
+		created_at: new Date(data.created_at),
+		updated_at: new Date(data.updated_at),
+	};
 
-  const parsedData = ExistingDailySaleSchema.parse(transformedData);
+	const parsedData = ExistingDailySaleSchema.parse(transformedData);
 
-  return parsedData;
+	return parsedData;
 };
 
 

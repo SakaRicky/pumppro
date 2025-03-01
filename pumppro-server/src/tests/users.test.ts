@@ -1,8 +1,7 @@
 import { test, describe, beforeEach } from "node:test";
 import prisma from "../../client";
-import { testApi, authToken } from "./helper/setupTestDB";
+import { testApi, authToken, initialUsersInDB } from "./helper/setupTestDB";
 import { AuthenticatedUSer, NewUser, User } from "../types";
-import { createdUsers } from "../../prisma/seed";
 import assert from "assert";
 
 const userToSave: NewUser = {
@@ -39,7 +38,7 @@ describe("Test the users route", () => {
 
             assert.strictEqual(res.status, 200);
             const users = await prisma.user.findMany();
-            assert.strictEqual(users.length, createdUsers.length + 1);
+            assert.strictEqual(users.length, initialUsersInDB.length + 1);
             
             // deleting this user so it doesn't mess up the DB
             await prisma.user.delete({where: {id: savedUser.id}})
@@ -52,7 +51,7 @@ describe("Test the users route", () => {
             const users = res.body as User[];
 
             assert.strictEqual(res.status, 200);
-            assert.strictEqual(users.length, createdUsers.length);
+            assert.strictEqual(users.length, initialUsersInDB.length);
         });
 
         test("should update existing user", async () => {
@@ -75,7 +74,7 @@ describe("Test the users route", () => {
                 assert.ok(updatedUser && updatedUser.names.includes("EDITED"), "User was not updated");
 
                 const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, createdUsers.length)
+                assert.strictEqual(users.length, initialUsersInDB.length)
 
                 const editedUser = prisma.user.findUnique({
                     where: { username: userToEdit.username + "EDITED" }
@@ -99,7 +98,7 @@ describe("Test the users route", () => {
 
                 assert.strictEqual(res.status, 200);
                 const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, createdUsers.length - 1);
+                assert.strictEqual(users.length, initialUsersInDB.length - 1);
             }
         });
     });
@@ -130,7 +129,7 @@ describe("Test the users route", () => {
 
             // This test isn't working because the test "should create a new user when posted by admin"
             // added a new user to the DB and for 
-            assert.strictEqual(users.length, createdUsers.length);
+            assert.strictEqual(users.length, initialUsersInDB.length);
         });
 
         test("should return users when authToken is given", async () => {
@@ -141,7 +140,7 @@ describe("Test the users route", () => {
             const users = res.body as User[];
 
             assert.strictEqual(res.status, 200);
-            assert.strictEqual(users.length, createdUsers.length);
+            assert.strictEqual(users.length, initialUsersInDB.length);
         });
 
         test("shouldn't update existing user", async () => {
@@ -158,7 +157,7 @@ describe("Test the users route", () => {
 
                 assert.strictEqual(res.status, 401);
                 const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, createdUsers.length);
+                assert.strictEqual(users.length, initialUsersInDB.length);
                 const editedUser = await prisma.user.findUnique({
                     where: { username: user.username + "EDITED" }
                 });

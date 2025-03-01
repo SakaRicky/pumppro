@@ -18,6 +18,7 @@ import dailySalesRoutes from "./routes/dailySales";
 import fuelsRoutes from "./routes/fuel";
 import tankRoutes from "./routes/tank";
 import messageNotificationsRoutes from "./routes/notifications";
+import fuelSalesRoutes from "./routes/fuelSales";
 
 // Create a new express app
 const app = express();
@@ -62,7 +63,8 @@ app.use(checkTokenExistence);
 app.use("/users", usersRoute);
 app.use("/products", productsRoutes);
 app.use("/categories", categoriesRoutes);
-app.use("/sales", salesRoutes);
+app.use("/product-sales", salesRoutes);
+app.use("/fuel-sales", fuelSalesRoutes);
 app.use("/salessummary", salesSummaryRoutes);
 app.use("/daily-sales", dailySalesRoutes);
 app.use("/fuel", fuelsRoutes);

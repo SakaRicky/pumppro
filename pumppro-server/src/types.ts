@@ -6,9 +6,9 @@ import {
 	SaleDetail,
 	Tank,
 	Fuel,
-	FuelCount,
+	FuelSale,
 	MessageNotification,
-	DailySale as PrismaDailySale
+	DailySalesSummary as PrismaDailySaleSummary
 } from "@prisma/client";
 
 export type User = {
@@ -66,12 +66,11 @@ export type SaleItem = {
 	quantity: number;
 };
 
-export type Sale = {
-	id: string;
-	total_amount: number;
-	user_id: string;
-	sale_details: Prisma.Sale$sale_detailsArgs[];
-};
+export type SaleWithDetails = Prisma.SaleGetPayload<{
+	include: {
+	  sale_details: true
+	}
+  }>
 
 // 1: Define a type that includes the relation to `Post`
 const saleDetailsWithWithPosts = Prisma.validator<Prisma.SaleDetailArgs>()({
@@ -90,20 +89,18 @@ export type NewSaleDetails = Omit<
 	"id" | "sale_id" | "created_at" | "updated_at"
 >;
 
-export type NewFuelCount = Omit<
-FuelCount,
-	"id" | "daily_sale_id"
+export type NewFuelSale = Omit<
+FuelSale,
+	"id" | "daily_sale_id" | "created_at" | "updated_at" | "quantity_sold" | "total_amount"
 >
 
-export type NewDailySale = Omit<
-DailySale,
-	"id" | "difference" | "created_at" | "updated_at"
->  & {
-	fuel_counts?: NewFuelCount[]; 
-}
+export type NewDailySaleSummary = Omit<
+DailySaleSummary,
+	"id" | "created_at" | "updated_at"
+> 
 
-export type DailySale = PrismaDailySale & {
-	fuel_counts?: NewFuelCount[]; 
+export type DailySaleSummary = PrismaDailySaleSummary & {
+	fuel_sales?: NewFuelSale[]; 
 }
 
 export enum FuelType {

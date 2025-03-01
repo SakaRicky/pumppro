@@ -55,8 +55,8 @@ export const updateTank = async (req: Request, res: Response) => {
 	const updated = await prisma.fuel.update({
 		where: { id: fuelUpdate.id },
 		data: {
-			quantity_theory: fuel.quantity_theory + fuelUpdate.quantity,
-			quantity_actual: fuel.quantity_actual + fuelUpdate.quantity
+			quantity_theory: fuel.quantity_theory.add(fuelUpdate.quantity),
+			quantity_actual: fuel.quantity_actual.add(fuelUpdate.quantity)
 		}
 	});
 	console.log("🚀 ~ file: fuel.ts:53 ~ updateFuel ~ updated:", updated);

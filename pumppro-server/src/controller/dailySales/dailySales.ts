@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { validateExistingDailySale, validateNewDailySale } from "../../utils/validateData";
+import { validateExistingDailySale, validateNewDailySaleSummary } from "../../utils/validateData";
 import { createDailySaleInDB, deleteDailySaleInDB, updateDailySaleInDB } from "./dailySales.service";
 
 const prisma = new PrismaClient();
@@ -55,14 +55,13 @@ export const getDailySales = async (
 		userID
 	);
 
-	const dailySales = await prisma.dailySale.findMany({
+	const dailySales = await prisma.dailySalesSummary.findMany({
 		select: {
 			id: true,
 			amount_sold: true,
 			amount_given: true,
 			date_of_sale_start: true,
 			date_of_sale_stop: true,
-			fuel_counts: true,
 			user: true,
 			created_at: true
 		},
@@ -73,7 +72,7 @@ export const getDailySales = async (
 };
 
 export const saveDailySale = async (req: Request, res: Response) => {
-	const newDailySale = validateNewDailySale(req.body);
+	const newDailySale = validateNewDailySaleSummary(req.body);
 	let savedDailySale = {};
 
 	if (!newDailySale) {
@@ -110,7 +109,7 @@ export const deleteDailySale = async (req: Request, res: Response) => {
 };
 
 export const getDailySale = async (req: Request, res: Response) => {
-	const newDailySale = validateNewDailySale(req.body);
+	const newDailySale = validateNewDailySaleSummary(req.body);
 
 	if (!newDailySale) {
 		throw new Error("No Sale to be save");
@@ -132,7 +131,7 @@ export const getDailySale = async (req: Request, res: Response) => {
 		newDailySale.user_id
 	);
 
-	const dailySale = await prisma.dailySale.findFirst({
+	const dailySale = await prisma.dailySalesSummary.findFirst({
 		where: where
 	});
 

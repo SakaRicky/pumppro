@@ -15,7 +15,7 @@ model Sale {
   id           Int          @id @default(autoincrement())
   user         User         @relation(fields: [user_id], references: [id])
   user_id      String
-  sale_details  SaleDetail[]
+  sale_details SaleDetail[]
   created_at   DateTime     @default(now())
   updated_at   DateTime     @updatedAt
 
@@ -24,15 +24,15 @@ model Sale {
 
 // For each sold item. It keeps details as price and quantity. total amount can be calculated on the fly.
 model SaleDetail {
-  id           Int      @id @default(autoincrement())
-  sale         Sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
-  sale_id      Int
-  product      Product  @relation(fields: [product_id], references: [id])
-  product_id   String
-  quantity     Int
-  unit_price   Decimal
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  sale       Sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  sale_id    Int
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id String
+  quantity   Int
+  unit_price Decimal
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([sale_id])
   @@index([product_id])
@@ -41,7 +41,7 @@ model SaleDetail {
 // Each store product. Might not have description and image
 model Product {
   id                  String          @id @default(uuid())
-  sale_details         SaleDetail[]
+  sale_details        SaleDetail[]
   category            ProductCategory @relation(fields: [category_id], references: [id])
   purchases           Purchase[]
   category_id         String
@@ -58,12 +58,14 @@ model Product {
 
 // Tracks down product and fuel purchases.
 model Purchase {
-  id         String   @id @default(uuid())
-  product    Product  @relation(fields: [product_id], references: [id])
-  product_id String
-  quantity   Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id             String   @id @default(uuid())
+  product        Product  @relation(fields: [product_id], references: [id])
+  product_id     String
+  quantity       Int
+  purchase_price Decimal // Store price per unit at the time of purchase
+  purchase_date  DateTime @default(now()) // Track when the purchase happened
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
 
 model ProductCategory {
@@ -85,9 +87,10 @@ enum UserType {
 // The admin could enter the data in their place.
 model User {
   id              String                @id @default(uuid())
-  type            UserType   @default(WORKER)
-  daily_sales     DailySale[]
+  type            UserType              @default(WORKER)
+  daily_sales     DailySalesSummary[]
   sales           Sale[]
+  fuel_sales      FuelSale[]
   names           String
   date_of_birth   DateTime
   username        String                @unique
@@ -119,7 +122,7 @@ enum Role {
 }
 
 // Used to track how much cash each person hand in compared to the sale they made, hence tracking the differences that may be there
-model DailySale {
+model DailySalesSummary {
   id                 Int      @id @default(autoincrement())
   user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id            String
@@ -129,8 +132,6 @@ model DailySale {
   date_of_sale_stop  DateTime @default(now())
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
-
-  fuel_counts FuelCount[]
 }
 
 enum FuelType {
@@ -146,29 +147,33 @@ model Fuel {
   name            String
   purchase_price  Decimal
   selling_price   Decimal
-  quantity_theory Float
-  quantity_actual Float
+  quantity_theory Decimal   @db.Decimal(10, 3)
+  quantity_actual Decimal   @db.Decimal(10, 3)
   description     String
-  tank            Tank     @relation("FuelTank", fields: [tank_id], references: [id])
-  tank_id          Int      @unique
+  tank            Tank      @relation("FuelTank", fields: [tank_id], references: [id])
+  tank_id         Int       @unique
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
   fuel_type       FuelType
   pump            Pump[]
 
-  fuel_counts FuelCount[]
+  fuel_sales FuelSale[]
 }
 
 // Tracks down how much fuel was sold by PUMPIST each day when they hand in the cash money of their 
 // daily sale
-model FuelCount {
-  id            Int       @id @default(autoincrement())
-  daily_sale    DailySale @relation(fields: [daily_sale_id], references: [id], onDelete: Cascade)
-  daily_sale_id Int
-  fuel          Fuel      @relation(fields: [fuel_id], references: [id])
+model FuelSale {
+  id            Int      @id @default(autoincrement())
+  fuel          Fuel     @relation(fields: [fuel_id], references: [id])
   fuel_id       Int
-  start_count   Int
-  stop_count    Int
+  user          User     @relation(fields: [user_id], references: [id])
+  user_id       String
+  start_reading Decimal
+  end_reading   Decimal
+  quantity_sold Decimal  @default(0) // Auto-calculated as `end_reading - start_reading`
+  total_amount  Decimal  @default(0) // Auto-calculated as `quantity_sold * fuel.selling_price`
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }
 
 // It contains the fuel and 1 tank can only have 1 fuel.
@@ -183,10 +188,10 @@ model Tank {
 
 // Used to sell the fuel. Mainly for visual purposes.
 model Pump {
-  id     Int    @id @default(autoincrement())
-  name   String
-  fuel   Fuel?  @relation(fields: [fuel_id], references: [id])
-  fuel_id  Int?
+  id      Int    @id @default(autoincrement())
+  name    String
+  fuel    Fuel?  @relation(fields: [fuel_id], references: [id])
+  fuel_id Int?
 }
 
 // Used to send system notifications to the concerned users
@@ -194,8 +199,21 @@ model MessageNotification {
   id         Int      @id @default(autoincrement())
   message    String
   title      String
-  read       Boolean @default(false)
+  read       Boolean  @default(false)
   users      User[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+// some expenses link to the business usefull to calculate net profit
+model FixedCost {
+  id         Int      @id @default(autoincrement())
+  name       String // e.g., "Rent", "Electricity", "Security Fees"
+  amount     Decimal // Monthly cost amount
+  month      Int // 1 = January, 2 = February, ..., 12 = December
+  year       Int // e.g., 2024
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([month, year, name]) // Prevents duplicate entries for the same cost in the same month
 }

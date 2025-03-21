@@ -37,9 +37,15 @@ const saveProductsSale = async (user: User, products: Product[], quantities: num
 		throw new Error('Products and quantities arrays must have the same length');
 	}
 
+	const total = new Decimal(0);
+	for (let i = 0; i < products.length; i++) {
+		total.add(products[i].selling_price.mul(quantities[i]));
+	}
+
 	const sale = await prisma.sale.create({
 		data: {
 			user_id: user.id,
+			total: total,
 			sale_details: {
 				createMany: {
 					data: products.map((p, i) => ({
@@ -52,7 +58,7 @@ const saveProductsSale = async (user: User, products: Product[], quantities: num
 		}
 	});
 
-	const savedSale = await prisma.sale.findUnique({ where: { id: sale.id }, select: { id: true, user_id: true, created_at: true, updated_at: true, sale_details: true } });
+	const savedSale = await prisma.sale.findUnique({ where: { id: sale.id }, select: { id: true, user_id: true, total: true, created_at: true, updated_at: true, sale_details: true } });
 
 	if (!savedSale) {
 		throw new Error(`Sale with id ${sale.id} not found`);

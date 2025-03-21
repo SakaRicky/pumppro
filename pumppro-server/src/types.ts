@@ -8,7 +8,8 @@ import {
 	Fuel,
 	FuelSale,
 	MessageNotification,
-	DailySalesSummary as PrismaDailySaleSummary
+	DailySalesSummary as PrismaDailySaleSummary,
+	Sale
 } from "@prisma/client";
 
 export type User = {
@@ -61,10 +62,15 @@ export type ProductCategory = {
 
 export type NewProductCategory = Omit<ProductCategory, "id">;
 
-export type SaleItem = {
-	productID: string;
-	quantity: number;
-};
+// export type SaleItem = {
+// 	productID: string;
+// 	quantity: number;
+// };
+
+export type NewSale = Omit<Sale, "total" | "id" | "created_at" | "updated_at"> & {sale_details: NewSaleDetail[]};
+
+export type NewSaleDetail = Omit<SaleDetail, "id" | "sale_id" | "created_at" | "updated_at">;
+export type NewSaleDetail2 = Prisma.SaleDetailCreateInput;
 
 export type SaleWithDetails = Prisma.SaleGetPayload<{
 	include: {

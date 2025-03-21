@@ -13,8 +13,7 @@ export const errorHandler = (
 	if (error instanceof ZodError) {
 		console.log(
 			"error happened in ZodError with error.errors: ",
-			error.message
-		);
+			error.message);
 		return response.status(400).send({ error: error.message });
 	}
 	if (error instanceof PrismaClientKnownRequestError) {
@@ -38,7 +37,8 @@ export const errorHandler = (
 	}
 
 	if (error instanceof Error) {
-		console.log("file errors/index.ts line 41 Error happened with message: ", error);
+		
+		console.log("file errors/index.ts line 41 Error happened with message: ", error.message);
 
 		return response.status(400).send({ error: error.message });
 	}

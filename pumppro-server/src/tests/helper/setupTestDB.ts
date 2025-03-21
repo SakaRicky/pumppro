@@ -5,7 +5,8 @@ import prisma from "../../../client";
 import { seed } from "../../../prisma/seed";
 import { findUserAndCreateAuthUser } from "../../controller/auth";
 import { AuthenticatedUSer, UserToAuth } from "../../types";
-import { DailySalesSummary, Product, ProductCategory, Sale, User } from "@prisma/client";
+import { DailySalesSummary, Product, ProductCategory, Sale, SaleDetail, User } from "@prisma/client";
+import { getAllSalesDetails } from "./testsHelperFunctions";
 
 
 export const testApi = supertest(app);
@@ -32,6 +33,7 @@ export let initialUsersInDB: User[] = [];
 export let initialProductCategories: ProductCategory[] = [];
 export let initialProducts: Product[] = [];
 export let initialProductsSoldInDB: Sale[] =[]
+export let initialSaleDetailsInDB: SaleDetail[] =[]
 
 // This before is like beforeAll
 beforeEach(async () => {
@@ -49,6 +51,7 @@ beforeEach(async () => {
 	initialProductCategories = initialProductCategoriesInDB;
 	initialProducts = initialProductsInDB;
 	initialProductsSoldInDB = initialProductsSold;
+	initialSaleDetailsInDB = await getAllSalesDetails();
 
 	await AuthenticateTestUser(userToUseForTest)
 

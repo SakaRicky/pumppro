@@ -1,10 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, Product } from "@prisma/client";
 import { Request, Response } from "express";
 import { RequestWithToken } from "../utils/middleware";
 import { validateNewSale } from "../utils/validateData";
-import { NewSaleDetails } from "../types";
+import { NewSaleDetail, NewSaleDetails } from "../types";
 import { verifyToken } from "../utils/jwt";
 import { createNotificationForAdmins } from "./utils/notification";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
@@ -120,58 +121,65 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 	const decodedToken = verifyToken(userToken || "");
 	const sale_details: NewSaleDetails[] = [];
 
-	for (const saleItem of newSale) {
-		const product = await prisma.product.findUnique({
-			where: { id: saleItem.productID }
-		});
+	const seller = await prisma.user.findUnique({
+		where: { id: newSale.user_id }
+	});
 
-		if (!product) {
-			throw new Error(
-				`No product for this sale save productID: ${saleItem.productID}`
-			);
-		}
-		if (product.quantity < saleItem.quantity) {
-			throw new Error(`Insufficient stock for product: ${product.name}`);
-		}
+	if (!seller) {
+		throw new Error(
+			`No seller was provided or invalid seller id`
+		);
 	}
 
-	for (const saleItem of newSale) {
-		const product = await prisma.product.findUnique({
-			where: { id: saleItem.productID }
-		});
+	if (newSale.sale_details.length <= 0 || newSale.sale_details == null) {
+		throw new Error(
+			`No sale item was provided`
+		);
+	}
 
-		if (product) {
-			const updatedProduct = await prisma.product.update({
-				where: {
-					id: product.id
-				},
-				data: { ...product, quantity: product.quantity - saleItem.quantity }
+	const createdSale = await prisma.$transaction(async (tx) => {
+		for (const detail of newSale.sale_details) {
+			
+			const product = await tx.product.findUnique({
+				where: { id: detail.product_id }
 			});
-
-			if (updatedProduct.quantity <= product.low_stock_threshold) {
-				await createNotificationForAdmins(updatedProduct);
+			
+			// make sure the product exist and there are enough products
+			if (!product || detail.quantity <= 0) {
+				throw new Error(
+					`Invalid product or quantity for: ${product?.name}`
+				);
 			}
+			if (product.quantity < detail.quantity) {
+				throw new Error(`Insufficient stock for product: ${product.name}`);
+			}
+			
+			await updateProductQuantityInDB(tx, product, detail.quantity);
 
 			sale_details.push({
 				product_id: product.id,
 				unit_price: product.selling_price,
-				quantity: saleItem.quantity,
+				quantity: detail.quantity,
 			});
 		}
-	}
-
-	await prisma.sale.create({
-		data: {
-			user_id: decodedToken.id,
-			sale_details: {
-				createMany: {
-					data: sale_details
+		
+		const totalMoneyForSale = calculateTotalAmountSold(newSale.sale_details);
+		
+		return await tx.sale.create({
+			data: {
+				user_id: decodedToken.id,
+				total: totalMoneyForSale,
+				sale_details: {
+					createMany: {
+						data: sale_details
+					}
 				}
 			}
-		}
+		});
+		
 	});
-
-	return res.sendStatus(200);
+	
+	return res.status(200).send(createdSale);
 };
 
 export const updateSale = async (req: RequestWithToken, res: Response) => {
@@ -197,3 +205,22 @@ export const deleteSale = async (req: RequestWithToken, res: Response) => {
 
 	return res.sendStatus(200);
 };
+
+const calculateTotalAmountSold = (saleDetails: NewSaleDetails[]) => {
+	const total = saleDetails.reduce((acc: Decimal, curr: NewSaleDetail) => acc.add(curr.unit_price.mul(curr.quantity)), new Decimal(0));
+
+	return total;
+}
+
+const updateProductQuantityInDB = async (tx: Prisma.TransactionClient, product: Product, quantity: number) => {
+	const updatedProduct = await tx.product.update({
+		where: {
+			id: product.id
+		},
+		data: { ...product, quantity: product.quantity - quantity }
+	});
+
+	if (updatedProduct.quantity <= product.low_stock_threshold) {
+		await createNotificationForAdmins(updatedProduct);
+	}
+}

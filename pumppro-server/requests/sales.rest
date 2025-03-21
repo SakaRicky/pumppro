@@ -1,149 +1,20 @@
-GET http://localhost:5000/api/students HTTP/1.1
 
-###
-
-GET http://localhost:5000/api/students/3c311739-65b0-4039-9d95-113dc42cc1d7 HTTP/1.1
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
+POST http://localhost:5001/product-sales HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvaG5kb2UiLCJyb2xlIjoiQURNSU4iLCJpZCI6ImQwMTk3MDZkLTAwYzYtNGNhMC1hMzIwLTNmNWUxZWJiZTFiNyIsImlhdCI6MTc0MjUwODQyNSwiZXhwIjoxNzQyNTk0ODI1fQ.XFOO6QHJMjbgAYRDwOIUVI_bgfES9EYIOgQ9fe6-d_o
 
 {
-    "firstName": "Fally",
-    "lastName": "Ipupa",
-    "dateOfBirth": "Fri Apr 01 2002",
-    "gender": "Male",
-    "classCode": "F3",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Samuel",
-    "lastName": "Eto'o",
-    "dateOfBirth": "Thu May 01 2010",
-    "gender": "Male",
-    "classCode": "F1",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Bikim",
-    "lastName": "Adele",
-    "dateOfBirth": "Fri Apr 01 2012",
-    "gender": "Female",
-    "classCode": "F2",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Decca",
-    "lastName": "Grace",
-    "dateOfBirth": "Fri Jan 01 2000",
-    "gender": "Female",
-    "classCode": "F5",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Neymar",
-    "lastName": "Junior",
-    "dateOfBirth": "Mon Jan 21 2004",
-    "gender": "Male",
-    "classCode": "F3",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Daphne",
-    "lastName": "Nanji",
-    "dateOfBirth": "Fri Jan 01 2000",
-    "gender": "Female",
-    "classCode": "F5",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Beko",
-    "lastName": "Sade",
-    "dateOfBirth": "Fri Jan 01 2000",
-    "gender": "Female",
-    "classCode": "L6",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
-
-###
-POST http://localhost:5000/api/students HTTP/1.1
-content-type: application/json
-
-{
-    "firstName": "Fopoussi",
-    "lastName": "Eric",
-    "dateOfBirth": "Fri Jan 01 2000",
-    "gender": "Male",
-    "classCode": "U6",
-    "fathersName": "ABC DEF",
-    "fathersPhone": "123456789",
-    "fathersOccupation": "Worker",
-    "mothersName": "Ijk Lmn",
-    "mothersPhone": "12315262",
-    "mothersOccupation": "Worker"
-}
+    "user_id": "d019706d-00c6-4ca0-a320-3f5e1ebbe1b7",
+    "sale_details": [
+      {
+        "product_id": "01fe187e-b237-4f27-8add-16b10fc8e20f",
+        "quantity": 2,
+        "unit_price": 45.50
+      },
+      {
+        "product_id": "0ef694a9-71b8-42a0-af5c-0a195fbc27ba",
+        "quantity": 3,
+        "unit_price": 19.25
+      }
+    ]
+  }

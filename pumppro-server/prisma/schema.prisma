@@ -16,6 +16,7 @@ model Sale {
   user         User         @relation(fields: [user_id], references: [id])
   user_id      String
   sale_details SaleDetail[]
+  total        Decimal
   created_at   DateTime     @default(now())
   updated_at   DateTime     @updatedAt
 

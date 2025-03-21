@@ -11,7 +11,7 @@ import {
 	NewUser,
 	ProductCategory,
 	ProductType,
-	SaleItem
+	NewSale,
 } from "../types";
 import { Decimal } from "@prisma/client/runtime/library";
 
@@ -122,17 +122,24 @@ export const validateEditedProductCategory = (
 	return parsedData;
 };
 
-const NewSaleSchema = z.object({
-	productID: z.string(),
-	quantity: z.number()
+const NewSaleDetailSchema = z.object({
+	product_id: z.string(),
+	unit_price: z.instanceof(Decimal),
+	quantity: z.number(),
 });
 
-export const validateNewSale = (data: any[]): SaleItem[] | undefined => {
-	const formattedData = data.map(d => ({
-		...d,
-		quantity: Number.parseInt(d.quantity)
-	}));
-	const parsedData = formattedData.map(data => NewSaleSchema.parse(data));
+const NewSaleSchema = z.object({
+	user_id: z.string(),
+	sale_details: z.array(NewSaleDetailSchema)
+});
+
+export const validateNewSale = (data: any): NewSale | undefined => {
+	const formattedData = {
+		...data,
+		quantity: Number.parseInt(data.quantity),
+		sale_details: data.sale_details.map(d => ({...d, unit_price: new Decimal(d.unit_price)}))
+	};
+	const parsedData = NewSaleSchema.parse(formattedData);
 
 	return parsedData;
 };
@@ -271,7 +278,6 @@ export const validateNewDailySaleSummary = (data: any): NewDailySaleSummary | un
 };
 
 export const validateExistingDailySale = (data: any): DailySaleSummary | undefined => {
-
 	const transformedData = {
 		...data,
 		id: Number(data.id),

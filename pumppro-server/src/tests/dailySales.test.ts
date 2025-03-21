@@ -1,4 +1,4 @@
-import { test, describe, beforeEach } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import { authToken, dailySaleToPost, initialDailySalesInDB, testApi } from "./helper/setupTestDB";
 import assert from "assert";
 import { getAllDailySales, getDailySaleFromID } from "./helper/testsHelperFunctions";
@@ -83,6 +83,7 @@ describe("Update an existing daily sale", () => {
         dailySaleToUpdate.amount_sold = newAmountSold;
     })
 
+
     test("without a token, should not update", async () => {
 
         const dailySales = await testApi.patch("/daily-sales").send(dailySaleToUpdate).expect(401);
@@ -109,7 +110,7 @@ describe("Update an existing daily sale", () => {
         assert.strictEqual(updatedDailySales?.amount_sold.toNumber(), dailySaleToUpdate.amount_sold.toNumber());
     })
 
-    test("without a payload, it doesn't updates a new daily post", async () => {
+    test("without a payload, should throw error and doesn't updates a new daily post", async () => {
         const savedDailySales = await testApi
                                             .patch("/daily-sales")
                                             .send()

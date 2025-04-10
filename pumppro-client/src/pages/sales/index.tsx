@@ -59,7 +59,7 @@ const Sales = () => {
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
-				return <Box>XAF {params.row.total_amount}</Box>;
+				return <Box>XAF {params.row.total}</Box>;
 			}
 		},
 		{
@@ -69,7 +69,7 @@ const Sales = () => {
 			align: "center",
 			sortable: false,
 			renderCell: params => {
-				return params.row.saleDetails.length;
+				return params.row.sale_details.length;
 			}
 		}
 	];

@@ -37,9 +37,9 @@ const saveProductsSale = async (user: User, products: Product[], quantities: num
 		throw new Error('Products and quantities arrays must have the same length');
 	}
 
-	const total = new Decimal(0);
+	let total = new Decimal(0);
 	for (let i = 0; i < products.length; i++) {
-		total.add(products[i].selling_price.mul(quantities[i]));
+		total = total.add(products[i].selling_price.mul(quantities[i]));
 	}
 
 	const sale = await prisma.sale.create({

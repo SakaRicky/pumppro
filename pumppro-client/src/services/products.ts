@@ -2,6 +2,7 @@ import { Product } from "types";
 import api from "./api";
 import { AuthError } from "errors/authError";
 import { UserError } from "errors/userError";
+import { BadRequestError } from "errors/badRequestError";
 
 export const saveProduct = async (newUser: FormData) => {
 	try {
@@ -10,9 +11,8 @@ export const saveProduct = async (newUser: FormData) => {
 		});
 		return res.data;
 	} catch (error: any) {
-		console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
-		if (error.response.status === 409) {
-			throw new Error(error.response.data.error);
+		if (error instanceof BadRequestError) {
+			throw error;
 		}
 	}
 };
@@ -38,23 +38,21 @@ export const updateProduct = async (updateProduct: FormData) => {
 
 		return res.data;
 	} catch (error: any) {
-		console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
-		if (error.response.status === 409) {
-			throw new UserError({
-				name: "USER_ERROR",
-				message: error.response.data.error
-			});
+		if (error instanceof BadRequestError) {
+			throw error;
 		}
-		if (error.response.status === 401) {
+		else if (error.response.status === 401) {
 			throw new AuthError({
 				name: "AUTH_ERROR",
 				message: error.response.data.error
 			});
 		}
-		throw new UserError({
-			name: "USER_ERROR",
-			message: error.response.data.error
-		});
+		else {
+			throw new UserError({
+				name: "USER_ERROR",
+				message: error.response.data.error
+			});
+		}
 	}
 };
 

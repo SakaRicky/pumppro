@@ -49,13 +49,18 @@ const ShoppingCart = () => {
 		}
 	});
 
-	const handleSaleClick = () => {
+	const handleSaveSaleClick = () => {
 		const salesItem = state.cartItems.map(item => ({
-			productID: item.id,
+			product_id: item.id,
 			quantity: item.quantity
 		}));
 
-		createSaleMutation.mutateAsync(salesItem);
+		const saleToSave = {
+			user_id: state.logedUser?.id,
+			sale_details: salesItem
+		}
+
+		createSaleMutation.mutateAsync(saleToSave);
 	};
 
 	return (
@@ -89,7 +94,7 @@ const ShoppingCart = () => {
 				setAmountGiven={setAmountGiven}
 				amountGiven={amountGiven}
 				isLoading={createSaleMutation.isLoading}
-				handleSaleClick={handleSaleClick}
+				handleSaveSaleClick={handleSaveSaleClick}
 			/>
 		</Box>
 	);

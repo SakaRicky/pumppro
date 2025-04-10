@@ -1,8 +1,13 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { AuthError } from "errors/authError";
 import { BadRequestError } from "errors/badRequestError";
 import { ConnectionError } from "errors/connectionError";
 import storage from "utils/storage";
+
+interface ErrorData {
+	error: string, 
+	status: number,
+}
 
 // https://pumppro-server.onrender.com/
 // http://localhost:5001/
@@ -24,49 +29,56 @@ const requestInterceptor = (config: AxiosRequestConfig) => {
 		config.headers.Authorization = `bearer ${token}`;
 	}
 
-	// console.log("config: ", config);
-
 	return config;
 };
 
-api.interceptors.request.use(requestInterceptor);
+const successHandler = (response: AxiosResponse): AxiosResponse => {
+	return response;
+}
 
-api.interceptors.response.use(
-	response => response,
-	error => {
-		// Handle connection errors here
-		if (error.response) {
-			const message = error.response?.data?.message || error.message;
 
-			if (error.response.status === 401) {
-				throw new AuthError({
-					name: "AUTH_ERROR",
-					message: error.response.data.error
-				});
-			}
-			if (error.response.status === 400) {
-				console.log("error 400");
+const errorHandler = (errorResponse: AxiosError<ErrorData>): Promise<never> => {
 
-				throw new BadRequestError({
-					name: "BAD_REQUEST_ERROR",
-					message: error.response.data.error
-				});
-			}
-		} else if (error.request) {
-			console.log("Request Error Interceptors");
-			console.log("error.response: ", error);
-		} else {
-			console.log("Error in api else", error);
-			console.log("Error in api else: message: ", error.message);
+	if (errorResponse.response) {
+		
+		const message = errorResponse.response.data.error || errorResponse.message;
+		const responseErrorsMap: Record<number, (() => Error | undefined)> = {
+			400: () => new BadRequestError({
+				name: "BAD_REQUEST_ERROR",
+				message: message
+			}),
+			401: () => new AuthError({
+				name: "AUTH_ERROR",
+				message: message
+			}),
 		}
-		if (error.code === "ERR_NETWORK") {
+
+		const errorStatusCode = errorResponse.response.status;
+
+		const errorToThrow = responseErrorsMap[errorStatusCode];
+
+		if (errorToThrow) {
+			throw errorToThrow()
+		}
+	} else if (errorResponse.request) {
+		console.log("Request Error Interceptors");
+
+		if (errorResponse.code === "ERR_NETWORK") {
 			throw new ConnectionError({
 				name: "Connection_Error",
 				message: "Couldn't connect to the server"
 			});
 		}
-		return Promise.reject(error);
+	} else {
+		console.log("Error in api else", errorResponse);
+		console.log("Error in api else: message: ", errorResponse.message);
 	}
-);
+
+	return Promise.reject(errorResponse);
+}
+
+api.interceptors.request.use(requestInterceptor);
+
+api.interceptors.response.use(successHandler, errorHandler);
 
 export default api;

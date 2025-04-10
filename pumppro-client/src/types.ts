@@ -62,12 +62,12 @@ export type Product = {
 	selling_price: number;
 	low_stock_threshold: number;
 	created_at: string;
-	updatedAt: string;
+	updated_at: string;
 };
 
 export type NewProduct = Omit<
 	Product,
-	"id" | "category" | "created_at" | "updatedAt"
+	"id" | "category" | "created_at" | "updated_at"
 > & {
 	category_id: string;
 };
@@ -155,10 +155,10 @@ export type Tank = {
 	capacity: number;
 	name: string;
 	created_at: Date;
-	updatedAt: Date;
+	updated_at: Date;
 };
 
-export type NewTank = Omit<Tank, "id" | "created_at" | "updatedAt">;
+export type NewTank = Omit<Tank, "id" | "created_at" | "updated_at">;
 
 export type Fuel = {
 	id: number;
@@ -170,10 +170,10 @@ export type Fuel = {
 	description: string;
 	tank: Tank;
 	created_at: Date;
-	updatedAt: Date;
+	updated_at: Date;
 };
 
-export type NewFuel = Omit<Fuel, "id" | "created_at" | "updatedAt" | "tank"> & {
+export type NewFuel = Omit<Fuel, "id" | "created_at" | "updated_at" | "tank"> & {
 	tank_id: number;
 };
 
@@ -183,5 +183,5 @@ export type MessageNotification = {
 	message: string;
 	read: boolean;
 	created_at: Date;
-	updatedAt: Date;
+	updated_at: Date;
 };

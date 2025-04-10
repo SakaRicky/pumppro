@@ -10,14 +10,14 @@ type ShoppingCartFooterProps = {
 	setAmountGiven: React.Dispatch<React.SetStateAction<number>>;
 	amountGiven: number; // Amount given by the client. Used to calculate the change
 	isLoading: boolean;
-	handleSaleClick: () => void;
+	handleSaveSaleClick: () => void;
 };
 const ShoppingCartFooter = ({
 	totalPrice,
 	setAmountGiven,
 	amountGiven,
 	isLoading,
-	handleSaleClick
+	handleSaveSaleClick
 }: ShoppingCartFooterProps) => {
 	const theme = useTheme();
 
@@ -93,7 +93,7 @@ const ShoppingCartFooter = ({
 					loading={isLoading}
 					loadingPosition="end"
 					endIcon={<SaveIcon />}
-					onClick={handleSaleClick}
+					onClick={handleSaveSaleClick}
 					variant="contained"
 					sx={{
 						color: "#fff",

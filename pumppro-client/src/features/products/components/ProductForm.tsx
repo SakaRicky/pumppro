@@ -101,6 +101,10 @@ const ProductForm = forwardRef(
 			},
 			onMutate: variables => {
 				return { successMessage: "Updated Product Successfully" };
+			},
+			onError: (error: any) => {
+				console.log("error: ", error.message)
+				notify("Login Error", error.message, "error");
 			}
 		});
 
@@ -122,7 +126,7 @@ const ProductForm = forwardRef(
 				if (isEditMode) {
 					formData.append("id", product.id);
 					formData.append("created_at", product.created_at);
-					formData.append("updatedAt", product.updatedAt);
+					formData.append("updated_at", product.updated_at);
 					formData.append("image", product.image || "");
 					updateProductMutation.mutateAsync(formData);
 				} else {

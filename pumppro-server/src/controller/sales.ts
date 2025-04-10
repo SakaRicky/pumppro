@@ -55,6 +55,7 @@ export const getSales = async (
 	const allSaless = await prisma.sale.findMany({
 		select: {
 			id: true,
+			total: true,
 			user: {
 				select: {
 					names: true,
@@ -85,6 +86,8 @@ export const getSales = async (
 			created_at: "desc"
 		}
 	});
+
+	console.log("allSaless: ", allSaless);
 
 	return res.send(allSaless);
 };
@@ -138,8 +141,8 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 	}
 
 	const createdSale = await prisma.$transaction(async (tx) => {
+		// make sure we have enough to sell
 		for (const detail of newSale.sale_details) {
-			
 			const product = await tx.product.findUnique({
 				where: { id: detail.product_id }
 			});
@@ -163,7 +166,7 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 			});
 		}
 		
-		const totalMoneyForSale = calculateTotalAmountSold(newSale.sale_details);
+		const totalMoneyForSale = calculateTotalAmountSold(sale_details);
 		
 		return await tx.sale.create({
 			data: {

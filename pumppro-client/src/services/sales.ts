@@ -4,8 +4,9 @@ import { AuthError } from "errors/authError";
 import { UserError } from "errors/userError";
 
 export const saveSale = async (newSale: any) => {
+
 	try {
-		const res = await api.post("/sales", newSale);
+		const res = await api.post("/product-sales", newSale);
 		return res.data;
 	} catch (error: any) {
 		// console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
@@ -33,7 +34,7 @@ export const getSales = async (
 	userID?: string,
 	selectedCategoryID?: string
 ): Promise<Sale[]> => {
-	const { data } = await api.get<Sale[]>(`/sales`, {
+	const { data } = await api.get<Sale[]>(`/product-sales`, {
 		params: { startDate, stopDate, userID, selectedCategoryID }
 	});
 	return data;

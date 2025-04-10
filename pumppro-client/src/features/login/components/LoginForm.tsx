@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthError } from "errors/authError";
 import { useNotify } from "hooks/useNotify";
 import storage from "utils/storage";
+import { ConnectionError } from "errors/connectionError";
 
 const LoginForm = () => {
 	const theme = useTheme();
@@ -64,7 +65,8 @@ const LoginForm = () => {
 		try {
 			const loggedUser = await loginUser(data);
 
-			notify("Login Success", "You are authenticated", "success");
+			if (loggedUser !== null) {
+				notify("Login Success", "You are authenticated", "success");
 			if (!!loggedUser) {
 				storage.setToken(loggedUser.token);
 			}
@@ -74,8 +76,12 @@ const LoginForm = () => {
 			} else {
 				navigate("/products");
 			}
+			}
 		} catch (error) {
 			if (error instanceof AuthError) {
+				notify("Login Error", error.message, "error");
+			}
+			if (error instanceof ConnectionError) {
 				notify("Login Error", error.message, "error");
 			}
 			setLoading(false);

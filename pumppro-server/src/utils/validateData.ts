@@ -89,7 +89,7 @@ export const validateEditedProduct = (data: any): ProductType | undefined => {
 			const date = new Date(value);
 			return !isNaN(date.getTime());
 		}, "Expected valid date string"),
-		updatedAt: z.string().refine(value => {
+		updated_at: z.string().refine(value => {
 			const date = new Date(value);
 			return !isNaN(date.getTime());
 		}, "Expected valid date string")
@@ -124,7 +124,6 @@ export const validateEditedProductCategory = (
 
 const NewSaleDetailSchema = z.object({
 	product_id: z.string(),
-	unit_price: z.instanceof(Decimal),
 	quantity: z.number(),
 });
 
@@ -136,8 +135,7 @@ const NewSaleSchema = z.object({
 export const validateNewSale = (data: any): NewSale | undefined => {
 	const formattedData = {
 		...data,
-		quantity: Number.parseInt(data.quantity),
-		sale_details: data.sale_details.map(d => ({...d, unit_price: new Decimal(d.unit_price)}))
+		sale_details: data.sale_details.map(d => ({...d, quantity: Number.parseInt(d.quantity)}))
 	};
 	const parsedData = NewSaleSchema.parse(formattedData);
 

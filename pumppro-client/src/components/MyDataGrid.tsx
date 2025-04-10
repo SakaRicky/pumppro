@@ -35,14 +35,14 @@ const MyDataGrid = ({
 	const filteredRows =
 		search.length > 0
 			? (rows as Product[]).filter(
-					product =>
-						product.name
-							.toLocaleLowerCase()
-							.includes(search.toLocaleLowerCase()) ||
-						product.description
-							?.toLocaleLowerCase()
-							.includes(search.toLocaleLowerCase())
-			  )
+				product =>
+					product.name
+						.toLocaleLowerCase()
+						.includes(search.toLocaleLowerCase()) ||
+					product.description
+						?.toLocaleLowerCase()
+						.includes(search.toLocaleLowerCase())
+			)
 			: rows;
 
 	return (
@@ -76,9 +76,17 @@ const MyDataGrid = ({
 				"& .MuiDataGrid-row": {
 					backgroundColor: alpha(theme.palette.secondary[100], 0.2),
 					"&:hover": {
-						backgroundColor: alpha(theme.palette.secondary[600], 0.2)
+						backgroundColor: alpha(theme.palette.secondary[600], 0.2),
+						cursor: 'pointer'
+					},
+					"&.Mui-selected": {
+						border: `1px solid ${theme.palette.secondary[100]}`,
+						backgroundColor: theme.palette.secondary[900],
 					}
-				}
+				},
+				'.MuiDataGrid-cell:focus': {
+					outline: 'none'
+				},
 			}}
 		>
 			<DataGrid

@@ -87,8 +87,6 @@ export const getSales = async (
 		}
 	});
 
-	console.log("allSaless: ", allSaless);
-
 	return res.send(allSaless);
 };
 

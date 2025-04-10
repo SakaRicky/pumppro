@@ -91,9 +91,9 @@ export type CartItem = {
 
 export type Sale = {
 	id: string;
-	total_amount: number;
+	total: number;
 	user: User;
-	saleDetails: SaleDetails[];
+	sale_details: SaleDetails[];
 	created_at: Date;
 };
 

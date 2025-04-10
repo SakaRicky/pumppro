@@ -9,12 +9,14 @@ type SaleDetailsProps = {
 	sale: Sale;
 };
 const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
+
+	console.log("saledetail: ", sale.sale_details)
 	const theme = useTheme();
 	const columns: GridColDef[] = [
 		{
 			field: "product",
-			headerName: "Article",
-			width: 150,
+			headerName: "Item",
+			width: 180,
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
@@ -24,7 +26,7 @@ const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
 		{
 			field: "category",
 			headerName: "Category",
-			width: 150,
+			width: 180,
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
@@ -33,12 +35,12 @@ const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
 		},
 		{
 			field: "selling_price",
-			headerName: "Unit Price",
-			width: 100,
+			headerName: "Unit Price(XAF)",
+			width: 120,
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
-				return <span>XAF {params.row.product.selling_price}</span>;
+				return params.row.product.selling_price;
 			}
 		},
 		{
@@ -47,48 +49,35 @@ const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
 			width: 100,
 			headerAlign: "center",
 			align: "center"
-		},
-		{
-			field: "total_amount",
-			headerName: "Total Amount",
-			width: 150,
-			headerAlign: "center",
-			align: "center",
-			renderCell: params => {
-				return <span>XAF {params.row.total_amount}</span>;
-			}
 		}
 	];
 	return (
 		<Box
 			sx={{
-				p: 2,
-				height: "80%",
-				width: "70%",
-				backgroundColor: theme.palette.background.alt
+				height: "70%",
+				width: "100%",
+				backgroundColor: theme.palette.background.alt,
 			}}
 		>
-			<Typography fontSize="2rem">SaleDetails</Typography>
 			<Typography
 				component="span"
 				fontSize="1.2rem"
-				sx={{ display: "flex", alignItems: "center", gap: 1 }}
+				sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}
 			>
+				<Box sx={{display: "flex", alignItems: "center"}}>
 				<FormattedMessage
 					id="salesdetailpage.doneby"
-					defaultMessage="Done by"
+					defaultMessage="By:"
 				/>
-				<Typography color={theme.palette.primary[500]} fontSize="1.5rem">
+				<Typography color={theme.palette.primary[500]} fontSize="inherit">
 					{sale.user.names}
 				</Typography>
-				<FormattedMessage id="salesdetailpage.on" defaultMessage="On the" />{" "}
+				</Box>
+				
 				{moment(sale.created_at).format("DD/MM/YYYY")}{" "}
-				<FormattedMessage
-					id="salesdetailpage.total"
-					defaultMessage="For a total of"
-				/>{" "}
-				<Typography color={theme.palette.primary[500]} fontSize="1.5rem">
-					XAF {sale.total_amount}
+				<Typography color={theme.palette.primary[500]} fontSize="1.5rem" fontWeight={"Bold"}>
+				<FormattedMessage id="salesdetailpage.total" defaultMessage="Total" />{" "}
+					XAF {sale.total}
 				</Typography>
 			</Typography>
 
@@ -104,22 +93,20 @@ const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
 						color: theme.palette.secondary[200],
 						borderBottom: "none"
 					},
-					"& .MuiDataGrid-footerContainer": {
-						backgroundColor: theme.palette.background.alt,
-						color: theme.palette.secondary[200],
-						borderBottom: "none"
-					},
 					"& .MuiDataGrid-toolbarContainer .MuiButton-text": {
 						color: `${theme.palette.secondary[100]} !important`
+					},
+					'.MuiDataGrid-cell:focus': {
+						outline: 'none'
+					},
+					".MuiDataGrid-footerContainer": {
+						display: "none"
 					}
 				}}
 			>
 				<DataGrid
-					rows={sale.saleDetails}
+					rows={sale.sale_details}
 					columns={columns}
-					rowCount={(sale.saleDetails && sale.saleDetails.length) || 0}
-					pagination
-					rowsPerPageOptions={[20, 50, 100]}
 				/>
 			</Box>
 		</Box>

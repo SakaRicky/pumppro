@@ -54,18 +54,19 @@ const Sales = () => {
 		},
 		{
 			field: "total_amount",
-			headerName: "Total Amount",
+			headerName: "Total Amount(XAF)",
 			width: 200,
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
-				return <Box>XAF {params.row.total}</Box>;
+				return params.row.total;
 			}
 		},
 		{
 			field: "saleDetails",
-			headerName: "Number of Items",
+			headerName: "No. of Items",
 			headerAlign: "center",
+			width: 200,
 			align: "center",
 			sortable: false,
 			renderCell: params => {
@@ -75,38 +76,29 @@ const Sales = () => {
 	];
 
 	return (
-		<Box p={2}>
-			<Modal
-				open={viewSaleDetailModal}
-				onClose={handleCloseSaleDetailModal}
-				aria-labelledby="Worker Form"
-				aria-describedby="Form used to add or edit worker"
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center"
-				}}
-			>
-				<>
-					{selectedSale ? (
-						<SaleDetailsPage sale={selectedSale} />
-					) : (
-						<p>No Sale Selected</p>
-					)}
-				</>
-			</Modal>
-			<Typography fontSize="3rem">
-				<FormattedMessage id="sales" defaultMessage="Sales" />
-			</Typography>
-			{data && (
-				<MyDataGrid
-					columns={columns}
-					isLoading={isLoading}
-					rows={data}
-					checkboxSelection={false}
-					handleRowClick={handleRowClick}
-				/>
-			)}
+		<Box sx={{ p: 2, display: "flex", gap: "2rem" }}>
+			
+			<Box sx={{width: "55%"}}>
+				<Typography fontSize="3rem">
+					<FormattedMessage id="sales" defaultMessage="Sales" />
+				</Typography>
+				{data && (
+					<MyDataGrid
+						columns={columns}
+						isLoading={isLoading}
+						rows={data}
+						checkboxSelection={false}
+						handleRowClick={handleRowClick}
+					/>
+				)}
+			</Box>
+			<Box  sx={{width: "45%", display: "flex", alignItems: "center", justifyContent: "center", mt: "3rem"}}>
+				{selectedSale ? (
+					<SaleDetailsPage sale={selectedSale} />
+				) : (
+					<Typography fontSize="5rem">Select a Sale</Typography>
+				)}
+			</Box>
 		</Box>
 	);
 };

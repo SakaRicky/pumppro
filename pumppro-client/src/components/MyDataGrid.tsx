@@ -80,11 +80,10 @@ const MyDataGrid = ({
 						cursor: 'pointer'
 					},
 					"&.Mui-selected": {
-						border: `1px solid ${theme.palette.secondary[100]}`,
 						backgroundColor: theme.palette.secondary[900],
 					}
 				},
-				'.MuiDataGrid-cell:focus': {
+				'& .MuiDataGrid-cell:focus': {
 					outline: 'none'
 				},
 			}}

@@ -12,7 +12,7 @@ interface ErrorData {
 // https://pumppro-server.onrender.com/
 // http://localhost:5001/
 export const api = axios.create({
-	baseURL: "http://localhost:5001/"
+	baseURL: "http://10.0.0.73:5001/"
 });
 
 const requestInterceptor = (config: AxiosRequestConfig) => {

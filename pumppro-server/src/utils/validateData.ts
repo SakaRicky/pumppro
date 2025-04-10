@@ -11,7 +11,6 @@ import {
 	NewUser,
 	ProductCategory,
 	ProductType,
-	NewSale,
 } from "../types";
 import { Decimal } from "@prisma/client/runtime/library";
 
@@ -132,7 +131,9 @@ const NewSaleSchema = z.object({
 	sale_details: z.array(NewSaleDetailSchema)
 });
 
-export const validateNewSale = (data: any): NewSale | undefined => {
+type NewSaleValidation = { user_id: string; sale_details: { quantity: number; product_id: string; }[]; };
+
+export const validateNewSale = (data: any): NewSaleValidation | undefined => {
 	const formattedData = {
 		...data,
 		sale_details: data.sale_details.map(d => ({...d, quantity: Number.parseInt(d.quantity)}))

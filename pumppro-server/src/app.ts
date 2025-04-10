@@ -24,20 +24,10 @@ import fuelSalesRoutes from "./routes/fuelSales";
 const app = express();
 
 const corsOptions = {
-	origin: [
-		"http://localhost:5173",
-		"http://127.0.0.1:5173",
-		"http://localhost:3000",
-		"http://192.168.100.10:3000",
-		"http://192.168.100.10:5173",
-		"http://10.0.0.247:5173",
-		"http://10.0.0.85:5173",
-		"https://res.cloudinary.com/rickysaka/",
-		"https://preeminent-cucurucho-a2ea64.netlify.app"
-	],
+	origin: true, // Allow all origins
 	credentials: true,
-	optionSuccessStatus: 200
-};
+	optionSuccessStatus: 200,
+  };
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 app.use(cors(corsOptions));
 

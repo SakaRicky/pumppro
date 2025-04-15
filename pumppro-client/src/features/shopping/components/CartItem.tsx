@@ -22,59 +22,32 @@ const CartItem = ({ cartItem }: CartItemProps) => {
 	return (
 		<Box
 			sx={{
-				display: "flex",
-				gap: 2,
-				p: 1,
-				height: "11rem",
+				px: 4,
+				py:2,
 				width: "100%",
-				border: `2px solid ${theme.palette.secondary[100]}`
+				border: `2px solid ${theme.palette.secondary[100]}`,
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "space-between"
 			}}
 		>
-			<Box sx={{ width: "20%", height: "100%" }}>
-				{cartItem.image ? (
-					<img
-						style={{
-							padding: "2px",
-							border: `1px solid ${theme.palette.grey[600]}`,
-							objectFit: "cover",
-							width: "100%",
-							height: "100%"
-						}}
-						src={cartItem.image}
-						alt="profile"
-					/>
-				) : (
-					<Avatar
-						variant="rounded"
+
+			<Box width={"33%"}>
+				<Box>
+					<Typography
 						sx={{
-							bgcolor: theme.palette.grey[600],
-							width: "80%",
-							height: "100%",
-							padding: "2px",
-							border: `1px solid ${theme.palette.grey[600]}`
+							display: "flex",
+							gap: 1,
+							fontSize: "1.2rem",
+							fontWeight: "700"
 						}}
-						aria-label="cartItem avatar"
 					>
-						<Typography fontSize="3rem">
-							{cartItem.name.split(" ")[0].toUpperCase()}
-						</Typography>
-					</Avatar>
-				)}
-			</Box>
-			<Box sx={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-				<Typography
-					sx={{
-						display: "flex",
-						gap: 1,
-						fontSize: "1.2rem",
-						fontWeight: "700"
-					}}
-				>
-					{cartItem.name}
-				</Typography>
-				<Typography sx={{ display: "flex", gap: 1 }}>
-					XAF {cartItem.unit_price}
-				</Typography>
+						{cartItem.name}
+					</Typography>
+					<Typography sx={{ display: "flex", gap: 1 }}>
+						XAF {cartItem.unit_price}
+					</Typography>
+				</Box>
 				<Typography
 					component="span"
 					sx={{
@@ -86,97 +59,98 @@ const CartItem = ({ cartItem }: CartItemProps) => {
 					<Box
 						sx={{
 							width: "100%",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "space-between",
 						}}
 					>
-						<Box sx={{
-							display: "flex",
-							gap: 1,
-							alignItems: "center"
 
-						}}>
-							<IconButton sx={{
-								color: "#fff",
-								backgroundColor: theme.palette.primary.main,
-								"&:hover": {
-									backgroundColor: theme.palette.primary[400]
-								},
-								cursor: "pointer",
-								p: 0,
-								height: "1.4rem",
-								width: "1.4rem",
-								fontSize: "1.5rem",
-								fontWeight: "700",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								borderRadius: "50%"
-							}} aria-label="delete" onClick={() => dispatch(incrementItemInCart(cartItem.id))}>
-								<AddIcon />
-							</IconButton>
-
-							<Box
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-									width: "3rem",
-									height: "2rem",
-									backgroundColor: theme.palette.grey[600],
-									color: "#fff",
-									borderRadius: "5px",
-									fontSize: "1.5rem"
-								}}
-							>
-								{cartItem.quantity}
-							</Box>
-							<IconButton sx={{
-								color: "#fff",
-								backgroundColor: theme.palette.primary.main,
-								"&:hover": {
-									backgroundColor: theme.palette.primary[400]
-								},
-								cursor: "pointer",
-								p: 0,
-								height: "1.4rem",
-								width: "1.4rem",
-								fontSize: "1.5rem",
-								fontWeight: "700",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								borderRadius: "50%"
-							}} aria-label="delete" onClick={() => dispatch(decrementItemInCart(cartItem.id))}>
-								<RemoveIcon />
-							</IconButton>
-						</Box>
-						<Typography
-							component="span"
-							sx={{ display: "flex", gap: 1, alignItems: "center" }}
-						>
-							<Typography fontSize="2.5rem" fontWeight="700">
-								XAF {cartItem.unit_price * cartItem.quantity}
-							</Typography>
-						</Typography>
 					</Box>
 				</Typography>
 
-				<Box>
-					<Button
-						onClick={() => dispatch(removeItemFromCart(cartItem.id))}
+
+			</Box>
+			<Box width={"34%"}>
+				<Box sx={{
+					display: "flex",
+					gap: 1,
+					alignItems: "center"
+
+				}}>
+					<IconButton sx={{
+						color: "#fff",
+						backgroundColor: theme.palette.primary.main,
+						"&:hover": {
+							backgroundColor: theme.palette.primary[400]
+						},
+						cursor: "pointer",
+						p: 0,
+						height: "1.4rem",
+						width: "1.4rem",
+						fontSize: "1.5rem",
+						fontWeight: "700",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						borderRadius: "50%"
+					}} aria-label="delete" onClick={() => dispatch(incrementItemInCart(cartItem.id))}>
+						<AddIcon />
+					</IconButton>
+
+					<Box
 						sx={{
-							backgroundColor: theme.palette.error.main,
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							width: "3rem",
+							height: "2rem",
+							backgroundColor: theme.palette.grey[600],
 							color: "#fff",
-							"&:hover": {
-								backgroundColor: theme.palette.error.dark
-							}
+							borderRadius: "5px",
+							fontSize: "1.5rem"
 						}}
 					>
-						<FormattedMessage id="cartitem.delete" defaultMessage="Delete" />
-					</Button>
+						{cartItem.quantity}
+					</Box>
+					<IconButton sx={{
+						color: "#fff",
+						backgroundColor: theme.palette.primary.main,
+						"&:hover": {
+							backgroundColor: theme.palette.primary[400]
+						},
+						cursor: "pointer",
+						p: 0,
+						height: "1.4rem",
+						width: "1.4rem",
+						fontSize: "1.5rem",
+						fontWeight: "700",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						borderRadius: "50%"
+					}} aria-label="delete" onClick={() => dispatch(decrementItemInCart(cartItem.id))}>
+						<RemoveIcon />
+					</IconButton>
 				</Box>
+				<Typography
+					component="span"
+					sx={{ display: "flex", gap: 1, alignItems: "center" }}
+				>
+					<Typography fontSize="1.5rem" fontWeight="700">
+						XAF {cartItem.unit_price * cartItem.quantity}
+					</Typography>
+				</Typography>
+			</Box>
+			<Box sx={{width: "33%", display: "flex", justifyContent: "center"}}>
+			<Button
+				onClick={() => dispatch(removeItemFromCart(cartItem.id))}
+				sx={{
+					backgroundColor: theme.palette.error.main,
+					color: "#fff",
+					"&:hover": {
+						backgroundColor: theme.palette.error.dark
+					}
+				}}
+			>
+				<FormattedMessage id="cartitem.delete" defaultMessage="Delete" />
+			</Button>
 			</Box>
 		</Box>
 	);

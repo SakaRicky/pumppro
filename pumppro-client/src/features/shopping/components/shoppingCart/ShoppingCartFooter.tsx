@@ -25,8 +25,7 @@ const ShoppingCartFooter = ({
 		<Box
 			sx={{
 				border: `4px solid ${theme.palette.secondary[500]}`,
-				mt: 2,
-				p: 1
+				px: 1
 			}}
 		>
 			<Box>
@@ -39,7 +38,7 @@ const ShoppingCartFooter = ({
 				>
 					Total:
 					<Typography
-						fontSize="2rem"
+						fontSize="1.5rem"
 						color={theme.palette.secondary[500]}
 						fontWeight={700}
 						sx={{ width: "35%" }}
@@ -88,7 +87,7 @@ const ShoppingCartFooter = ({
 							backgroundColor: theme.palette.grey[500],
 							color: "#fff",
 							borderRadius: "5px",
-							p: "0.25rem 1rem",
+							px: "1rem",
 							width: "25%"
 						}}
 					>

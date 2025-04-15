@@ -110,11 +110,12 @@ const Shop = () => {
 				<Box
 					sx={{
 						width: "25%",
-						height: "80%",
+						maxHeight: "90vh",
 						position: "fixed",
 						top: "15%",
-						right: "4%",
-						overflowY: "auto"
+						right: "6%",
+						overflowY: "auto",
+						border: "1px solid green"
 					}}
 				>
 					<ShoppingCart refetch={refetch} />

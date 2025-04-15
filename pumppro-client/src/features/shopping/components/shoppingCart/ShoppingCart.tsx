@@ -77,24 +77,26 @@ const ShoppingCart = ({ refetch }: ShoppingCartProps) => {
 				boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
 				border: `4px solid ${theme.palette.primary[600]}`,
 				backgroundColor: theme.palette.background.alt,
-				p: 2
+				p: 1,
 			}}
 		>
-			<Typography component="h1" textAlign="center" fontSize="2rem" m={2}>
+			<Typography component="h1" textAlign="center" fontSize="2rem">
 				<FormattedMessage id="shopping_cart" defaultMessage="Shopping Cart" />
 			</Typography>
-			<List>
-				{state.cartItems.map(item => {
-					return (
-						<Box key={item.id}>
-							<ListItem sx={{ p: 0, m: "0.8rem 0" }}>
-								<CartItem cartItem={item} />
-							</ListItem>
-							<Divider />
-						</Box>
-					);
-				})}
-			</List>
+			<Box sx={{ maxHeight: "45vh", overflowY: "scroll" }}>
+				<List>
+					{state.cartItems.map(item => {
+						return (
+							<Box key={item.id}>
+								<ListItem sx={{ p: 0, m: "0.8rem 0" }}>
+									<CartItem cartItem={item} />
+								</ListItem>
+								<Divider />
+							</Box>
+						);
+					})}
+				</List>
+			</Box>
 
 			<Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
 				<Button

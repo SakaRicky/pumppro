@@ -10,7 +10,6 @@ type SaleDetailsProps = {
 };
 const SaleDetailsPage = forwardRef(({ sale }: SaleDetailsProps, ref: any) => {
 
-	console.log("saledetail: ", sale.sale_details)
 	const theme = useTheme();
 	const columns: GridColDef[] = [
 		{

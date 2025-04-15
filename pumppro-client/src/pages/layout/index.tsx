@@ -9,8 +9,8 @@ import { useTheme } from "@mui/material";
 const Layout = () => {
 	const theme = useTheme();
 	const [state, dispatch] = useStateValue();
-	const isNonMobile = useMediaQuery("(min-width: 600px)");
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+	const isNonMobile = useMediaQuery("(min-width: 768px)");
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 	return (
 		<Box width="100%" height="100%" display={isNonMobile ? "flex" : "block"}>
@@ -46,7 +46,8 @@ const Layout = () => {
 					mt="5rem"
 					sx={{
 						backgroundColor: theme.palette.background.alt,
-						boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px;"
+						boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px;",
+						minHeight: "75vh"
 					}}
 				>
 					<Outlet />

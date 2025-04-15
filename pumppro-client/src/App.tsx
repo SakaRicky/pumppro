@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Layout from "pages/layout";
 import Login from "pages/login";
 import Dashboard from "pages/dashboard";
 import Products from "pages/products";
 import { useStateValue } from "state";
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from "@mui/material";
 import { themeSettings } from "theme";
 import { IntlProvider } from "react-intl";
 import messages_fr from "./translations/fr.json";
@@ -17,6 +17,7 @@ import Sales from "pages/sales";
 import SalesByForm from "pages/SaleForm";
 import Fuels from "pages/fuel";
 import Perfomances from "pages/perfomances";
+import MobileSalesDetailsPage from "pages/sales/MobileSalesDetails";
 
 function App() {
 	const [state] = useStateValue();
@@ -50,6 +51,7 @@ function App() {
 									<Route path="/workers" element={<Workers />} />
 									<Route path="/shop" element={<Shop />} />
 									<Route path="/sales" element={<Sales />} />
+									<Route path="/sales/:saleId" element={<MobileSalesDetailsPage />} />
 									<Route path="/salesform" element={<SalesByForm />} />
 									<Route path="/fuels" element={<Fuels />} />
 									<Route path="/perfomances" element={<Perfomances />} />

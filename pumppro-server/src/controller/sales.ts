@@ -90,27 +90,38 @@ export const getSales = async (
 	return res.send(allSaless);
 };
 
-export const getOneSale = async (_req: Request, res: Response) => {
-	// const { id } = req.params;
+export const getOneSale = async (req: Request, res: Response) => {
+	const { id } = req.params;
+	console.log("getting 1 sale with id: ", id)
 
-	// const productFound = await prisma.product.findUnique({
-	// 	where: {
-	// 		id: id
-	// 	},
-	// 	select: {
-	// 		id: true,
-	// 		name: true,
-	// 		description: true,
-	// 		quantity: true,
-	// 		purchase_price: true,
-	// 		selling_price: true,
-	// 		reorder_point: true,
-	// 		category: true,
-	// 		image: true,
-	// 		created_at: true
-	// 	}
-	// })
-	return res.sendStatus(404);
+	const saleFound = await prisma.sale.findUnique({
+		where: {
+			id: Number(id)
+		},
+		select: {
+			id: true,
+			user: true,
+			sale_details: {
+				select: {
+					id: true,
+					quantity: true,
+					product: {
+						select: {
+							id: true,
+							name: true,
+							category: { select: { name: true } },
+							image: true,
+							selling_price: true
+						}
+					}
+				},
+			},
+			total: true,
+			created_at: true,
+			updated_at: true,
+		}
+	})
+	return res.send(saleFound);
 };
 
 export const saveSale = async (req: RequestWithToken, res: Response) => {

@@ -23,7 +23,7 @@ export const saveSale = async (newSale: any) => {
 // For now we get 1 and the same teacher the time to implement auth
 // This method returns a user(User) for display
 export const getSale = async (id: string): Promise<Sale> => {
-	const { data } = await api.get<Sale>(`/sales/${id}`);
+	const { data } = await api.get<Sale>(`/product-sales/${id}`);
 	return data;
 };
 
@@ -63,7 +63,7 @@ export const getSalesSummary = async (
 // For now we get 1 and the same teacher the time to implement auth
 export const updateSale = async (updateUser: FormData) => {
 	try {
-		const res = await api.put("/sales", updateUser, {
+		const res = await api.put("/product-sales", updateUser, {
 			headers: { "Content-Type": "multipart/form-data" }
 		});
 
@@ -91,7 +91,7 @@ export const updateSale = async (updateUser: FormData) => {
 
 export const deleteSale = async (ids: string[]) => {
 	try {
-		const res = await api.delete("/sales", { data: { ids: ids } });
+		const res = await api.delete("/product-sales", { data: { ids: ids } });
 
 		return res.data;
 	} catch (error: any) {

@@ -21,7 +21,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 	const theme = useTheme();
 	const [state, dispatch] = useStateValue();
 
-	const isMobile = useMediaQuery("(max-width: 599px)");
+	const isMobile = useMediaQuery("(max-width: 768px)");
 
 	const [quantity, setQuantity] = useState(1);
 

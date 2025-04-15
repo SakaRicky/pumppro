@@ -6,13 +6,15 @@ import {
 	Typography,
 	useTheme
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { CartItem, Product } from "types";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { addItemToCart, useStateValue } from "state";
 import { useMediaQuery } from "@mui/material";
 import { red } from "@mui/material/colors";
+import DoneIcon from '@mui/icons-material/Done';
+import { Tooltip } from "@mui/material";
 
 type ProductCardProps = {
 	product: Product;
@@ -21,9 +23,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
 	const theme = useTheme();
 	const [state, dispatch] = useStateValue();
 
+	const isItemInCart = state.cartItems.map(c => c.id).includes(product.id);
+
 	const isMobile = useMediaQuery("(max-width: 768px)");
 
 	const [quantity, setQuantity] = useState(1);
+
+	useEffect(() => {
+		if (!isItemInCart) {
+			setQuantity(1);
+		}
+	}, [isItemInCart])
 
 	const handleQuantityChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -97,9 +107,20 @@ const ProductCard = ({ product }: ProductCardProps) => {
 				<Typography fontWeight="700" fontSize="1.2rem">
 					{product.name}
 				</Typography>
-				<Typography fontWeight="700" fontSize="0.8rem">
-					{product.description}
-				</Typography>
+				<Tooltip title={product.description}>
+					<Typography
+						fontWeight="700"
+						fontSize="0.8rem"
+						style={{
+							whiteSpace: "nowrap",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+						}}
+					>
+						{product.description}
+					</Typography>
+				</Tooltip>
+
 				<Typography
 					fontWeight="700"
 					fontSize="1.5rem"
@@ -107,22 +128,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
 				>
 					XAF {product.selling_price}
 				</Typography>
+				<Typography>Stock: <span style={{ color: product.quantity <= product.low_stock_threshold ? "red" : "green" }}>{product.quantity}</span></Typography>
 			</Box>
+
 			<Box m="1rem 0" sx={{ display: "flex", gap: "5px", p: "16px" }}>
 				<TextField
 					type="number"
 					size="small"
 					value={quantity}
+					disabled={isItemInCart}
 					sx={{ width: "50%" }}
 					onChange={handleQuantityChange}
 				/>
 				<Button
 					onClick={handleClickAddToCart}
-					disabled={isMobile}
+					disabled={isMobile || isItemInCart}
 					fullWidth
-					endIcon={<AddShoppingCartIcon />}
+					endIcon={isItemInCart ? <DoneIcon /> : <AddShoppingCartIcon />}
 					sx={{
-						backgroundColor: theme.palette.secondary.main,
+						backgroundColor: isItemInCart ? theme.palette.grey[600] : theme.palette.secondary.main,
 						color: theme.palette.grey[50],
 
 						"&:hover": {
@@ -130,7 +154,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 						}
 					}}
 				>
-					<FormattedMessage id="add_to_cart" defaultMessage="Add To Chart" />
+					{isItemInCart ? <FormattedMessage id="added_to_cart" defaultMessage="Added" /> : <FormattedMessage id="add_to_cart" defaultMessage="Add To Chart" />}
 				</Button>
 			</Box>
 			<Box sx={{ display: "flex", justifyContent: "center" }}>

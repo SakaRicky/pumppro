@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
 	Box,
+	Button,
 	Divider,
 	List,
 	ListItem,
@@ -16,8 +17,13 @@ import { useNotify } from "hooks/useNotify";
 import ShoppingCartFooter from "./ShoppingCartFooter";
 import { BadRequestError } from "errors/badRequestError";
 import { FormattedMessage } from "react-intl";
+import { clearCart } from "state/reducer";
 
-const ShoppingCart = () => {
+type ShoppingCartProps = {
+	refetch: () => void;
+};
+
+const ShoppingCart = ({ refetch }: ShoppingCartProps) => {
 	const [state, dispatch] = useStateValue();
 	const [totalPrice, setTotalPrice] = useState(0);
 	const [amountGiven, setAmountGiven] = useState(0);
@@ -38,6 +44,7 @@ const ShoppingCart = () => {
 		onSuccess: (data, variables, context: any) => {
 			notify("Save Success", context.successMessage, "success");
 			dispatch(setCartItems([]));
+			refetch()
 		},
 		onError: error => {
 			if (error instanceof BadRequestError) {
@@ -88,6 +95,21 @@ const ShoppingCart = () => {
 					);
 				})}
 			</List>
+
+			<Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
+				<Button
+					onClick={() => dispatch(clearCart())}
+					sx={{
+						backgroundColor: theme.palette.error.main,
+						color: "#fff",
+						"&:hover": {
+							backgroundColor: theme.palette.error.dark
+						}
+					}}
+				>
+					<FormattedMessage id="cartitem.delete" defaultMessage="Clear Cart" />
+				</Button>
+			</Box>
 
 			<ShoppingCartFooter
 				totalPrice={totalPrice}

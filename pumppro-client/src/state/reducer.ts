@@ -11,6 +11,7 @@ export type Action =
 	| { type: "SET_ADD_ITEM_TO_CART"; payload: CartItem }
 	| { type: "INCREMENT_ITEM_IN_CART"; payload: string }
 	| { type: "DECREMENT_ITEM_IN_CART"; payload: string }
+	| { type: "CLEAR_CART"; payload: null }
 	| { type: "REMOVE_ITEM_FROM_CART"; payload: string };
 
 export const toggleMode = (): Action => {
@@ -47,6 +48,10 @@ export const decrementItemInCart = (cartItemID: string): Action => {
 
 export const removeItemFromCart = (id: string): Action => {
 	return { type: "REMOVE_ITEM_FROM_CART", payload: id };
+};
+
+export const clearCart = (): Action => {
+	return { type: "CLEAR_CART", payload: null };
 };
 
 export const reducer = (state: State, action: Action): State => {
@@ -128,6 +133,14 @@ export const reducer = (state: State, action: Action): State => {
 			return {
 				...state,
 				cartItems: newCartItems
+			};
+		}
+
+		case "CLEAR_CART": {
+			
+			return {
+				...state,
+				cartItems: []
 			};
 		}
 

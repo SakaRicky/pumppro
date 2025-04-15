@@ -117,7 +117,7 @@ const Shop = () => {
 						overflowY: "auto"
 					}}
 				>
-					<ShoppingCart />
+					<ShoppingCart refetch={refetch} />
 				</Box>
 			) : null}
 		</Box>

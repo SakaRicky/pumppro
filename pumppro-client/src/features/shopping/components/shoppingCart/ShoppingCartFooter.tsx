@@ -34,7 +34,7 @@ const ShoppingCartFooter = ({
 					component="span"
 					fontSize="1.5rem"
 					display="flex"
-					gap={2}
+					justifyContent="space-between"
 					alignItems="center"
 				>
 					Total:
@@ -42,6 +42,7 @@ const ShoppingCartFooter = ({
 						fontSize="2rem"
 						color={theme.palette.secondary[500]}
 						fontWeight={700}
+						sx={{ width: "35%" }}
 					>
 						XAF {totalPrice}
 					</Typography>
@@ -52,17 +53,25 @@ const ShoppingCartFooter = ({
 					component="span"
 					fontSize="1.5rem"
 					display="flex"
-					gap={2}
+					justifyContent="space-between"
 					alignItems="center"
 				>
 					<FormattedMessage id="amount_given" defaultMessage="Amount Given" />
-					<TextField
-						type="number"
-						size="small"
-						onChange={(e: ChangeEvent<HTMLInputElement>) =>
-							setAmountGiven(Number.parseInt(e.target.value))
-						}
-					/>
+					<Box display="flex" gap={1} sx={{ width: "35%" }}>
+						<Typography fontSize="1.5rem"
+						>
+							XAF
+
+						</Typography>
+						<TextField
+							type="number"
+							size="small"
+							
+							onChange={(e: ChangeEvent<HTMLInputElement>) =>
+								setAmountGiven(Number.parseInt(e.target.value))
+							}
+						/>
+					</Box>
 				</Typography>
 			</Box>
 			<Box>
@@ -70,7 +79,7 @@ const ShoppingCartFooter = ({
 					component="span"
 					fontSize="1.5rem"
 					display="flex"
-					gap={2}
+					justifyContent="space-between"
 					alignItems="center"
 				>
 					<FormattedMessage id="shopping_change" defaultMessage="Change" />
@@ -79,7 +88,8 @@ const ShoppingCartFooter = ({
 							backgroundColor: theme.palette.grey[500],
 							color: "#fff",
 							borderRadius: "5px",
-							p: "0.25rem 1rem"
+							p: "0.25rem 1rem",
+							width: "25%"
 						}}
 					>
 						XAF {amountGiven !== 0 ? amountGiven - totalPrice : 0}
@@ -87,7 +97,7 @@ const ShoppingCartFooter = ({
 				</Typography>
 			</Box>
 
-			<Box sx={{ display: "flex", justifyContent: "center" }}>
+			<Box sx={{mt: 2}}>
 				<LoadingButton
 					type="submit"
 					loading={isLoading}
@@ -95,6 +105,7 @@ const ShoppingCartFooter = ({
 					endIcon={<SaveIcon />}
 					onClick={handleSaveSaleClick}
 					variant="contained"
+					fullWidth
 					sx={{
 						color: "#fff",
 						my: 2,

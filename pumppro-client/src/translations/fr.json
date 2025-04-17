@@ -29,5 +29,7 @@
 	"edit_fuel": "Modifier Carburant",
 	"add_fuel": "Ajouter Carburant",
 	"delete_fuel": "Supprimer Carburant",
-	"load_fuel": "Charger Carburant"
+	"load_fuel": "Charger Carburant",
+	"revenue": "Recettes",
+	"all_cat_revenue": "recettes toute categorie"
 }

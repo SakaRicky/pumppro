@@ -14,6 +14,12 @@ type SoldItemsProps = {
 	selectedCategory: ProductCategory | undefined;
 };
 
+export const getItemAvatarName = (name: string): string => {
+	const nameParts = name.split(" ");
+
+	return nameParts.length > 1 ? nameParts[0][0] + nameParts[1][0] : nameParts[0]+nameParts[1]
+}
+
 const SoldItems = ({
 	isLoading,
 	data,
@@ -26,81 +32,50 @@ const SoldItems = ({
 
 	const columns: GridColDef[] = [
 		{
-			field: "image",
-			headerName: "Image",
-			renderCell: params => {
-				return (
-					<Box width="100%" height="3rem">
-						{params.value ? (
-							<img
-								style={{
-									padding: "2px",
-									border: `1px solid ${theme.palette.grey[600]}`,
-									objectFit: "cover",
-									width: "100%",
-									height: "100%"
-								}}
-								src={params.value}
-								alt="profile"
-							/>
-						) : (
-							<Avatar
-								variant="rounded"
-								sx={{
-									bgcolor: theme.palette.grey[600],
-									fontSize: "0.5rem",
-									width: "100%",
-									height: "100%",
-									padding: "2px",
-									border: `1px solid ${theme.palette.grey[600]}`
-								}}
-								aria-label="product avatar"
-							>
-								<Typography fontSize="3rem">
-									{params.row.name.split(" ")[0].substring(0, 3).toUpperCase()}
-								</Typography>
-							</Avatar>
-						)}
-					</Box>
-				);
-			}
-		},
-		{
 			field: "name",
 			headerName: "Names",
 			width: 200,
 			headerAlign: "center",
-			align: "center"
-		},
-		{
-			field: "quantity_in_stock",
-			headerName: "Quantity in Stock",
-			headerAlign: "center",
-			align: "center"
+			align: "left"
 		},
 		{
 			field: "number_sold",
-			headerName: "Sold",
+			headerName: "Sold Qty",
+			width: 150,
 			headerAlign: "center",
 			align: "center"
 		},
 		{
 			field: "amount",
-			headerName: "Amount",
+			headerName: "Amount (XAF)",
+			width: 150,
 			headerAlign: "center",
 			align: "center"
 		},
 		{
 			field: "purchase_price",
-			headerName: "Purchase Price",
+			headerName: "Purchase Price (XAF)",
+			width: 200,
 			headerAlign: "center",
 			align: "center"
 		},
 		{
 			field: "selling_price",
-			headerName: "Selling Price",
+			headerName: "Selling Price (XAF)",
+			width: 200,
 			headerAlign: "center",
 			align: "center"
+		},
+		{
+			field: "profit",
+			headerName: "Profit (XAF)",
+			width: 150,
+			headerAlign: "center",
+			align: "center",
+			renderCell: params => {
+				console.log("params: ", params)
+				return (params.row.selling_price * params.row.number_sold) - (params.row.purchase_price * params.row.number_sold);
+			}
 		}
 	];
 
@@ -122,13 +97,13 @@ const SoldItems = ({
 						sx={{
 							display: "flex",
 							gap: 2,
-							fontSize: { xs: mobileFontSize, md: "1.5rem" }
+							fontSize: { xs: mobileFontSize, md: "2rem" }
 						}}
 					>
-						<FormattedMessage id="total_sold" defaultMessage="Total Sold " />
+						<FormattedMessage id="revenue" defaultMessage="Revenue " />
 
 						<Typography
-							sx={{ fontSize: { xs: mobileFontSize, md: "1.5rem" } }}
+							sx={{ fontSize: "inherit" }}
 							fontWeight="900"
 							color={theme.palette.secondary[200]}
 						>
@@ -136,8 +111,8 @@ const SoldItems = ({
 						</Typography>
 						<Typography
 							component="span"
-							sx={{ fontSize: { xs: mobileFontSize, md: "1.5rem" } }}
 							fontWeight="900"
+							sx={{ fontSize: "inherit" }}
 							color={theme.palette.secondary[100]}
 						>
 							XAF {totalAmountSoldForThisPeriodInThisCategory}
@@ -148,12 +123,12 @@ const SoldItems = ({
 						sx={{
 							display: "flex",
 							gap: 2,
-							fontSize: { xs: mobileFontSize, md: "1.5rem" }
+							fontSize: { xs: mobileFontSize, md: "2rem" }
 						}}
 					>
 						<FormattedMessage id="profits" defaultMessage="Profit " />
 						<Typography
-							sx={{ fontSize: { xs: mobileFontSize, md: "1.5rem" } }}
+							sx={{ fontSize: "inherit" }}
 							fontWeight="900"
 							color={theme.palette.secondary[200]}
 						>
@@ -161,7 +136,7 @@ const SoldItems = ({
 						</Typography>
 						<Typography
 							component="span"
-							sx={{ fontSize: { xs: mobileFontSize, md: "1.5rem" } }}
+							sx={{ fontSize: "inherit" }}
 							fontWeight="900"
 							color={theme.palette.secondary[100]}
 						>
@@ -171,14 +146,13 @@ const SoldItems = ({
 				</Box>
 				<Typography
 					component="span"
-					fontSize="1.5rem"
-					sx={{ display: "flex", gap: 2, mt: { xs: 2, md: 0 } }}
+					sx={{ display: "flex", gap: 2, mt: { xs: 2, md: 0 }, fontSize: { xs: mobileFontSize, md: "2rem" } }}
 				>
-					<FormattedMessage id="total_sold" defaultMessage="Total Sold" />
+					<FormattedMessage id="all_cat_revenue" defaultMessage="All Category Revenue" />
 					{": "}
 					<Typography
 						component="span"
-						fontSize="1.5rem"
+						fontSize="inherit"
 						fontWeight="900"
 						color={theme.palette.secondary[100]}
 					>

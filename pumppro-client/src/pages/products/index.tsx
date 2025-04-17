@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MyDataGrid from "components/MyDataGrid";
+import { getItemAvatarName } from "features/sales/components/SoldItems";
 
 const Products = () => {
 	const { data, isLoading, error, refetch } = useProducts();
@@ -98,7 +99,7 @@ const Products = () => {
 								aria-label="product avatar"
 							>
 								<Typography fontSize="3rem">
-									{params.row.name.split(" ")[0].toUpperCase()}
+									{getItemAvatarName(params.row.name)}
 								</Typography>
 							</Avatar>
 						)}

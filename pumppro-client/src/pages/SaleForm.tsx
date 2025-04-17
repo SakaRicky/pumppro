@@ -261,7 +261,7 @@ const SalesByForm = () => {
 							sx={{
 								boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px;",
 								width: "100%",
-								p: { xs: 0, md: 4 }
+								p: { xs: 0, md: "1rem 2rem" }
 							}}
 						>
 							<SoldItems

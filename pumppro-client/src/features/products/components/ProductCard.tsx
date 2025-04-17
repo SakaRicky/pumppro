@@ -15,6 +15,7 @@ import { useMediaQuery } from "@mui/material";
 import { red } from "@mui/material/colors";
 import DoneIcon from '@mui/icons-material/Done';
 import { Tooltip } from "@mui/material";
+import { getItemAvatarName } from "features/sales/components/SoldItems";
 
 type ProductCardProps = {
 	product: Product;
@@ -91,7 +92,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 						aria-label="product avatar"
 					>
 						<Typography fontSize="3rem">
-							{product.name.split(" ")[0].toUpperCase()}
+							{getItemAvatarName(product.name)}
 						</Typography>
 					</Avatar>
 				)}

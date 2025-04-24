@@ -5,6 +5,7 @@ import Sidebar from "components/Sidebar";
 import Navbar from "components/Navbar";
 import { useStateValue } from "state";
 import { useTheme } from "@mui/material";
+import ConfirmationDialog from "components/ConfirmationDialog";
 
 const Layout = () => {
 	const theme = useTheme();
@@ -50,6 +51,7 @@ const Layout = () => {
 						minHeight: "75vh"
 					}}
 				>
+					<ConfirmationDialog />
 					<Outlet />
 				</Box>
 			</Box>

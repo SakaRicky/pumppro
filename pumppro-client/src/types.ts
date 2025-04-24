@@ -185,3 +185,7 @@ export type MessageNotification = {
 	created_at: Date;
 	updated_at: Date;
 };
+
+export type ConfirmationDialog = {
+	message: string;
+};

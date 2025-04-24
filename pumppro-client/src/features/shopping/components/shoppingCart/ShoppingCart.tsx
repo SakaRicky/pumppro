@@ -17,7 +17,7 @@ import { useNotify } from "hooks/useNotify";
 import ShoppingCartFooter from "./ShoppingCartFooter";
 import { BadRequestError } from "errors/badRequestError";
 import { FormattedMessage } from "react-intl";
-import { clearCart } from "state/reducer";
+import { clearCart, showDialog } from "state/reducer";
 
 type ShoppingCartProps = {
 	refetch: () => void;
@@ -70,6 +70,12 @@ const ShoppingCart = ({ refetch }: ShoppingCartProps) => {
 		createSaleMutation.mutateAsync(saleToSave);
 	};
 
+
+
+	const handleClearCart = () => {
+		dispatch(showDialog(true,"Are you Sure?", "You will lose all data in the cart. Do you want to continue?",() => dispatch(clearCart()), "Cancel", "Clear Cart"))
+	}
+
 	return (
 		<Box
 			sx={{
@@ -100,7 +106,7 @@ const ShoppingCart = ({ refetch }: ShoppingCartProps) => {
 
 			<Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
 				<Button
-					onClick={() => dispatch(clearCart())}
+					onClick={handleClearCart}
 					sx={{
 						backgroundColor: theme.palette.error.main,
 						color: "#fff",

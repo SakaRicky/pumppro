@@ -19,7 +19,6 @@ import { Cancel } from "@mui/icons-material";
 const Shop = () => {
 	const [state, dispatch] = useStateValue();
 	const { data, isLoading, error, refetch } = useProducts();
-	console.log("🚀 ~ Shop ~ data:", data)
 
 	const isNonMobileTablet = useMediaQuery("(min-width: 600px)");
 

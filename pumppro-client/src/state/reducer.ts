@@ -12,7 +12,9 @@ export type Action =
 	| { type: "INCREMENT_ITEM_IN_CART"; payload: string }
 	| { type: "DECREMENT_ITEM_IN_CART"; payload: string }
 	| { type: "CLEAR_CART"; payload: null }
-	| { type: "REMOVE_ITEM_FROM_CART"; payload: string };
+	| { type: "REMOVE_ITEM_FROM_CART"; payload: string }
+	| { type: "SHOW_DIALOG"; payload: {isOpen: boolean, title: string, message: string, onConfirm?: () => void, cancelText?: string,
+		confirmText?: string} };
 
 export const toggleMode = (): Action => {
 	return { type: "SET_MODE" };
@@ -52,6 +54,10 @@ export const removeItemFromCart = (id: string): Action => {
 
 export const clearCart = (): Action => {
 	return { type: "CLEAR_CART", payload: null };
+};
+
+export const showDialog = (isOpen: boolean, title: string, message: string, onConfirm?: () => void, cancelText?: string, confirmText?: string): Action => {
+	return { type: "SHOW_DIALOG", payload: {isOpen: isOpen,title: title, message: message, onConfirm: onConfirm, cancelText: cancelText, confirmText: confirmText} };
 };
 
 export const reducer = (state: State, action: Action): State => {
@@ -141,6 +147,20 @@ export const reducer = (state: State, action: Action): State => {
 			return {
 				...state,
 				cartItems: []
+			};
+		}
+
+		case "SHOW_DIALOG": {
+
+			return {
+				...state,
+				confirmationDialog: {isOpen: action.payload.isOpen,
+					title: action.payload.title,
+					message: action.payload.message, 
+					onConfirm: action.payload.onConfirm,
+					cancelText: action.payload.cancelText,
+					confirmText: action.payload.confirmText
+				}
 			};
 		}
 

@@ -21,9 +21,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MyDataGrid from "components/MyDataGrid";
 import { getItemAvatarName } from "features/sales/components/SoldItems";
+import { useStateValue } from "state";
+import { showDialog } from "state/reducer";
 
 const Products = () => {
 	const { data, isLoading, error, refetch } = useProducts();
+	const [state, dispatch] = useStateValue()
 
 	const theme = useTheme();
 
@@ -54,13 +57,19 @@ const Products = () => {
 	});
 
 	const handleDeleteProduct = async () => {
-		try {
-			await deleteProductMutation.mutateAsync(selectedProductsIDs);
-			refetch();
-		} catch (error: any) {
-			notify("Login Error", error.message, "error");
+		dispatch(showDialog(true,"Are you Sure?", "This process can't be reversed. Do you want to continue?",() => deleteProductInBackend(), "Cancel", "Delete Product"))
+
+		const deleteProductInBackend = async () => {
+			try {
+				await deleteProductMutation.mutateAsync(selectedProductsIDs);
+				refetch();
+			} catch (error: any) {
+				notify("Login Error", error.message, "error");
+			}
 		}
 	};
+
+	
 
 	const handleSelectedProducts = (productsIDs: GridSelectionModel) => {
 		setSelectedProductsIDs(productsIDs.map(id => id.toString()));

@@ -73,7 +73,6 @@ const SoldItems = ({
 			headerAlign: "center",
 			align: "center",
 			renderCell: params => {
-				console.log("params: ", params)
 				return (params.row.selling_price * params.row.number_sold) - (params.row.purchase_price * params.row.number_sold);
 			}
 		}

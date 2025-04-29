@@ -17,7 +17,6 @@ export const useSales = (
 	const query = useQuery<Sale[], Error>({
 		queryKey: ["sales", startDate, stopDate, userID, selectedCategoryID],
 		queryFn: () => getSales(startDate, stopDate, userID, selectedCategoryID)
-		// enabled:
 	});
 
 	return query;

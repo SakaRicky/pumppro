@@ -121,11 +121,13 @@ export const getOneSale = async (req: Request, res: Response) => {
 			updated_at: true,
 		}
 	})
+	
 	return res.send(saleFound);
 };
 
 export const saveSale = async (req: RequestWithToken, res: Response) => {
 	const newSale = validateNewSale(req.body);
+
 	if (!newSale) {
 		throw new Error("Now Sale to be save");
 	}

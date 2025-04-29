@@ -66,6 +66,7 @@ const ShoppingCart = ({ refetch }: ShoppingCartProps) => {
 			user_id: state.logedUser?.id,
 			sale_details: salesItem
 		}
+		console.log("🚀 ~ handleSaveSaleClick ~ saleToSave:", saleToSave)
 
 		createSaleMutation.mutateAsync(saleToSave);
 	};

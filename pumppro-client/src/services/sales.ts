@@ -37,6 +37,7 @@ export const getSales = async (
 	const { data } = await api.get<Sale[]>(`/product-sales`, {
 		params: { startDate, stopDate, userID, selectedCategoryID }
 	});
+
 	return data;
 };
 

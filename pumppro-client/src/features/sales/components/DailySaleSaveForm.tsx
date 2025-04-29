@@ -191,8 +191,15 @@ const DailySaleSaveForm = forwardRef(
 			setUserIDError(false);
 		};
 
+		console.log("sales line 194: ", sales)
+		console.log("sales line 198: ", typeof sales?.at(0)?.total)
+
+		if(sales != undefined && sales.length> 0){
+			console.log("sales line 198: ", typeof sales[0].total)
+		}
+
 		const totalAmountSold = sales?.reduce(
-			(accumulator, currentValue) => accumulator + currentValue.total_amount,
+			(accumulator, currentValue) => accumulator + Number(currentValue.total), // Prisma Decimal type is coverted to string when it's transfered
 			0
 		);
 

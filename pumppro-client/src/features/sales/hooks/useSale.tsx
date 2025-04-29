@@ -9,14 +9,15 @@ import {
 import { DailySale, Sale } from "types";
 
 export const useSales = (
+	isAllSales: boolean,
+	userID?: string,
 	startDate?: string,
 	stopDate?: string,
-	userID?: string,
 	selectedCategoryID?: string
 ) => {
 	const query = useQuery<Sale[], Error>({
 		queryKey: ["sales", startDate, stopDate, userID, selectedCategoryID],
-		queryFn: () => getSales(startDate, stopDate, userID, selectedCategoryID)
+		queryFn: () => getSales(isAllSales, startDate, stopDate, userID, selectedCategoryID)
 	});
 
 	return query;

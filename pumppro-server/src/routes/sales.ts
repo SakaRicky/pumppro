@@ -4,6 +4,7 @@ import asyncHandler from "express-async-handler";
 import { checkIfAdmin } from "../../middlewares/jwt";
 import {
 	deleteSale,
+	getAllSalesForUser,
 	getOneSale,
 	getSales,
 	saveSale,
@@ -13,6 +14,8 @@ import {
 const salesRoutes = express.Router();
 
 salesRoutes.get("/", asyncHandler(getSales as unknown as RequestHandler));
+
+salesRoutes.get("/all", asyncHandler(getAllSalesForUser as unknown as RequestHandler));
 
 salesRoutes.get(
 	"/:id",

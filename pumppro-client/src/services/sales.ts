@@ -29,12 +29,15 @@ export const getSale = async (id: string): Promise<Sale> => {
 
 // For now we get 1 and the same teacher the time to implement auth
 export const getSales = async (
+	isAllSales: boolean,
 	startDate?: string,
 	stopDate?: string,
 	userID?: string,
 	selectedCategoryID?: string
 ): Promise<Sale[]> => {
-	const { data } = await api.get<Sale[]>(`/product-sales`, {
+	const { data } = isAllSales ? await api.get<Sale[]>(`/product-sales/all`, {
+		params: { userID }
+	}) : await api.get<Sale[]>(`/product-sales`, {
 		params: { startDate, stopDate, userID, selectedCategoryID }
 	});
 

@@ -16,6 +16,55 @@ interface RequestQuery {
 	userID: string | undefined;
 }
 
+export const getAllSalesForUser = async (
+	req: Request<unknown, unknown, unknown, RequestQuery>,
+	res: Response
+) => {
+	const { userID } = req.query as RequestQuery;
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userID
+		}
+	})
+
+	const sales = await prisma.sale.findMany({
+		select: {
+			id: true,
+			total: true,
+			user: {
+				select: {
+					names: true,
+					username: true,
+					profile_picture: true
+				}
+			},
+			sale_details: {
+				select: {
+					id: true,
+					quantity: true,
+					product: {
+						select: {
+							id: true,
+							name: true,
+							category: { select: { name: true } },
+							image: true,
+							selling_price: true
+						}
+					}
+				}
+			},
+			created_at: true
+		},
+		where: user?.role === "ADMIN" ? {} : {user_id: userID},
+		orderBy: {
+			created_at: "desc"
+		}
+	});
+
+	return res.send(sales);
+}
+
 export const getSales = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response

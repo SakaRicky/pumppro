@@ -12,10 +12,12 @@ import { Sale } from "types";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+import { useStateValue } from "state";
 
 
 const Sales = () => {
-	const { data, error, isLoading, refetch } = useSales();
+	const [state, dispatch] = useStateValue();
+	const { data, error, isLoading, refetch } = useSales(true, state.logedUser?.id);
 
 	const [selectedSale, setSelectedSale] = React.useState<Sale>();
 

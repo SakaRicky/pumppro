@@ -6,6 +6,7 @@ import { DailySalesSummary, SaleDetail } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { NewSale, NewSaleDetail } from "../types";
 
+
 describe("Product Sales", async () => {
 
     describe("Get products sale", async () => {
@@ -26,10 +27,16 @@ describe("Product Sales", async () => {
     })
 
     describe("Save a new product sale", async () => {
+        type SaleToSaveType = {
+            user_id: string,
+            sale_details: NewSaleDetail[]
+        }
 
-        let saleDetailToSave;
+        let saleDetailToSave: SaleToSaveType;
 
         beforeEach(() => {
+
+            
 
             saleDetailToSave = {
                 user_id: initialUsersInDB[0].id,
@@ -37,17 +44,17 @@ describe("Product Sales", async () => {
                     {
                         product_id: initialProducts[0].id,
                         quantity: 2,
-                        unit_price: 45.50,
+                        unit_price: initialProducts[0].selling_price,
                     },
                     {
                         product_id: initialProducts[1].id,
                         quantity: 3,
-                        unit_price: 19.25,
+                        unit_price: initialProducts[1].selling_price,
                     },
                     {
                         product_id: initialProducts[2].id,
                         quantity: 7,
-                        unit_price: 8.17,
+                        unit_price: initialProducts[2].selling_price,
                     }
                 ]
             }
@@ -55,7 +62,7 @@ describe("Product Sales", async () => {
 
 
         test("with a token, it saves a new product sale with multiple sale details", async () => {
-            const initialTotal = saleDetailToSave.sale_details.reduce((acc, curr) => acc + (curr.quantity*curr.unit_price), 0);
+            const initialTotal = saleDetailToSave.sale_details.reduce((acc: Decimal, curr: NewSaleDetail) => acc.add(curr.unit_price.mul(curr.quantity)), new Decimal(0));
             const savedSales = await testApi
             .post("/product-sales")
             .send(saleDetailToSave)
@@ -70,7 +77,7 @@ describe("Product Sales", async () => {
             assert.strictEqual(savedSales.status, 200);
             assert(savedSales.headers['content-type'], "application.json");
             assert.strictEqual(allSales.length, initialProductsSoldInDB.length + 1);
-            assert.strictEqual(savedTotal, initialTotal);
+            assert.strictEqual(savedTotal, initialTotal.toNumber());
             assert.strictEqual(allSaleDetails.length, initialSaleDetailsInDB.length + saleDetailToSave.sale_details.length);
         })
 
@@ -79,9 +86,9 @@ describe("Product Sales", async () => {
                 {
                     product_id: initialProducts[0].id,
                     quantity: 2,
-                    unit_price: 45.50,
+                    unit_price: initialProducts[0].selling_price,
                 }];
-            const initialTotal = saleDetailToSave.sale_details.reduce((acc, curr) => acc + (curr.quantity*curr.unit_price), 0);
+            const initialTotal = saleDetailToSave.sale_details.reduce((acc, curr) => acc.add(curr.unit_price.mul(curr.quantity)), new Decimal(0));
             const savedSales = await testApi
             .post("/product-sales")
             .send(saleDetailToSave)
@@ -96,7 +103,7 @@ describe("Product Sales", async () => {
             assert.strictEqual(savedSales.status, 200);
             assert(savedSales.headers['content-type'], "application.json");
             assert.strictEqual(allSales.length, initialProductsSoldInDB.length + 1);
-            assert.strictEqual(savedTotal, initialTotal);
+            assert.strictEqual(savedTotal, initialTotal.toNumber());
             assert.strictEqual(allSaleDetails.length, initialSaleDetailsInDB.length + saleDetailToSave.sale_details.length);
         })
 

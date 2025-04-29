@@ -20,7 +20,6 @@ import { useMutation } from "@tanstack/react-query";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MyDataGrid from "components/MyDataGrid";
-import { getItemAvatarName } from "features/sales/components/SoldItems";
 import { useStateValue } from "state";
 import { showDialog } from "state/reducer";
 
@@ -108,7 +107,7 @@ const Products = () => {
 								aria-label="product avatar"
 							>
 								<Typography fontSize="3rem">
-									{getItemAvatarName(params.row.name)}
+									{params.row.name.slice(0, 4)}
 								</Typography>
 							</Avatar>
 						)}

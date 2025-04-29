@@ -18,6 +18,7 @@ import SalesByForm from "pages/SaleForm";
 import Fuels from "pages/fuel";
 import Perfomances from "pages/perfomances";
 import MobileSalesDetailsPage from "pages/sales/MobileSalesDetails";
+import ProtectedRoute from "pages/layout/ProtectedRoute";
 
 function App() {
 	const [state] = useStateValue();
@@ -46,15 +47,18 @@ function App() {
 										}
 									/>
 
-									<Route path="/dashboard" element={<Dashboard />} />
 									<Route path="/products" element={<Products />} />
-									<Route path="/workers" element={<Workers />} />
 									<Route path="/shop" element={<Shop />} />
 									<Route path="/sales" element={<Sales />} />
 									<Route path="/sales/:saleId" element={<MobileSalesDetailsPage />} />
-									<Route path="/salesform" element={<SalesByForm />} />
-									<Route path="/fuels" element={<Fuels />} />
-									<Route path="/perfomances" element={<Perfomances />} />
+									//Protected admin routes
+									<Route element={<ProtectedRoute />}>
+										<Route path="/dashboard" element={<Dashboard />} />
+										<Route path="/salesform" element={<SalesByForm />} />
+										<Route path="/fuels" element={<Fuels />} />
+										<Route path="/perfomances" element={<Perfomances />} />
+										<Route path="/workers" element={<Workers />} />
+									</Route>
 								</Route>
 								<Route path="/login" element={<Login />} />
 							</Routes>

@@ -5,20 +5,25 @@ import {
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
+	SvgIconTypeMap,
 	useTheme
 } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
+import { OverridableComponent } from "@mui/material/OverridableComponent";
+import { FormattedMessage } from "react-intl";
 
 interface SidebarNavItemProps {
 	text: string;
 	url: string;
-	icon: JSX.Element;
-	translate: JSX.Element;
+	icon: OverridableComponent<SvgIconTypeMap<{}, "svg">>;
+	translationID: string;
+	translationDefaultMessage: string;
 }
 const SidebarNavItem = ({
 	text,
 	icon,
-	translate,
+	translationID,
+	translationDefaultMessage,
 	url
 }: SidebarNavItemProps) => {
 	const theme = useTheme();
@@ -39,6 +44,8 @@ const SidebarNavItem = ({
 
 	const lcText = text.toLowerCase();
 
+	const Icon = icon;
+
 	return (
 		<ListItem disablePadding>
 			<NavLink
@@ -55,9 +62,9 @@ const SidebarNavItem = ({
 									: theme.palette.text.secondary
 						}}
 					>
-						{icon}
+						<Icon />
 					</ListItemIcon>
-					<ListItemText sx={{ margin: "0.25rem 0" }}>{translate}</ListItemText>
+					<ListItemText sx={{ margin: "0.25rem 0" }}><FormattedMessage id={translationID} defaultMessage={translationDefaultMessage} /></ListItemText>
 					{pathname.substring(1) === lcText && (
 						<ChevronRightOutlined sx={{ ml: "auto" }} />
 					)}

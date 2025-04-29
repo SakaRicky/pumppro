@@ -14,12 +14,6 @@ type SoldItemsProps = {
 	selectedCategory: ProductCategory | undefined;
 };
 
-export const getItemAvatarName = (name: string): string => {
-	const nameParts = name.split(" ");
-
-	return nameParts.length > 1 ? nameParts[0][0] + nameParts[1][0] : nameParts[0]+nameParts[1]
-}
-
 const SoldItems = ({
 	isLoading,
 	data,
@@ -43,14 +37,16 @@ const SoldItems = ({
 			headerName: "Sold Qty",
 			width: 150,
 			headerAlign: "center",
-			align: "center"
+			align: "center",
+			sortable: true,
 		},
 		{
 			field: "amount",
 			headerName: "Amount (XAF)",
 			width: 150,
 			headerAlign: "center",
-			align: "center"
+			align: "center",
+			sortable: true,
 		},
 		{
 			field: "purchase_price",
@@ -72,7 +68,8 @@ const SoldItems = ({
 			width: 150,
 			headerAlign: "center",
 			align: "center",
-			renderCell: params => {
+			sortable: true,
+			valueGetter: params => {
 				return (params.row.selling_price * params.row.number_sold) - (params.row.purchase_price * params.row.number_sold);
 			}
 		}

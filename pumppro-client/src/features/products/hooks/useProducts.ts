@@ -3,23 +3,23 @@ import { Product } from "types";
 import { getProduct, getProducts } from "services/products";
 
 export const useProducts = (categoryID?: string) => {
-	const query = useQuery<Product[], Error>({
-		queryKey: ["products", categoryID],
-		queryFn: () => getProducts(categoryID),
-		enabled: categoryID !== ""
-	});
+  const query = useQuery<Product[], Error>({
+    queryKey: ["products", categoryID],
+    queryFn: () => getProducts(categoryID),
+    enabled: categoryID !== "",
+  });
 
-	return query;
+  return query;
 };
 
 export const useProduct = (productID: string) => {
-	const query = useQuery<Product, Error>({
-		queryKey: ["product"],
-		queryFn: () => getProduct(productID),
-		enabled: productID !== ""
-	});
+  const query = useQuery<Product, Error>({
+    queryKey: ["product"],
+    queryFn: () => getProduct(productID),
+    enabled: productID !== "",
+  });
 
-	return query;
+  return query;
 };
 
 // export const FindingsUpdateMutator = (

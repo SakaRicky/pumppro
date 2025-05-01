@@ -3,22 +3,22 @@ import { User } from "types";
 import { getUser, getUsers } from "services/users";
 
 export const useUsers = () => {
-	const query = useQuery<User[], Error>({
-		queryKey: ["users"],
-		queryFn: () => getUsers()
-	});
+  const query = useQuery<User[], Error>({
+    queryKey: ["users"],
+    queryFn: () => getUsers(),
+  });
 
-	return query;
+  return query;
 };
 
 export const useUser = (userID: string) => {
-	const query = useQuery<User, Error>({
-		queryKey: ["user"],
-		queryFn: () => getUser(userID),
-		enabled: userID !== ""
-	});
+  const query = useQuery<User, Error>({
+    queryKey: ["user"],
+    queryFn: () => getUser(userID),
+    enabled: userID !== "",
+  });
 
-	return query;
+  return query;
 };
 
 // export const FindingsUpdateMutator = (

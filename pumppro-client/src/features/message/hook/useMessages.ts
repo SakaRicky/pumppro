@@ -3,23 +3,23 @@ import { MessageNotification } from "types";
 import { getMessage, getMessages } from "services/messages";
 
 export const useMessages = (userID?: string) => {
-	const query = useQuery<MessageNotification[], Error>({
-		queryKey: ["messages", userID],
-		queryFn: () => getMessages(userID),
-		enabled: userID !== ""
-	});
+  const query = useQuery<MessageNotification[], Error>({
+    queryKey: ["messages", userID],
+    queryFn: () => getMessages(userID),
+    enabled: userID !== "",
+  });
 
-	return query;
+  return query;
 };
 
 export const UseMessage = (messageID: number) => {
-	const query = useQuery<MessageNotification, Error>({
-		queryKey: ["message"],
-		queryFn: () => getMessage(messageID),
-		enabled: messageID !== null
-	});
+  const query = useQuery<MessageNotification, Error>({
+    queryKey: ["message"],
+    queryFn: () => getMessage(messageID),
+    enabled: messageID !== null,
+  });
 
-	return query;
+  return query;
 };
 
 // export const FindingsUpdateMutator = (

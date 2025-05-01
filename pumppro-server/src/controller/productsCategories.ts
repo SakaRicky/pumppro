@@ -78,7 +78,7 @@ export const updateProductCategory = async (
 };
 
 export const deleteProductCategory = async (
-	req: RequestWithToken,
+	req: Request<unknown, unknown, { id: string }>,
 	res: Response
 ) => {
 	const body = req.body;

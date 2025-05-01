@@ -11,7 +11,7 @@ export const getMessageNotifications = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { userID } = req.query as RequestQuery;
+	const { userID } = req.query;
 
 	if (userID) {
 		const user = await prisma.user.findUnique({

@@ -9,7 +9,7 @@ export const requestLogger = (
 ) => {
 	logger.info("Method: ", request.method);
 	logger.info("Path: ", request.path);
-	logger.info("Body: ", request.body);
+	logger.info("Body: ", request.body as string);
 	logger.info("---------");
 	next();
 };
@@ -48,10 +48,6 @@ export const setHeaders = function (
 	next();
 };
 
-export const unknownEndpoint = (
-	_request: Request,
-	response: Response,
-	_next: NextFunction
-) => {
+export const unknownEndpoint = (_request: Request, response: Response) => {
 	response.status(404).send({ error: "unknown endpoint" });
 };

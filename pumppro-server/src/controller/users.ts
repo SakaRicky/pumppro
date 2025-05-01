@@ -12,19 +12,26 @@ interface RequestQuery {
 	role: Role | undefined;
 }
 
+interface UserFilterCriteria {
+	role: {
+		in: Role[];
+	};
+}
+
 export const getUsers = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { role } = req.query as RequestQuery;
-	let where;
-	if (role) {
-		where = {
-			role: {
-				in: [role, Role.ADMIN]
-			}
-		};
-	}
+	const { role } = req.query;
+
+	const where: UserFilterCriteria | object = role
+		? {
+				role: {
+					in: [role, Role.ADMIN]
+				}
+		  }
+		: {};
+
 	const allUsers = await prisma.user.findMany({
 		select: {
 			id: true,
@@ -74,8 +81,7 @@ export const getOneUser = async (req: Request, res: Response) => {
 export const saveUser = async (req: RequestWithToken, res: Response) => {
 	const newUser = validateNewUser(req.body);
 
-	const reqFile = req.file as Express.Multer.File;
-	const imageURL = reqFile ? await uploadImage(reqFile, "users") : "";
+	const imageURL = req.file ? await uploadImage(req.file, "users") : "";
 
 	if (newUser) {
 		const saltRounds = 10;
@@ -105,7 +111,6 @@ export const saveUser = async (req: RequestWithToken, res: Response) => {
 };
 
 export const updateUser = async (req: RequestWithToken, res: Response) => {
-	console.log("Updating user")
 	const editedUser = validateEditedUser(req.body) as NewUser & { id: string };
 
 	const existingUser = await prisma.user.findUnique({
@@ -115,8 +120,10 @@ export const updateUser = async (req: RequestWithToken, res: Response) => {
 	if (editedUser) {
 		const saltRounds = 10;
 		let password_hash = "";
-		const reqFile = req.file as Express.Multer.File;
-		const imageURL = req.file ? await uploadImage(reqFile, "users") : existingUser?.profile_picture;
+
+		const imageURL = req.file
+			? await uploadImage(req.file, "users")
+			: existingUser?.profile_picture;
 
 		if (editedUser?.password) {
 			password_hash = await bcrypt.hash(editedUser?.password, saltRounds);
@@ -146,7 +153,10 @@ export const updateUser = async (req: RequestWithToken, res: Response) => {
 	}
 };
 
-export const deleteUser = async (req: RequestWithToken, res: Response) => {
+export const deleteUser = async (
+	req: Request<unknown, unknown, { id: string }>,
+	res: Response
+) => {
 	const body = req.body;
 	const userIdToDelete = body.id;
 	await prisma.user.delete({ where: { id: userIdToDelete } });

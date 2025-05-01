@@ -10,7 +10,7 @@ export const tokenExtractor = (
 	next: NextFunction
 ) => {
 	const authorization = req.headers.authorization;
-	if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+	if (authorization?.toLowerCase().startsWith("bearer ")) {
 		req.token = authorization.substring(7);
 		next();
 	} else {
@@ -25,7 +25,7 @@ export const checkTokenExistence = (
 ) => {
 	const token = req.token;
 	const decodedToken = jwt.verify(
-		token || "",
+		token ?? "",
 		config.JWT_SECRET
 	) as DecodedTokenType;
 
@@ -42,7 +42,7 @@ export const checkIfAdmin = (
 ) => {
 	const token = req.token;
 	const decodedToken = jwt.verify(
-		token || "",
+		token ?? "",
 		config.JWT_SECRET
 	) as DecodedTokenType;
 

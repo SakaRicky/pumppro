@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import {
-	validateEditedFuel,
+	validateExistingFuel,
 	validateFuelTankUpdate,
 	validateNewFuel
 } from "../utils/validateData";
@@ -50,7 +50,7 @@ export const saveFuel = async (req: Request, res: Response) => {
 };
 
 export const updateFuel = async (req: Request, res: Response) => {
-	const fuelUpdate = validateEditedFuel(req.body);
+	const fuelUpdate = validateExistingFuel(req.body);
 
 	if (fuelUpdate) {
 		await prisma.fuel.update({
@@ -88,7 +88,14 @@ export const refillFuel = async (req: Request, res: Response) => {
 	return res.sendStatus(200);
 };
 
-export const deleteFuel = async (req: Request, res: Response) => {
+export interface DeleteFuelRequestBody {
+	ids: number[]; // Assuming IDs are strings
+}
+
+export const deleteFuel = async (
+	req: Request<unknown, unknown, DeleteFuelRequestBody>,
+	res: Response
+) => {
 	const body = req.body;
 	const fuelIdsToDelete = body.ids;
 

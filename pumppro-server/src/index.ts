@@ -6,6 +6,6 @@ const server = http.createServer(app);
 
 const PORT = config.PORT;
 
-server.listen(PORT, async () => {
+server.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });

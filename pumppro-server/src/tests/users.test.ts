@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { test, describe, beforeEach } from "node:test";
 import prisma from "../../client";
 import { testApi, authToken, initialUsersInDB } from "./helper/setupTestDB";
@@ -5,193 +6,195 @@ import { AuthenticatedUSer, NewUser, User } from "../types";
 import assert from "assert";
 
 const userToSave: NewUser = {
-    names: "New John Doe Test",
-    username: "newjohndoetest",
-    gender: "MALE",
-    phone: "123456789",
-    godfather_phone: "253142542",
-    date_of_birth: new Date(2000, 0o2, 15),
-    salary: 80000,
-    email: "newjohndoe@gmail.com",
-    cni_number: "0024585",
-    password: "12345678",
-    role: "ADMIN",
-    localisation: "",
-    profile_picture: "",
-}
+	names: "New John Doe Test",
+	username: "newjohndoetest",
+	gender: "MALE",
+	phone: "123456789",
+	godfather_phone: "253142542",
+	date_of_birth: new Date(2000, 0o2, 15),
+	salary: 80000,
+	email: "newjohndoe@gmail.com",
+	cni_number: "0024585",
+	password: "12345678",
+	role: "ADMIN",
+	localisation: "",
+	profile_picture: ""
+};
 
 describe("Test the users route", () => {
+	describe("CRUD operation by ADMIN", () => {
+		test("should create a new user when posted by admin", async () => {
+			const res = await testApi
+				.post("/users")
+				.send(userToSave)
+				.set({
+					authorization: `bearer ${authToken}`
+				});
 
-    describe("CRUD operation by ADMIN", () => {
+			const savedUser = res.body as User;
 
-        
-        test("should create a new user when posted by admin", async () => {
+			assert.strictEqual(res.status, 200);
+			const users = await prisma.user.findMany();
+			assert.strictEqual(users.length, initialUsersInDB.length + 1);
 
-            const res = await testApi
-                .post("/users")
-                .send(userToSave)
-                .set({
-                    authorization: `bearer ${authToken}`
-                });
-            
-            const savedUser = res.body as User;            
+			// deleting this user so it doesn't mess up the DB
+			await prisma.user.delete({ where: { id: savedUser.id } });
+		});
 
-            assert.strictEqual(res.status, 200);
-            const users = await prisma.user.findMany();
-            assert.strictEqual(users.length, initialUsersInDB.length + 1);
-            
-            // deleting this user so it doesn't mess up the DB
-            await prisma.user.delete({where: {id: savedUser.id}})
-        });
+		test("should return users when authToken is given", async () => {
+			const res = await testApi.get("/users").set({
+				authorization: `bearer ${authToken}`
+			});
+			const users = res.body as User[];
 
-        test("should return users when authToken is given", async () => {
-            const res = await testApi.get("/users").set({
-                authorization: `bearer ${authToken}`
-            });
-            const users = res.body as User[];
+			assert.strictEqual(res.status, 200);
+			assert.strictEqual(users.length, initialUsersInDB.length);
+		});
 
-            assert.strictEqual(res.status, 200);
-            assert.strictEqual(users.length, initialUsersInDB.length);
-        });
+		test("should update existing user", async () => {
+			const userToEdit = await prisma.user.findUnique({
+				where: { username: "newjohndoetest" }
+			});
 
-        test("should update existing user", async () => {
+			if (userToEdit) {
+				const res = await testApi
+					.put("/users")
+					.send({ ...userToEdit, names: userToEdit.names + " EDITED" })
+					.set({
+						authorization: `bearer ${authToken}`
+					});
 
-            const userToEdit = await prisma.user.findUnique({
-                where: { username: "newjohndoetest" }
-            });
+				assert.strictEqual(res.status, 200);
 
-            if (userToEdit) {
-                const res = await testApi
-                    .put("/users")
-                    .send({ ...userToEdit, names: userToEdit.names + " EDITED" })
-                    .set({
-                        authorization: `bearer ${authToken}`
-                    });
+				const updatedUser = await prisma.user.findUnique({
+					where: { id: userToEdit.id }
+				});
+				assert.ok(
+					updatedUser?.names.includes("EDITED"),
+					"User was not updated"
+				);
 
-                assert.strictEqual(res.status, 200);
+				const users = await prisma.user.findMany();
+				assert.strictEqual(users.length, initialUsersInDB.length);
 
-                const updatedUser = await prisma.user.findUnique({where: {id: userToEdit.id}});
-                assert.ok(updatedUser && updatedUser.names.includes("EDITED"), "User was not updated");
+				const editedUser = prisma.user.findUnique({
+					where: { username: userToEdit.username + "EDITED" }
+				});
+				// check if object is defined
+				assert.ok(editedUser, "editedUser is not defined");
+			}
+		});
 
-                const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, initialUsersInDB.length)
+		test("should delete existing user", async () => {
+			const userToDelete = await prisma.user.findUnique({
+				where: { username: "neymartest" }
+			});
+			if (userToDelete) {
+				const res = await testApi
+					.delete("/users")
+					.send({ id: userToDelete.id })
+					.set({
+						authorization: `bearer ${authToken}`
+					});
 
-                const editedUser = prisma.user.findUnique({
-                    where: { username: userToEdit.username + "EDITED" }
-                });
-                // check if object is defined
-                assert.ok(editedUser, 'editedUser is not defined')
-            }
-        });
+				assert.strictEqual(res.status, 200);
+				const users = await prisma.user.findMany();
+				assert.strictEqual(users.length, initialUsersInDB.length - 1);
+			}
+		});
+	});
 
-        test("should delete existing user", async () => {
-            const userToDelete = await prisma.user.findUnique({
-                where: { username: "neymartest" }
-            });
-            if (userToDelete) {
-                const res = await testApi
-                    .delete("/users")
-                    .send({ id: userToDelete.id })
-                    .set({
-                        authorization: `bearer ${authToken}`
-                    });
+	describe("CRUD from non admin", () => {
+		let nonAdminAuthUser: AuthenticatedUSer;
 
-                assert.strictEqual(res.status, 200);
-                const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, initialUsersInDB.length - 1);
-            }
-        });
-    });
+		beforeEach(async () => {
+			const res = await testApi.post("/auth").send({
+				username: "neymarjunior",
+				password: "12345678"
+			});
 
-    describe("CRUD from non admin", () => {
-        let nonAdminAuthUser: AuthenticatedUSer;
+			nonAdminAuthUser = res.body as AuthenticatedUSer;
+		});
 
-        beforeEach(async () => {
-            const res = await testApi.post("/auth").send({
-                username: "neymarjunior",
-                password: "12345678"
-            });
+		test("shouldn't create a new user when posted by non ADMIN", async () => {
+			const res = await testApi
+				.post("/users")
+				.send(userToSave)
+				.set({
+					authorization: `bearer ${nonAdminAuthUser.token}`
+				});
 
-            nonAdminAuthUser = res.body as AuthenticatedUSer
-        })
+			assert.strictEqual(res.status, 401);
+			const users = await prisma.user.findMany();
 
-        test("shouldn't create a new user when posted by non ADMIN", async () => {
+			// This test isn't working because the test "should create a new user when posted by admin"
+			// added a new user to the DB and for
+			assert.strictEqual(users.length, initialUsersInDB.length);
+		});
 
-            const res = await testApi
-                .post("/users")
-                .send(userToSave)
-                .set({
-                    authorization: `bearer ${nonAdminAuthUser.token}`
-                });
+		test("should return users when authToken is given", async () => {
+			const res = await testApi.get("/users").set({
+				authorization: `bearer ${authToken}`
+			});
 
-            assert.strictEqual(res.status, 401);
-            const users = await prisma.user.findMany();
+			const users = res.body as User[];
 
-            // This test isn't working because the test "should create a new user when posted by admin"
-            // added a new user to the DB and for 
-            assert.strictEqual(users.length, initialUsersInDB.length);
-        });
+			assert.strictEqual(res.status, 200);
+			assert.strictEqual(users.length, initialUsersInDB.length);
+		});
 
-        test("should return users when authToken is given", async () => {
-            const res = await testApi.get("/users").set({
-                authorization: `bearer ${authToken}`
-            });
+		test("shouldn't update existing user", async () => {
+			const user = await prisma.user.findUnique({
+				where: { username: "johndoetest" }
+			});
+			if (user) {
+				const res = await testApi
+					.put("/users")
+					.send({ ...user, names: user.names + "EDITED" })
+					.set({
+						authorization: `bearer ${authToken}`
+					});
 
-            const users = res.body as User[];
+				assert.strictEqual(res.status, 401);
+				const users = await prisma.user.findMany();
+				assert.strictEqual(users.length, initialUsersInDB.length);
+				const editedUser = await prisma.user.findUnique({
+					where: { username: user.username + "EDITED" }
+				});
+				// check if editedUser is null
+				assert.strictEqual(editedUser, null, "editedUser is not null");
+			}
+		});
 
-            assert.strictEqual(res.status, 200);
-            assert.strictEqual(users.length, initialUsersInDB.length);
-        });
+		test("shouldn't delete existing user", async () => {
+			const user = await prisma.user.findUnique({
+				where: { username: "neymartest" }
+			});
+			if (user) {
+				const res = await testApi
+					.delete("/users")
+					.send({ id: user.id })
+					.set({
+						authorization: `bearer ${authToken}`
+					});
 
-        test("shouldn't update existing user", async () => {
-            const user = await prisma.user.findUnique({
-                where: { username: "johndoetest" }
-            });
-            if (user) {
-                const res = await testApi
-                    .put("/users")
-                    .send({ ...user, names: user.names + "EDITED" })
-                    .set({
-                        authorization: `bearer ${authToken}`
-                    });
+				assert.strictEqual(res.status, 401);
+				const users = await prisma.user.findMany();
+				assert.strictEqual(users.length, 2);
+			}
+		});
+	});
 
-                assert.strictEqual(res.status, 401);
-                const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, initialUsersInDB.length);
-                const editedUser = await prisma.user.findUnique({
-                    where: { username: user.username + "EDITED" }
-                });
-                // check if editedUser is null
-                assert.strictEqual(editedUser, null, 'editedUser is not null');
-            }
-        });
+	describe("When no authToken is given", () => {
+		test("shouldn't return users if no authToken is given", async () => {
+			const res = await testApi.get("/users");
 
-        test("shouldn't delete existing user", async () => {
-            const user = await prisma.user.findUnique({
-                where: { username: "neymartest" }
-            });
-            if (user) {
-                const res = await testApi
-                    .delete("/users")
-                    .send({ id: user.id })
-                    .set({
-                        authorization: `bearer ${authToken}`
-                    });
-
-                assert.strictEqual(res.status, 401);
-                const users = await prisma.user.findMany();
-                assert.strictEqual(users.length, 2);
-            }
-        });
-    });
-
-    describe("When no authToken is given", () => {
-        test("shouldn't return users if no authToken is given", async () => {
-            const res = await testApi.get("/users");
-
-            assert.strictEqual(res.status, 401);
-            // Check if text contains the substring
-            assert.ok(res.text.includes("token missing or invalid"), `"${res.text}" does not contain "${"token missing or invalid"}"`);
-        });
-    });
+			assert.strictEqual(res.status, 401);
+			// Check if text contains the substring
+			assert.ok(
+				res.text.includes("token missing or invalid"),
+				`"${res.text}" does not contain "${"token missing or invalid"}"`
+			);
+		});
+	});
 });

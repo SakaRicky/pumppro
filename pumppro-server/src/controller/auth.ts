@@ -7,7 +7,9 @@ import { RequestWithToken } from "../utils/middleware";
 
 const prisma = new PrismaClient();
 
-export const findUserAndCreateAuthUser = async (userToAuth: UserToAuth): Promise<AuthenticatedUSer> => {
+export const findUserAndCreateAuthUser = async (
+	userToAuth: UserToAuth
+): Promise<AuthenticatedUSer> => {
 	const user = await prisma.user.findUnique({
 		where: { username: userToAuth.username },
 		include: {
@@ -17,20 +19,17 @@ export const findUserAndCreateAuthUser = async (userToAuth: UserToAuth): Promise
 
 	const allowedRoles = ["ADMIN", "SALE"];
 	if (user && !allowedRoles.includes(user.role)) {
-		throw new Error("You are not allowed to use this platform")
+		throw new Error("You are not allowed to use this platform");
 	}
 
 	const passwordCorrect =
-		user === null
-			? false
-			: await bcrypt.compare(
-				userToAuth.password,
-					(user.password_hash as string) || ""
-			  );
+		// Condition: Check if user exists AND password_hash is truthy (exists and not empty)
+		user?.password_hash
+			? await bcrypt.compare(userToAuth.password, user.password_hash)
+			: false;
 
-	// If there is no user and no password, auth fail and return message to indicate that
 	if (!(user && passwordCorrect)) {
-		throw new Error("Invalid username or password")
+		throw new Error("Invalid username or password");
 	}
 
 	const token = createJWTToken(user);
@@ -43,7 +42,7 @@ export const findUserAndCreateAuthUser = async (userToAuth: UserToAuth): Promise
 		token: token,
 		messages: user.messages
 	};
-}
+};
 
 export const authenticateUser = async (
 	req: Request,
@@ -54,20 +53,21 @@ export const authenticateUser = async (
 		const body = req.body as UserToAuth;
 		const authenticatedUser = await findUserAndCreateAuthUser(body);
 
-		return res.status(200).json(authenticatedUser)
-	} catch (error: any) {
-		if (error instanceof Error && error.message.includes("not allowed")) {
-			return res.status(401).json({
-				error: "You are not allowed to use this platform"
-			});
-		} else if (error.message.includes("invalid")) {
-			return res.status(401).json({
-				error: "invalid username or password"
-			});
-		} else {
-			next(error);
+		return res.status(200).json(authenticatedUser);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			if (error.message.includes("not allowed")) {
+				return res.status(401).json({
+					error: "You are not allowed to use this platform"
+				});
+			} else if (error.message.includes("invalid")) {
+				return res.status(401).json({
+					error: "invalid username or password"
+				});
+			} else {
+				next(error);
+			}
 		}
-		
 	}
 };
 
@@ -79,7 +79,7 @@ export const verifyUser = async (
 	const token = req.token;
 
 	try {
-		const decodedToken = verifyToken(token || "");
+		const decodedToken = verifyToken(token ?? "");
 		if (!decodedToken.id) {
 			return res.status(401).json({ error: "token missing or invalid" });
 		}

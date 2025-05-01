@@ -26,7 +26,6 @@ const Layout = () => {
 				</Alert>
 			</Snackbar>
 			<Sidebar
-				user={{}}
 				isNonMobile={isNonMobile}
 				drawerWidth="250px"
 				isSidebarOpen={isSidebarOpen}

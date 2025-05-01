@@ -18,13 +18,8 @@ export const getProducts = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { categoryID } = req.query as RequestQuery;
-	let where;
-	if (categoryID) {
-		where = {
-			category_id: { equals: categoryID }
-		};
-	}
+	const { categoryID } = req.query;
+
 	const allProducts = await prisma.product.findMany({
 		select: {
 			id: true,
@@ -39,7 +34,7 @@ export const getProducts = async (
 			created_at: true,
 			updated_at: true
 		},
-		where: where
+		where: categoryID ? { category_id: { equals: categoryID } } : {}
 	});
 
 	return res.send(allProducts);
@@ -72,7 +67,7 @@ export const getOneProduct = async (req: Request, res: Response) => {
 export const saveProduct = async (req: RequestWithToken, res: Response) => {
 	const newProduct = validateNewProduct(req.body);
 
-	const reqFile = req.file as Express.Multer.File;
+	const reqFile = req.file;
 	let imageURL = "";
 	if (reqFile) {
 		imageURL = await uploadImage(reqFile, "products");
@@ -108,8 +103,7 @@ export const updateProduct = async (req: RequestWithToken, res: Response) => {
 		id: string;
 	};
 
-	const reqFile = req.file as Express.Multer.File;
-	const imageURL = req.file ? await uploadImage(reqFile, "products") : "";
+	const imageURL = req.file ? await uploadImage(req.file, "products") : "";
 
 	if (editedProduct) {
 		await prisma.product.update({
@@ -129,7 +123,10 @@ export const updateProduct = async (req: RequestWithToken, res: Response) => {
 	}
 };
 
-export const deleteProduct = async (req: RequestWithToken, res: Response) => {
+export const deleteProduct = async (
+	req: Request<unknown, unknown, { ids: string[] }>,
+	res: Response
+) => {
 	const body = req.body;
 	const productIdsToDelete = body.ids;
 

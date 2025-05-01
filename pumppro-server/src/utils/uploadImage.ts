@@ -35,7 +35,8 @@ export const uploadImage = async (
 			options
 		);
 		return result.secure_url;
-	} catch (error: any) {
-		throw new Error("Cloudinary Error");
+	} catch (error: unknown) {
+		console.log("🚀 ~ error:", error);
+		throw new Error("Cloudinary Error: ");
 	}
 };

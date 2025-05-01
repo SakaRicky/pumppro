@@ -1,7 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { validateExistingDailySale, validateNewDailySaleSummary } from "../../utils/validateData";
-import { createDailySaleInDB, deleteDailySaleInDB, updateDailySaleInDB } from "./dailySales.service";
+import {
+	validateExistingDailySale,
+	validateNewDailySaleSummary
+} from "../../utils/validateData";
+import {
+	createDailySaleInDB,
+	deleteDailySaleInDB,
+	updateDailySaleInDB
+} from "./dailySales.service";
 
 const prisma = new PrismaClient();
 
@@ -42,7 +49,7 @@ export const getDailySales = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { startDate, stopDate, userID } = req.query as RequestQuery;
+	const { startDate, stopDate, userID } = req.query;
 	// remove seconds to have fix hours intervals
 	const startDateDate = startDate ? new Date(startDate) : new Date();
 	startDateDate.setHours(startDateDate.getHours() - 1);

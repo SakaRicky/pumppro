@@ -5,14 +5,15 @@ import { ConnectionError } from "errors/connectionError";
 import storage from "utils/storage";
 
 interface ErrorData {
-	error: string, 
-	status: number,
+	error: string;
+	status: number;
 }
 
 // https://pumppro-server.onrender.com/
 // http://localhost:5001/
+// "http://10.0.0.73:5001/"
 export const api = axios.create({
-	baseURL: "http://10.0.0.73:5001/"
+	baseURL: "http://localhost:5001/"
 });
 
 const requestInterceptor = (config: AxiosRequestConfig) => {
@@ -34,31 +35,30 @@ const requestInterceptor = (config: AxiosRequestConfig) => {
 
 const successHandler = (response: AxiosResponse): AxiosResponse => {
 	return response;
-}
-
+};
 
 const errorHandler = (errorResponse: AxiosError<ErrorData>): Promise<never> => {
-
 	if (errorResponse.response) {
-		
 		const message = errorResponse.response.data.error || errorResponse.message;
-		const responseErrorsMap: Record<number, (() => Error | undefined)> = {
-			400: () => new BadRequestError({
-				name: "BAD_REQUEST_ERROR",
-				message: message
-			}),
-			401: () => new AuthError({
-				name: "AUTH_ERROR",
-				message: message
-			}),
-		}
+		const responseErrorsMap: Record<number, () => Error | undefined> = {
+			400: () =>
+				new BadRequestError({
+					name: "BAD_REQUEST_ERROR",
+					message: message
+				}),
+			401: () =>
+				new AuthError({
+					name: "AUTH_ERROR",
+					message: message
+				})
+		};
 
 		const errorStatusCode = errorResponse.response.status;
 
 		const errorToThrow = responseErrorsMap[errorStatusCode];
 
 		if (errorToThrow) {
-			throw errorToThrow()
+			throw errorToThrow();
 		}
 	} else if (errorResponse.request) {
 		console.log("Request Error Interceptors");
@@ -75,7 +75,7 @@ const errorHandler = (errorResponse: AxiosError<ErrorData>): Promise<never> => {
 	}
 
 	return Promise.reject(errorResponse);
-}
+};
 
 api.interceptors.request.use(requestInterceptor);
 

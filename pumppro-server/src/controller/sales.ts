@@ -16,17 +16,25 @@ interface RequestQuery {
 	userID: string | undefined;
 }
 
+export interface SaleFilterCriteria {
+	created_at?: {
+		gte: Date;
+		lte: Date;
+	};
+	user_id?: string;
+}
+
 export const getAllSalesForUser = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { userID } = req.query as RequestQuery;
+	const { userID } = req.query;
 
 	const user = await prisma.user.findUnique({
 		where: {
 			id: userID
 		}
-	})
+	});
 
 	const sales = await prisma.sale.findMany({
 		select: {
@@ -56,30 +64,29 @@ export const getAllSalesForUser = async (
 			},
 			created_at: true
 		},
-		where: user?.role === "ADMIN" ? {} : {user_id: userID},
+		where: user?.role === "ADMIN" ? {} : { user_id: userID },
 		orderBy: {
 			created_at: "desc"
 		}
 	});
 
 	return res.send(sales);
-}
+};
 
 export const getSales = async (
 	req: Request<unknown, unknown, unknown, RequestQuery>,
 	res: Response
 ) => {
-	const { startDate, stopDate, userID, selectedCategoryID } =
-		req.query as RequestQuery;
+	const { startDate, stopDate, userID, selectedCategoryID } = req.query;
 
-	let where = {};
+	let where: SaleFilterCriteria = {};
 
 	if (startDate && stopDate) {
 		where = {
 			...where,
 			created_at: {
-				gte: startDate,
-				lte: stopDate
+				gte: new Date(startDate),
+				lte: new Date(stopDate)
 			}
 		};
 	}
@@ -88,16 +95,6 @@ export const getSales = async (
 		where = {
 			...where,
 			user_id: userID
-		};
-	}
-
-	let categoryWhere;
-	// for sales of a particular product category
-	if (selectedCategoryID) {
-		categoryWhere = {
-			product: {
-				category_id: selectedCategoryID
-			}
 		};
 	}
 
@@ -126,7 +123,9 @@ export const getSales = async (
 						}
 					}
 				},
-				where: categoryWhere
+				where: selectedCategoryID
+					? { product: { category_id: selectedCategoryID } }
+					: {}
 			},
 			created_at: true
 		},
@@ -141,7 +140,6 @@ export const getSales = async (
 
 export const getOneSale = async (req: Request, res: Response) => {
 	const { id } = req.params;
-	console.log("getting 1 sale with id: ", id)
 
 	const saleFound = await prisma.sale.findUnique({
 		where: {
@@ -163,14 +161,14 @@ export const getOneSale = async (req: Request, res: Response) => {
 							selling_price: true
 						}
 					}
-				},
+				}
 			},
 			total: true,
 			created_at: true,
-			updated_at: true,
+			updated_at: true
 		}
-	})
-	
+	});
+
 	return res.send(saleFound);
 };
 
@@ -181,7 +179,7 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 		throw new Error("Now Sale to be save");
 	}
 	const userToken = req.token;
-	const decodedToken = verifyToken(userToken || "");
+	const decodedToken = verifyToken(userToken ?? "");
 	const sale_details: NewSaleDetails[] = [];
 
 	const seller = await prisma.user.findUnique({
@@ -189,45 +187,39 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 	});
 
 	if (!seller) {
-		throw new Error(
-			`No seller was provided or invalid seller id`
-		);
+		throw new Error(`No seller was provided or invalid seller id`);
 	}
 
 	if (newSale.sale_details.length <= 0 || newSale.sale_details == null) {
-		throw new Error(
-			`No sale item was provided`
-		);
+		throw new Error(`No sale item was provided`);
 	}
 
-	const createdSale = await prisma.$transaction(async (tx) => {
+	const createdSale = await prisma.$transaction(async tx => {
 		// make sure we have enough to sell
 		for (const detail of newSale.sale_details) {
 			const product = await tx.product.findUnique({
 				where: { id: detail.product_id }
 			});
-			
+
 			// make sure the product exist and there are enough products
 			if (!product || detail.quantity <= 0) {
-				throw new Error(
-					`Invalid product or quantity for: ${product?.name}`
-				);
+				throw new Error(`Invalid product or quantity for: ${product?.name}`);
 			}
 			if (product.quantity < detail.quantity) {
 				throw new Error(`Insufficient stock for product: ${product.name}`);
 			}
-			
+
 			await updateProductQuantityInDB(tx, product, detail.quantity);
 
 			sale_details.push({
 				product_id: product.id,
 				unit_price: product.selling_price,
-				quantity: detail.quantity,
+				quantity: detail.quantity
 			});
 		}
-		
+
 		const totalMoneyForSale = calculateTotalAmountSold(sale_details);
-		
+
 		return await tx.sale.create({
 			data: {
 				user_id: decodedToken.id,
@@ -239,13 +231,12 @@ export const saveSale = async (req: RequestWithToken, res: Response) => {
 				}
 			}
 		});
-		
 	});
-	
+
 	return res.status(200).send(createdSale);
 };
 
-export const updateSale = async (req: RequestWithToken, res: Response) => {
+export const updateSale = (req: RequestWithToken, res: Response) => {
 	// const editedProduct = validateEditedProduct(req.body) as NewProduct & {
 	// 	id: string;
 	// };
@@ -254,7 +245,10 @@ export const updateSale = async (req: RequestWithToken, res: Response) => {
 	return res.sendStatus(200);
 };
 
-export const deleteSale = async (req: RequestWithToken, res: Response) => {
+export const deleteSale = async (
+	req: Request<unknown, unknown, { ids: string[] }>,
+	res: Response
+) => {
 	const body = req.body;
 	const productIdsToDelete = body.ids;
 
@@ -270,12 +264,20 @@ export const deleteSale = async (req: RequestWithToken, res: Response) => {
 };
 
 const calculateTotalAmountSold = (saleDetails: NewSaleDetails[]) => {
-	const total = saleDetails.reduce((acc: Decimal, curr: NewSaleDetail) => acc.add(curr.unit_price.mul(curr.quantity)), new Decimal(0));
+	const total = saleDetails.reduce(
+		(acc: Decimal, curr: NewSaleDetail) =>
+			acc.add(curr.unit_price.mul(curr.quantity)),
+		new Decimal(0)
+	);
 
 	return total;
-}
+};
 
-const updateProductQuantityInDB = async (tx: Prisma.TransactionClient, product: Product, quantity: number) => {
+const updateProductQuantityInDB = async (
+	tx: Prisma.TransactionClient,
+	product: Product,
+	quantity: number
+) => {
 	const updatedProduct = await tx.product.update({
 		where: {
 			id: product.id
@@ -286,4 +288,4 @@ const updateProductQuantityInDB = async (tx: Prisma.TransactionClient, product: 
 	if (updatedProduct.quantity <= product.low_stock_threshold) {
 		await createNotificationForAdmins(updatedProduct);
 	}
-}
+};

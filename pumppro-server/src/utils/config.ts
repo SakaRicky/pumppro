@@ -3,9 +3,16 @@ import dotenv from "dotenv";
 
 delete process.env.DATABASE_URL; // Ensure it's not set before loading dotenv
 
-dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : process.env.NODE_ENV === "development" ? ".env.dev" : ".env" });
+dotenv.config({
+	path:
+		process.env.NODE_ENV === "test"
+			? ".env.test"
+			: process.env.NODE_ENV === "development"
+			? ".env.dev"
+			: ".env"
+});
 
-type Config = {
+interface Config {
 	PORT: string | number;
 	DATABASE_URL: string | undefined;
 	SECRET: string | undefined;
@@ -16,19 +23,18 @@ type Config = {
 		CLOUDINARY_APIKEY: string;
 		CLOUDINARY_API_SECRET: string;
 	};
-};
-
+}
 
 const config: Config = {
-	PORT: process.env.PORT || 5000,
+	PORT: process.env.PORT ?? 5000,
 	DATABASE_URL: process.env.DATABASE_URL,
 	SECRET: process.env.SECRET,
-	SESSION_SECRET: process.env.SESSION_SECRET || "",
-	JWT_SECRET: process.env.JWT_SECRET || "",
+	SESSION_SECRET: process.env.SESSION_SECRET ?? "",
+	JWT_SECRET: process.env.JWT_SECRET ?? "",
 	CLOUDINARY_CONFIG: {
-		CLOUDINARY_URL: process.env.CLOUDINARY_URL || "",
-		CLOUDINARY_APIKEY: process.env.CLOUDINARY_APIKEY || "",
-		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || ""
+		CLOUDINARY_URL: process.env.CLOUDINARY_URL ?? "",
+		CLOUDINARY_APIKEY: process.env.CLOUDINARY_APIKEY ?? "",
+		CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ?? ""
 	}
 };
 

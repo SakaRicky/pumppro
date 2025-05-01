@@ -138,16 +138,17 @@ describe("Product Sales", () => {
 		});
 
 		test("should throw error and not save sale without a user", async () => {
-			const { ...saleWithoutUser } = saleDetailToSave;
+			/* eslint-disable @typescript-eslint/no-unused-vars */
+			const {user_id, ...saleWithoutUser } = saleDetailToSave;
 
 			const response = await testApi
-				.post("/product-sales")
-				.send(saleWithoutUser)
-				.set("Authorization", `Bearer ${authToken}`);
-
+			.post("/product-sales")
+			.send(saleWithoutUser)
+			.set("Authorization", `Bearer ${authToken}`);
+			
 			// Since in this test I save a new daily sale
 			const allSales = await getAllSales();
-
+			
 			assert.notStrictEqual(response.status, 200);
 			assert.strictEqual(
 				(response.body as { error: string }).error.includes("user_id"),
@@ -202,19 +203,19 @@ describe("Product Sales", () => {
 			saleDetailToSave.sale_details[0].quantity = 0;
 
 			const response = await testApi
-				.post("/product-sales")
-				.send(saleDetailToSave)
-				.set("Authorization", `Bearer ${authToken}`);
-
+			.post("/product-sales")
+			.send(saleDetailToSave)
+			.set("Authorization", `Bearer ${authToken}`);
+			
 			// Since in this test I save a new daily sale
 			const allSales = await getAllSales();
-
+			
 			const allSaleDetails = await getAllSalesDetails();
 
 			assert.notStrictEqual(response.status, 200);
 			assert.ok(
 				(response.body as { error: string }).error.includes(
-					"Invalid product or quantity for"
+					"Number must be greater than 0", 
 				),
 				"Expected error message not found"
 			);
@@ -226,19 +227,19 @@ describe("Product Sales", () => {
 			saleDetailToSave.sale_details = [];
 
 			const response = await testApi
-				.post("/product-sales")
-				.send(saleDetailToSave)
-				.set("Authorization", `Bearer ${authToken}`);
-
+			.post("/product-sales")
+			.send(saleDetailToSave)
+			.set("Authorization", `Bearer ${authToken}`);
+			
 			// Since in this test I save a new daily sale
 			const allSales = await getAllSales();
-
+			
 			const allSaleDetails = await getAllSalesDetails();
 
 			assert.notStrictEqual(response.status, 200);
 			assert.ok(
 				(response.body as { error: string }).error.includes(
-					"No sale item was provided"
+					"Array must contain at least 1 element(s)"
 				),
 				"Expected error message not found"
 			);

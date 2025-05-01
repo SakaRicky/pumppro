@@ -59,6 +59,7 @@ describe("Save a new daily sale", () => {
 
 		// Since in this test I save a new daily sale
 		allDailySales = await getAllDailySales();
+		// console.log("🚀 ~ test ~ savedDailySales:", savedDailySales)
 		assert.strictEqual(savedDailySales.status, 200);
 		assert(savedDailySales.headers["content-type"], "application.json");
 		assert.strictEqual(allDailySales.length, initialDailySalesInDB.length + 1);
@@ -126,20 +127,20 @@ describe("Update an existing daily sale", () => {
 	});
 
 	test("without a payload, should throw error and doesn't updates a new daily post", async () => {
-		const savedDailySales = await testApi
-			.patch("/daily-sales")
-			.send()
-			.set("Authorization", `Bearer ${authToken}`);
+		const errorResponse = await testApi
+		.patch("/daily-sales")
+		.send()
+		.set("Authorization", `Bearer ${authToken}`);		
 
 		const updatedDailySales = await getDailySaleFromID(dailySaleToUpdate.id);
-		assert.strictEqual(savedDailySales.status, 400);
+		assert.strictEqual(errorResponse.status, 400);
 		assert(
-			(savedDailySales.body as { error: string }).error.includes(
-				"Invalid argument"
+			(errorResponse.body as { error: string }).error.includes(
+				"Invalid date"
 			),
-			"Error message should include 'Invalid argument'"
+			"Error message should include 'Invalid date'"
 		);
-		assert(savedDailySales.headers["content-type"], "application.json");
+		assert(errorResponse.headers["content-type"], "application.json");
 		assert.notEqual(
 			updatedDailySales?.amount_given.toNumber(),
 			dailySaleToUpdate.amount_given.toNumber()

@@ -174,15 +174,15 @@ export const validateExistingFuel = (data: unknown): Fuel | undefined => {
 };
 
 const FuelSaleSchema = z.object({
-	id: z.number(),
-	fuel_id: z.number(),
+	id: z.coerce.number(),
+	fuel_id: z.coerce.number(),
 	user_id: z.string(),
 	start_reading: createDecimalSchema(),
 	end_reading: createDecimalSchema(),
 	quantity_sold: createDecimalSchema(),
 	total_amount: createDecimalSchema(),
-	created_at: z.date(),
-	updated_at: z.date()
+	created_at: z.coerce.date(),
+	updated_at: z.coerce.date()
 });
 
 export const validateExistingFuelSale = (
@@ -196,14 +196,14 @@ export const validateExistingFuelSale = (
 // Define the NewDailySaleSummary schema with FuelCounts
 const NewDailySaleSummarySchema = z.object({
 	user_id: z.string(),
-	amount_sold: z.instanceof(Decimal),
-	amount_given: z.instanceof(Decimal),
-	date_of_sale_start: z.date(),
-	date_of_sale_stop: z.date()
+	amount_sold: createDecimalSchema(),
+	amount_given: createDecimalSchema(),
+	date_of_sale_start: z.coerce.date(),
+	date_of_sale_stop: z.coerce.date()
 });
 
 const ExistingDailySaleSchema = NewDailySaleSummarySchema.extend({
-	id: z.number(),
+	id: z.coerce.number(),
 	created_at: z.coerce.date(),
 	updated_at: z.coerce.date()
 });
@@ -211,6 +211,7 @@ const ExistingDailySaleSchema = NewDailySaleSummarySchema.extend({
 export const validateNewDailySaleSummary = (
 	data: unknown
 ): NewDailySaleSummary | undefined => {
+
 	const parsedData = NewDailySaleSummarySchema.parse(data);
 
 	return parsedData;
@@ -240,6 +241,7 @@ export const validateFuelTankUpdate = (
 function createDecimalSchema(): z.ZodType<Decimal, ZodTypeDef, unknown> {
 	return z.preprocess(
 		(arg: unknown) => {
+
 			if (typeof arg === "string" || typeof arg === "number") {
 				try {
 					return new Decimal(arg);

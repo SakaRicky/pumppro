@@ -1,0 +1,42 @@
+{
+  "name": "pumppro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "lint:client": "npm run lint --prefix pumppro-client",
+  "lint:server": "npm run lint --prefix pumppro-server",
+
+  "test:client": "npm run test --prefix pumppro-client",
+  "test:server": "npm run test --prefix pumppro-server",
+
+  "build:client": "npm run build --prefix pumppro-client",
+  "build:server": "npm run build --prefix server",
+
+  "lint:sequential": "npm run lint:server && npm run lint:pumppro-client",
+  "test:sequential": "npm run test:server && npm run test:pumppro-client",
+  "build:sequential": "npm run build:pumppro-client && npm run build:pumppro-server",
+
+  "lint": "concurrently \"npm:lint:*\"",
+  "test": "concurrently \"npm:test:*\"",
+  "build": "concurrently \"npm:build:*\"",
+
+  "ci:validate": "npm run lint && npm run test",
+  "ci:full": "npm run ci:validate && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SakaRicky/pumppro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SakaRicky/pumppro/issues"
+  },
+  "homepage": "https://github.com/SakaRicky/pumppro#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -22,6 +22,4 @@ jobs:
             - name: Run linters
               run: npm run lint
             - name: Run Tests
-              env:
-                DATABASE_URL: ${{ secrets.DATABASE_URL }} # Keep the env var here for the actual test
               run: npm run test:sequential # concurent one not working

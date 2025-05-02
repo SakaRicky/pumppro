@@ -11,10 +11,10 @@
   "test:server": "npm run test --prefix pumppro-server",
 
   "build:client": "npm run build --prefix pumppro-client",
-  "build:server": "npm run build --prefix server",
+  "build:server": "npm run build --prefix pumppro-server",
 
-  "lint:sequential": "npm run lint:server && npm run lint:pumppro-client",
-  "test:sequential": "npm run test:server && npm run test:pumppro-client",
+  "lint:sequential": "npm run lint:server && npm run lint:client",
+  "test:sequential": "npm run test:server && npm run test:client",
   "build:sequential": "npm run build:pumppro-client && npm run build:pumppro-server",
 
   "lint": "concurrently \"npm:lint:*\"",

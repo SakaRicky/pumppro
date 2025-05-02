@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import path from 'path';
 
-let envPath;
+let envPath: string;
 
 if (process.env.NODE_ENV === "test") {
 	envPath = path.resolve(__dirname, '../../.env.test.local');

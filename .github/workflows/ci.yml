@@ -22,4 +22,4 @@ jobs:
             - name: Run linters
               run: npm run lint
             - name: Run Tests
-              run: npm run test:sequential
+              run: npm run test:sequential # concurent one not working

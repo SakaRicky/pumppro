@@ -24,4 +24,9 @@ jobs:
             - name: Run Tests
               env:
                 DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                JWT_SECRET: ${{ secrets.JWT_SECRET }}     
+                SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+                CLOUDINARY_APIKEY: ${{ secrets.CLOUDINARY_APIKEY }}
+                CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+                CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
               run: npm run test:sequential # concurent one not working

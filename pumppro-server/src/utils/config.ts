@@ -1,16 +1,23 @@
-import "dotenv/config";
 import dotenv from "dotenv";
+import path from 'path';
 
-delete process.env.DATABASE_URL; // Ensure it's not set before loading dotenv
+let envPath;
 
-dotenv.config({
-	path:
-		process.env.NODE_ENV === "test"
-			? ".env.test.local"
-			: process.env.NODE_ENV === "development"
-			? ".env.dev"
-			: ".env"
-});
+if (process.env.NODE_ENV === "test") {
+	envPath = path.resolve(__dirname, '../../.env.test.local');
+} else if (process.env.NODE_ENV === "development") {
+    envPath = path.resolve(__dirname, '../../.env.dev');
+} else {
+    envPath = path.resolve(__dirname, '../../.env.prod');
+}
+
+const dotenvResult = dotenv.config({ path: envPath, override: true });
+
+if (dotenvResult.error) {
+    console.warn(`Warning: dotenv could not load file ${envPath}: ${dotenvResult.error.message}`);
+} else {
+    console.log(`dotenv loaded environment variables from: ${envPath}`);
+}
 
 interface Config {
 	PORT: string | number;
@@ -25,6 +32,8 @@ interface Config {
 	};
 }
 
+console.log("process.env.DATABASE_URL: ", process.env.DATABASE_URL)
+
 const config: Config = {
 	PORT: process.env.PORT ?? 5000,
 	DATABASE_URL: process.env.DATABASE_URL,
@@ -38,6 +47,6 @@ const config: Config = {
 	}
 };
 
-console.log("Connected to the database: ", config.DATABASE_URL);
+console.log("Connected to the database: ", config);
 
 export default config;

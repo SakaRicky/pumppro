@@ -22,4 +22,6 @@ jobs:
             - name: Run linters
               run: npm run lint
             - name: Run Tests
+              env:
+                DATABASE_URL: ${{ secrets.DATABASE_URL }}
               run: npm run test:sequential # concurent one not working

@@ -1,36 +1,32 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useField, useFormikContext } from "formik";
-import { ProductCategory, Tank } from "types";
 import CreatableSelect from "react-select/creatable";
 import { StylesConfig } from "react-select";
-import { saveProductCategory } from "services/productCategory";
 import { red } from "@mui/material/colors";
+import { useNotify } from "hooks/useNotify";
 
-type Props = {
+interface Props<T> {
   label?: string;
   name: string;
   isLoading?: boolean;
-  options: ProductCategory[] | Tank[] | undefined;
+  options: T[];
   handleChange?: (e: any) => void;
-  refetch: any;
-};
-
-interface SelectItems {
-  value: string;
-  label: string;
+  onCreate: (name: string) => Promise<T | undefined>;
 }
 
-const CreatableSelectInput = ({
+const CreatableSelectInput = <T extends { id: string | number; name: string }>({
   label,
   isLoading,
   name,
   options,
-  refetch,
   handleChange,
-}: Props) => {
+  onCreate,
+}: Props<T>) => {
   const [field, meta] = useField(name);
   const { setFieldValue } = useFormikContext();
+
+  const notify = useNotify();
 
   const [isLocalIsLoading, setIsLocalIsLoading] = useState(false);
 
@@ -40,18 +36,36 @@ const CreatableSelectInput = ({
     if (handleChange) {
       handleChange(newValue);
     } else {
-      // else it's formik
-      if (newValue.value) {
+      console.log("newValue: ", newValue);
+      // it's a reset
+      if (!newValue) {
+        setFieldValue(name, "");
+      } else {
+        //it's formik, so set formik field
         setFieldValue(name, newValue.value);
       }
     }
   };
 
   const handleCreate = async (inputValue: string) => {
-    setIsLocalIsLoading(true);
-    await saveProductCategory({ name: inputValue });
-    setIsLocalIsLoading(false);
-    refetch();
+    try {
+      setIsLocalIsLoading(true);
+      const createdCat = await onCreate(inputValue);
+      setFieldValue(name, createdCat?.id);
+      setIsLocalIsLoading(false);
+    } catch (error: unknown) {
+      console.log("error while creating a new category");
+      if (error instanceof Error) {
+        notify("Create Category Error", error.message, "error");
+      }
+    }
+  };
+
+  const getVale = () => {
+    const found = options?.find(
+      (option) => option.id === field.value.toString()
+    );
+    return found ? { value: found.id, label: found.name } : null;
   };
 
   const styles: StylesConfig = {
@@ -80,25 +94,20 @@ const CreatableSelectInput = ({
     }),
   };
 
-  const optionsForSelect: SelectItems[] | undefined = options?.map((option) => {
-    return {
-      value: option.id.toString(),
-      label: option.name,
-    };
-  });
-
   return (
     <Box>
       <CreatableSelect
-        value={optionsForSelect?.find(
-          (option) => option.value === field.value.toString()
-        )}
+        value={getVale()}
+        placeholder={`Select a ${label}`}
         isClearable
         isLoading={isLoading || isLocalIsLoading}
         isSearchable
         onChange={handleReactSelectChange}
         onCreateOption={handleCreate}
-        options={optionsForSelect}
+        options={options?.map((option) => ({
+          value: option.id.toString(),
+          label: option.name,
+        }))}
         styles={styles}
       />
       {meta && meta.touched && meta.error ? (

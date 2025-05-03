@@ -4,9 +4,9 @@ import { AuthError } from "errors/authError";
 import { UserError } from "errors/userError";
 import { BadRequestError } from "errors/badRequestError";
 
-export const saveProduct = async (newUser: FormData) => {
+export const saveProduct = async (newProduct: FormData) => {
   try {
-    const res = await api.post("/products", newUser, {
+    const res = await api.post("/products", newProduct, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;

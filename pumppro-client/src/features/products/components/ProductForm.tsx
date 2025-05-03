@@ -19,6 +19,7 @@ import CreatableSelectInput from "components/inputs/CreatableSelect";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import EditIcon from "@mui/icons-material/Edit";
 import { useMediaQuery } from "@mui/material";
+import { saveProductCategory } from "services/productCategory";
 
 type ProductFormProps = {
   product?: Product;
@@ -42,7 +43,6 @@ const ProductForm = forwardRef(
     }
 
     const isEditMode = !!product;
-    // console.log("product in ProductForm: ", product);
 
     const navigate = useNavigate();
 
@@ -190,9 +190,16 @@ const ProductForm = forwardRef(
                 <CreatableSelectInput
                   label="Category"
                   name="category_id"
-                  refetch={refetch}
+                  // refetch={refetch}
                   options={data}
                   isLoading={isLoading}
+                  onCreate={async (value: string) => {
+                    const createdCategory = await saveProductCategory({
+                      name: value,
+                    });
+                    refetch();
+                    return createdCategory;
+                  }}
                 />
               </Grid>
               <Grid item xs={6} md={3}>

@@ -5,11 +5,16 @@ import { UserError } from "errors/userError";
 
 export const saveProductCategory = async (
   newProductCategory: NewProductCategory
-) => {
+): Promise<ProductCategory | undefined> => {
   try {
-    const res = await api.post("/categories/products", newProductCategory, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await api.post<ProductCategory>(
+      "/categories/products",
+      newProductCategory,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
     return res.data;
   } catch (error: any) {
     console.log("🚀 ~ file: productCategory.ts:15 ~ error", error);

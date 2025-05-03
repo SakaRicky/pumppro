@@ -45,13 +45,13 @@ export const saveProductCategory = async (
 	const newProductCategories = validateNewProductCategory(req.body);
 
 	if (newProductCategories) {
-		await prisma.productCategory.create({
+		const createdCategory = await prisma.productCategory.create({
 			data: {
 				name: newProductCategories.name,
 				description: newProductCategories.description
 			}
 		});
-		return res.sendStatus(200);
+		return res.send(createdCategory);
 	}
 };
 

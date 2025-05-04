@@ -21,7 +21,7 @@
   "test": "concurrently \"npm:test:*\"",
   "build": "concurrently \"npm:build:*\"",
 
-  "ci:validate": "npm run lint && npm run test",
+  "ci:validate": "npm run lint && npm run test:sequential",
   "ci:full": "npm run ci:validate && npm run build"
   },
   "repository": {

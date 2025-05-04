@@ -9,7 +9,7 @@ import {
 import { useProducts } from "features/products/hooks/useProducts";
 import withAuth from "hoc/withAuth";
 import { useNotify } from "hooks/useNotify";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import AddIcon from "@mui/icons-material/Add";
 import { deleteProduct } from "services/products";
@@ -37,16 +37,20 @@ const Products = () => {
       : undefined;
 
   const [addProductModal, setAddProductModal] = useState(false);
-  const handleCloseAddProductModal = () => {
+
+  const handleCloseAddProductModal = useCallback(() => {
     setAddProductModal(false);
+
     refetch();
-  };
+  }, [refetch]);
 
   const notify = useNotify();
 
-  if (error) {
-    notify(error.name, error.message, "error");
-  }
+  useEffect(() => {
+    if (error) {
+      notify(error.name, error.message, "error");
+    }
+  }, [error, notify]);
 
   const deleteProductMutation = useMutation({
     mutationFn: deleteProduct,

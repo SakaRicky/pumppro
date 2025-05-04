@@ -192,7 +192,7 @@ const ProductForm = forwardRef(
                   name="category_id"
                   // refetch={refetch}
                   options={data}
-                  isLoading={isLoading}
+                  isDataLoading={isLoading}
                   onCreate={async (value: string) => {
                     const createdCategory = await saveProductCategory({
                       name: value,

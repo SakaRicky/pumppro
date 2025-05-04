@@ -1,4 +1,8 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { AuthError } from "errors/authError";
 import { BadRequestError } from "errors/badRequestError";
 import { ConnectionError } from "errors/connectionError";
@@ -16,16 +20,11 @@ export const api = axios.create({
   baseURL: "http://localhost:5001/",
 });
 
-const requestInterceptor = (config: AxiosRequestConfig) => {
+const requestInterceptor = (config: InternalAxiosRequestConfig) => {
   // Get the token from storage (or wherever you store it)
   const token = storage.getToken();
 
   if (token) {
-    // Make sure the config object has a headers property
-    if (!config.headers) {
-      config.headers = {};
-    }
-
     config.withCredentials = true;
     config.headers.Authorization = `bearer ${token}`;
   }

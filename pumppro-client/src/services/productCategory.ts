@@ -16,11 +16,9 @@ export const saveProductCategory = async (
     );
 
     return res.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("🚀 ~ file: productCategory.ts:15 ~ error", error);
-    if (error.response.status === 409) {
-      throw new Error(error.response.data.error);
-    }
+    throw error;
   }
 };
 

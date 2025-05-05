@@ -32,8 +32,6 @@ const corsOptions = {
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 app.use(cors(corsOptions));
 
-app.use(express.static(path.join(__dirname, '..', 'dist')));
-
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -50,6 +48,8 @@ app.use(setHeaders);
 
 app.use(requestLogger);
 
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+
 app.use("/api/auth", authRouter);
 app.use(tokenExtractor);
 app.use(checkTokenExistence);
@@ -64,8 +64,8 @@ app.use("/api/fuel", fuelsRoutes);
 app.use("/api/tank", tankRoutes);
 app.use("/api/messages", messageNotificationsRoutes);
 
-app.use("/", (_req, res) => {
-	res.send("Server Deployed");
+app.use("*", (_req, res) => {
+	res.sendFile(path.join(__dirname, '..', 'dist', "index.html"));
 });
 
 app.use(unknownEndpoint);

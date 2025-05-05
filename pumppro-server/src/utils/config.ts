@@ -45,4 +45,6 @@ const config: Config = {
 	}
 };
 
+console.log('config:', config);
+
 export default config;

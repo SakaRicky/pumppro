@@ -37,20 +37,21 @@ const DataGridCustomToolbar = ({
                 backgroundColor: alpha(theme.palette.secondary[600], 0.8),
               },
             }}
-          />
+            placeholder="" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}          />
           <GridToolbarDensitySelector
             sx={{
               "&:hover": {
                 backgroundColor: alpha(theme.palette.secondary[600], 0.8),
               },
             }}
-          />
+            placeholder="" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}          />
           <GridToolbarExport
             sx={{
               "&:hover": {
                 backgroundColor: alpha(theme.palette.secondary[600], 0.8),
               },
             }}
+            placeholder=""
           />
         </FlexBetween>
         <TextField

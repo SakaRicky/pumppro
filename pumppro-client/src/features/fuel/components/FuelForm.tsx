@@ -18,6 +18,7 @@ import { saveFuel, updateFuel } from "services/fuel";
 import { useFuels } from "./hooks/useFuels";
 import { UseTanks } from "features/tank/hooks/useTank";
 import withAuth from "hoc/withAuth";
+import { saveTank } from "services/tank";
 
 type FuelFormProps = {
   fuel?: Fuel;
@@ -171,9 +172,16 @@ const FuelForm = forwardRef(
                 <CreatableSelectInput
                   label="Tank"
                   name="tank_id"
-                  refetch={refetchTank}
-                  options={tankData}
-                  isLoading={tankIsLoading}
+                  options={tankData ?? []}
+                  isDataLoading={tankIsLoading}
+                  onCreate={async (value: string) => {
+                    const createdCategory = await saveTank({
+                      name: value,
+                      capacity: 10000
+                    });
+                    refetchFuels();
+                    return createdCategory;
+                  }}
                 />
               </Grid>
               <Grid item xs={6} md={3}>

@@ -19,6 +19,7 @@ import fuelsRoutes from "./routes/fuel";
 import tankRoutes from "./routes/tank";
 import messageNotificationsRoutes from "./routes/notifications";
 import fuelSalesRoutes from "./routes/fuelSales";
+import path from "path";
 
 // Create a new express app
 const app = express();
@@ -30,6 +31,8 @@ const corsOptions = {
   };
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 app.use(cors(corsOptions));
+
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));

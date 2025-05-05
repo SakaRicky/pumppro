@@ -25,7 +25,6 @@
 		"lint": "eslint .",
 		"test": "cross-env NODE_ENV=test tsx --test src/tests/index.ts",
 		"test_one_file": "cross-env NODE_ENV=test tsx --test src/tests/productSales.test.ts",
-		"build:ui": "rm -rf dist && cd ../client && npm run build && cp -r dist ../server",
 		"studio_remote": "dotenv -e .env -- npx prisma studio",
 		"studio_dev": "dotenv -e .env.dev -- npx prisma studio",
 		"studio_test": "dotenv -e .env.test -- npx prisma studio"

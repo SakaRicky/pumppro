@@ -17,7 +17,7 @@ interface ErrorData {
 // http://localhost:5001/
 // "http://10.0.0.73:5001/"
 export const api = axios.create({
-  baseURL: "http://localhost:5001/",
+  baseURL: "/api",
 });
 
 const requestInterceptor = (config: InternalAxiosRequestConfig) => {

@@ -26,6 +26,7 @@
 		"start": "ts-node src/index.ts",
 		"lint": "eslint .",
 		"test": "cross-env NODE_ENV=test tsx --test src/tests/index.ts",
+		"build": "cd ../ && npm run build:integrated",
 		"test_one_file": "cross-env NODE_ENV=test tsx --test src/tests/productSales.test.ts",
 		"studio_remote": "dotenv -e .env -- npx prisma studio",
 		"studio_dev": "dotenv -e .env.dev -- npx prisma studio",

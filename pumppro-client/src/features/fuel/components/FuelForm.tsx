@@ -177,7 +177,7 @@ const FuelForm = forwardRef(
                   onCreate={async (value: string) => {
                     const createdCategory = await saveTank({
                       name: value,
-                      capacity: 10000
+                      capacity: 10000,
                     });
                     refetchFuels();
                     return createdCategory;

@@ -327,7 +327,8 @@ export async function seed() {
 			{ user: users[2], fuel: fuels[2], start_reading: 500, end_reading: 300 }
 		];
 
-		const fuelSold = await saveFuelsSale(fuelSaleData);
+		/* eslint-disable @typescript-eslint/no-unused-vars */
+		await saveFuelsSale(fuelSaleData);
 
 		// Each savedSale in savedProductsSold is for a different user
 		const savedDailySalesSummary = await Promise.all(

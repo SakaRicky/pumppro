@@ -25,7 +25,7 @@ describe("Test the users route", () => {
 	describe("CRUD operation by ADMIN", () => {
 		test("should create a new user when posted by admin", async () => {
 			const res = await testApi
-				.post("/users")
+				.post("/api/users")
 				.send(userToSave)
 				.set({
 					authorization: `bearer ${authToken}`
@@ -42,7 +42,7 @@ describe("Test the users route", () => {
 		});
 
 		test("should return users when authToken is given", async () => {
-			const res = await testApi.get("/users").set({
+			const res = await testApi.get("/api/users").set({
 				authorization: `bearer ${authToken}`
 			});
 			const users = res.body as User[];
@@ -58,7 +58,7 @@ describe("Test the users route", () => {
 
 			if (userToEdit) {
 				const res = await testApi
-					.put("/users")
+					.put("/api/users")
 					.send({ ...userToEdit, names: userToEdit.names + " EDITED" })
 					.set({
 						authorization: `bearer ${authToken}`
@@ -91,7 +91,7 @@ describe("Test the users route", () => {
 			});
 			if (userToDelete) {
 				const res = await testApi
-					.delete("/users")
+					.delete("/api/users")
 					.send({ id: userToDelete.id })
 					.set({
 						authorization: `bearer ${authToken}`
@@ -108,7 +108,7 @@ describe("Test the users route", () => {
 		let nonAdminAuthUser: AuthenticatedUSer;
 
 		beforeEach(async () => {
-			const res = await testApi.post("/auth").send({
+			const res = await testApi.post("/api/auth").send({
 				username: "neymarjunior",
 				password: "12345678"
 			});
@@ -118,7 +118,7 @@ describe("Test the users route", () => {
 
 		test("shouldn't create a new user when posted by non ADMIN", async () => {
 			const res = await testApi
-				.post("/users")
+				.post("/api/users")
 				.send(userToSave)
 				.set({
 					authorization: `bearer ${nonAdminAuthUser.token}`
@@ -133,7 +133,7 @@ describe("Test the users route", () => {
 		});
 
 		test("should return users when authToken is given", async () => {
-			const res = await testApi.get("/users").set({
+			const res = await testApi.get("/api/users").set({
 				authorization: `bearer ${authToken}`
 			});
 
@@ -149,7 +149,7 @@ describe("Test the users route", () => {
 			});
 			if (user) {
 				const res = await testApi
-					.put("/users")
+					.put("/api/users")
 					.send({ ...user, names: user.names + "EDITED" })
 					.set({
 						authorization: `bearer ${authToken}`
@@ -172,7 +172,7 @@ describe("Test the users route", () => {
 			});
 			if (user) {
 				const res = await testApi
-					.delete("/users")
+					.delete("/api/users")
 					.send({ id: user.id })
 					.set({
 						authorization: `bearer ${authToken}`
@@ -187,7 +187,7 @@ describe("Test the users route", () => {
 
 	describe("When no authToken is given", () => {
 		test("shouldn't return users if no authToken is given", async () => {
-			const res = await testApi.get("/users");
+			const res = await testApi.get("/api/users");
 
 			assert.strictEqual(res.status, 401);
 			// Check if text contains the substring

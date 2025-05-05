@@ -19,14 +19,14 @@ describe("Product Sales", () => {
 	describe("Get products sale", () => {
 		test("Should not save products sales without an auth token", async () => {
 			await testApi
-				.get("/daily-sales")
+				.get("/api/daily-sales")
 				.expect(401)
 				.expect("Content-Type", /application\/json/);
 		});
 
 		test("Should get products sales with an auth token", async () => {
 			const productsSales = await testApi
-				.get("/product-sales")
+				.get("/api/product-sales")
 				.set("Authorization", `Bearer ${authToken}`);
 
 			assert.strictEqual(productsSales.status, 200);
@@ -76,7 +76,7 @@ describe("Product Sales", () => {
 				new Decimal(0)
 			);
 			const savedSales = await testApi
-				.post("/product-sales")
+				.post("/api/product-sales")
 				.send(saleDetailToSave)
 				.set("Authorization", `Bearer ${authToken}`);
 
@@ -109,7 +109,7 @@ describe("Product Sales", () => {
 				new Decimal(0)
 			);
 			const savedSales = await testApi
-				.post("/product-sales")
+				.post("/api/product-sales")
 				.send(saleDetailToSave)
 				.set("Authorization", `Bearer ${authToken}`);
 
@@ -131,7 +131,7 @@ describe("Product Sales", () => {
 
 		test("Should not save products sales without an auth token", async () => {
 			await testApi
-				.post("/daily-sales")
+				.post("/api/daily-sales")
 				.send(saleDetailToSave)
 				.expect(401)
 				.expect("Content-Type", /application\/json/);
@@ -142,7 +142,7 @@ describe("Product Sales", () => {
 			const {user_id, ...saleWithoutUser } = saleDetailToSave;
 
 			const response = await testApi
-			.post("/product-sales")
+			.post("/api/product-sales")
 			.send(saleWithoutUser)
 			.set("Authorization", `Bearer ${authToken}`);
 			
@@ -161,7 +161,7 @@ describe("Product Sales", () => {
 			saleDetailToSave.user_id = "a_user_id";
 
 			const response = await testApi
-				.post("/product-sales")
+				.post("/api/product-sales")
 				.send(saleDetailToSave)
 				.set("Authorization", `Bearer ${authToken}`);
 
@@ -182,7 +182,7 @@ describe("Product Sales", () => {
 			saleDetailToSave.user_id = "a_user_id";
 
 			const response = await testApi
-				.post("/product-sales")
+				.post("/api/product-sales")
 				.send(saleDetailToSave)
 				.set("Authorization", `Bearer ${authToken}`);
 
@@ -203,7 +203,7 @@ describe("Product Sales", () => {
 			saleDetailToSave.sale_details[0].quantity = 0;
 
 			const response = await testApi
-			.post("/product-sales")
+			.post("/api/product-sales")
 			.send(saleDetailToSave)
 			.set("Authorization", `Bearer ${authToken}`);
 			
@@ -227,7 +227,7 @@ describe("Product Sales", () => {
 			saleDetailToSave.sale_details = [];
 
 			const response = await testApi
-			.post("/product-sales")
+			.post("/api/product-sales")
 			.send(saleDetailToSave)
 			.set("Authorization", `Bearer ${authToken}`);
 			

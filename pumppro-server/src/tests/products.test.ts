@@ -31,12 +31,12 @@ describe("Product Management Feature", () => {
 	describe("Adding a Product", () => {
 		test("should successfully add a product with valid details", async () => {
 			const res = await testApi
-				.post("/products")
-				.send(productToSave)
-				.set({
-					authorization: `bearer ${authToken}`
-				});
-
+			.post("/api/products")
+			.send(productToSave)
+			.set({
+				authorization: `bearer ${authToken}`
+			});
+			
 			assert.strictEqual(res.status, 200);
 
 			const products = await prisma.product.findMany();
@@ -48,7 +48,7 @@ describe("Product Management Feature", () => {
 			const { name, ...productWithoutName } = productToSave;
 
 			const res = await testApi
-				.post("/products")
+				.post("/api/products")
 				.send(productWithoutName)
 				.set({
 					authorization: `bearer ${authToken}`

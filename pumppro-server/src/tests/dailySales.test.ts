@@ -18,14 +18,14 @@ import { Decimal } from "@prisma/client/runtime/library";
 describe("getDailysales", () => {
 	test("get daily sales without an auth token", async () => {
 		await testApi
-			.get("/daily-sales")
+			.get("/api/daily-sales")
 			.expect(401)
 			.expect("Content-Type", /application\/json/);
 	});
 
 	test("get daily sales with an auth token", async () => {
 		const dailySales = await testApi
-			.get("/daily-sales")
+			.get("/api/daily-sales")
 			.set("Authorization", `Bearer ${authToken}`);
 
 		assert.strictEqual(dailySales.status, 200);
@@ -43,7 +43,7 @@ describe("Save a new daily sale", () => {
 
 	test("without a token, should not save", async () => {
 		const dailySales = await testApi
-			.post("/daily-sales")
+			.post("/api/daily-sales")
 			.send(dailySaleToPost)
 			.expect(401);
 
@@ -53,7 +53,7 @@ describe("Save a new daily sale", () => {
 
 	test("with a token, it saves a new daily post", async () => {
 		const savedDailySales = await testApi
-			.post("/daily-sales")
+			.post("/api/daily-sales")
 			.send(dailySaleToPost)
 			.set("Authorization", `Bearer ${authToken}`);
 
@@ -96,7 +96,7 @@ describe("Update an existing daily sale", () => {
 
 	test("without a token, should not update", async () => {
 		const dailySales = await testApi
-			.patch("/daily-sales")
+			.patch("/api/daily-sales")
 			.send(dailySaleToUpdate)
 			.expect(401);
 
@@ -106,7 +106,7 @@ describe("Update an existing daily sale", () => {
 
 	test("with a token, it updates a new daily post", async () => {
 		const savedDailySales = await testApi
-			.patch("/daily-sales")
+			.patch("/api/daily-sales")
 			.send(dailySaleToUpdate)
 			.set("Authorization", `Bearer ${authToken}`);
 
@@ -128,7 +128,7 @@ describe("Update an existing daily sale", () => {
 
 	test("without a payload, should throw error and doesn't updates a new daily post", async () => {
 		const errorResponse = await testApi
-		.patch("/daily-sales")
+		.patch("/api/daily-sales")
 		.send()
 		.set("Authorization", `Bearer ${authToken}`);		
 
@@ -163,7 +163,7 @@ describe("Delete a daily sale", () => {
 
 	test("without a token, should not delete", async () => {
 		const dailySales = await testApi
-			.delete("/daily-sales")
+			.delete("/api/daily-sales")
 			.send(dailySaleToDelete)
 			.expect(401);
 
@@ -173,7 +173,7 @@ describe("Delete a daily sale", () => {
 
 	test("with a token, it delete a new daily sale", async () => {
 		const savedDailySales = await testApi
-			.delete("/daily-sales")
+			.delete("/api/daily-sales")
 			.send(dailySaleToDelete)
 			.set("Authorization", `Bearer ${authToken}`);
 

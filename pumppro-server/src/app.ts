@@ -51,18 +51,24 @@ app.use(requestLogger);
 app.use(express.static(path.join(__dirname, '..', 'dist')));
 
 app.use("/api/auth", authRouter);
-app.use(tokenExtractor);
-app.use(checkTokenExistence);
-app.use("/api/users", usersRoute);
-app.use("/api/products", productsRoutes);
-app.use("/api/categories", categoriesRoutes);
-app.use("/api/product-sales", salesRoutes);
-app.use("/api/fuel-sales", fuelSalesRoutes);
-app.use("/api/salessummary", salesSummaryRoutes);
-app.use("/api/daily-sales", dailySalesRoutes);
-app.use("/api/fuel", fuelsRoutes);
-app.use("/api/tank", tankRoutes);
-app.use("/api/messages", messageNotificationsRoutes);
+
+const authenticatedApiRouter = express.Router();
+
+authenticatedApiRouter.use(tokenExtractor);
+authenticatedApiRouter.use(checkTokenExistence);
+
+authenticatedApiRouter.use("/users", usersRoute);
+authenticatedApiRouter.use("/products", productsRoutes);
+authenticatedApiRouter.use("/categories", categoriesRoutes);
+authenticatedApiRouter.use("/product-sales", salesRoutes);
+authenticatedApiRouter.use("/fuel-sales", fuelSalesRoutes);
+authenticatedApiRouter.use("/salessummary", salesSummaryRoutes);
+authenticatedApiRouter.use("/daily-sales", dailySalesRoutes);
+authenticatedApiRouter.use("/fuel", fuelsRoutes);
+authenticatedApiRouter.use("/tank", tankRoutes);
+authenticatedApiRouter.use("/messages", messageNotificationsRoutes);
+
+app.use("/api", authenticatedApiRouter);
 
 app.use("*", (_req, res) => {
 	res.sendFile(path.join(__dirname, '..', 'dist', "index.html"));

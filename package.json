@@ -10,6 +10,8 @@
     "test:server": "npm run test --prefix pumppro-server",
     "clean:dist": "rimraf pumppro-client/dist && rimraf dist pumppro-server/dist",
     "copy:client-to-server": "cpr pumppro-client/dist pumppro-server/dist -f",
+    "install:client": "npm install --prefix pumppro-client",
+    "install:server": "npm install --prefix pumppro-server",
     "build:client": "npm run build --prefix pumppro-client",
     "build:server": "npm run build --prefix pumppro-server",
     "lint:sequential": "npm run lint:server && npm run lint:client",
@@ -18,7 +20,7 @@
     "lint": "concurrently \"npm:lint:*\"",
     "test": "concurrently \"npm:test:*\"",
     "build": "concurrently \"npm:build:*\"",
-    "build:integrated": "npm run clean:dist && npm run build:client && npm run copy:client-to-server",
+    "build:integrated": "npm run clean:dist && npm run install:client && npm run build:client && npm run copy:client-to-server && npm run install:server",
     "ci:validate": "npm run lint && npm run test:sequential",
     "ci:full": "npm run ci:validate && npm run build"
   },

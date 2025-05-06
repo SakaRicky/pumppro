@@ -30,9 +30,9 @@ jobs:
                 CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
                 CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
               run: npm run test:sequential # concurent one not working
-            # - name: Trigger Diployment
-            #   uses: sws2apps/render-deployment@main
-            #   with:
-            #     serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-            #     apiKey: ${{ secrets.RENDER_API_KEY }}
-            #     multipleDeployment: false
+            - name: Trigger Diployment
+              uses: sws2apps/render-deployment@main
+              with:
+                serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+                apiKey: ${{ secrets.RENDER_API_KEY }}
+                multipleDeployment: false

@@ -15,6 +15,7 @@ type DataGridProps = {
   rows: (Product | Sale | SalesSummary | DailySale | Fuel)[];
   searchInput?: boolean; // used to enable seach functionality
   columns: GridColDef<any, any, any>[];
+  disableSelectionOnClick?: boolean;
   handleSelected?: (ids: GridSelectionModel) => void;
   handleRowClick?: GridEventListener<"rowClick">;
 };
@@ -25,6 +26,7 @@ const MyDataGrid = ({
   checkboxSelection,
   columns,
   searchInput,
+  disableSelectionOnClick = true,
   handleSelected,
   handleRowClick,
 }: DataGridProps) => {
@@ -48,7 +50,7 @@ const MyDataGrid = ({
   return (
     <Box
       mt="1rem"
-      height="75vh"
+      height="100%"
       width="100%"
       sx={{
         "& .MuiDataGrid-root": {
@@ -96,6 +98,7 @@ const MyDataGrid = ({
         checkboxSelection={checkboxSelection || false}
         rowCount={(filteredRows && filteredRows.length) || 0}
         pagination
+        disableSelectionOnClick={disableSelectionOnClick}
         rowsPerPageOptions={[20, 50, 100]}
         components={{ Toolbar: DataGridCustomToolbar }}
         componentsProps={{

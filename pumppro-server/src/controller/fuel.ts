@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import {
 	validateExistingFuel,
-	validateFuelTankUpdate,
+	validateExistingTank,
 	validateNewFuel
 } from "../utils/validateData";
 
@@ -21,6 +21,7 @@ export const getFuels = async (_req: Request, res: Response) => {
 			quantity_theory: true,
 			quantity_actual: true,
 			created_at: true,
+			fuel_type: true,
 			updated_at: true
 		}
 	});
@@ -71,7 +72,7 @@ export const updateFuel = async (req: Request, res: Response) => {
 };
 
 export const refillFuel = async (req: Request, res: Response) => {
-	const fuelUpdate = validateFuelTankUpdate(req.body);
+	const fuelUpdate = validateExistingTank(req.body);
 
 	const fuel = await prisma.fuel.findUnique({ where: { id: fuelUpdate?.id } });
 
@@ -79,8 +80,8 @@ export const refillFuel = async (req: Request, res: Response) => {
 		await prisma.fuel.update({
 			where: { id: fuelUpdate.id },
 			data: {
-				quantity_theory: fuel.quantity_theory.add(fuelUpdate.quantity),
-				quantity_actual: fuel.quantity_actual.add(fuelUpdate.quantity)
+				quantity_theory: fuel.quantity_theory.add(fuelUpdate.capacity),
+				quantity_actual: fuel.quantity_actual.add(fuelUpdate.capacity)
 			}
 		});
 	}
@@ -89,7 +90,7 @@ export const refillFuel = async (req: Request, res: Response) => {
 };
 
 export interface DeleteFuelRequestBody {
-	ids: number[]; // Assuming IDs are strings
+	fuelID: number; // Assuming IDs are strings
 }
 
 export const deleteFuel = async (
@@ -97,15 +98,13 @@ export const deleteFuel = async (
 	res: Response
 ) => {
 	const body = req.body;
-	const fuelIdsToDelete = body.ids;
+	const fuelIdToDelete = body.fuelID;
 
-	await prisma.fuel.deleteMany({
+	const deletedFuel = await prisma.fuel.delete({
 		where: {
-			id: {
-				in: fuelIdsToDelete
-			}
+			id: fuelIdToDelete
 		}
 	});
 
-	return res.sendStatus(200);
+	return res.send(deletedFuel);
 };

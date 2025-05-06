@@ -4,6 +4,7 @@ import {
   Grid,
   MenuItem,
   TextField,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import React, { ChangeEvent } from "react";
@@ -40,6 +41,8 @@ export const RefillFuelForm = ({ fuels, fetchFuels }: UpdateFuelFormProps) => {
   const theme = useTheme();
 
   const notify = useNotify();
+
+  const isNoTMobileTablet = useMediaQuery("(min-width: 600px)");
 
   // Pumpist must submit the index and fuel types
   const fuelUpdateValidationSchema = yup.object({
@@ -82,12 +85,12 @@ export const RefillFuelForm = ({ fuels, fetchFuels }: UpdateFuelFormProps) => {
             <Form>
               <Box
                 sx={{
-                  display: "flex",
+                  display: isNoTMobileTablet ? "flex" : "block",
                   gap: "1rem",
                 }}
               >
                 <Grid container spacing={2}>
-                  <Grid item xs={6} sm={2}>
+                  <Grid item xs={6} sm={4}>
                     <FormControl fullWidth>
                       <TextField
                         select
@@ -116,28 +119,36 @@ export const RefillFuelForm = ({ fuels, fetchFuels }: UpdateFuelFormProps) => {
                       </TextField>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={6} sm={2}>
-                    <TextField
-                      id="quantity"
-                      label="Quantity"
-                      type="number"
-                      size="small"
-                      value={values.quantity}
-                      InputProps={{
-                        inputProps: {
-                          min: 0,
-                        },
-                      }}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFieldValue("quantity", e.target.value)
-                      }
-                      error={Boolean(errors.quantity) && touched.quantity}
-                      helperText={touched.quantity && errors.quantity}
-                    />
+                  <Grid item xs={6} sm={4}>
+                    <FormControl fullWidth>
+                      <TextField
+                        id="quantity"
+                        label="Quantity"
+                        type="number"
+                        size="small"
+                        value={values.quantity}
+                        InputProps={{
+                          inputProps: {
+                            min: 0,
+                          },
+                        }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFieldValue("quantity", e.target.value)
+                        }
+                        error={Boolean(errors.quantity) && touched.quantity}
+                        helperText={touched.quantity && errors.quantity}
+                      />
+                    </FormControl>
                   </Grid>
                 </Grid>
 
-                <Box sx={{ width: "20%" }}>
+                <Box
+                  sx={
+                    isNoTMobileTablet
+                      ? { width: "40%" }
+                      : { width: "100%", mt: "1rem" }
+                  }
+                >
                   <LoadingButton
                     type="submit"
                     loading={updateFuelMutation.isLoading}
@@ -154,8 +165,8 @@ export const RefillFuelForm = ({ fuels, fetchFuels }: UpdateFuelFormProps) => {
                     }}
                   >
                     <FormattedMessage
-                      id="load_fuel"
-                      defaultMessage="Load Fuel"
+                      id="record_fuel"
+                      defaultMessage="Record Fuel"
                     />
                   </LoadingButton>
                 </Box>

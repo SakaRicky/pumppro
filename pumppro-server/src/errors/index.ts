@@ -1,3 +1,4 @@
+
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { MulterError } from "multer";
@@ -19,11 +20,49 @@ export const errorHandler = (
 	}
 	if (error instanceof PrismaClientKnownRequestError) {
 		console.log(
-			"error happened in Prisma.PrismaClientKnownRequestError with: ",
+			"Error line 22 error happened in Prisma.PrismaClientKnownRequestError with: ",
 			error
 		);
 
-		return response.status(500).send({ error: "Error happened in server" });
+		switch (error.code) {
+			case 'P2003': {
+				const fieldNameString = error.meta?.field_name; // Get the potentially non-string value
+
+				const relatedTableMatch = typeof fieldNameString === 'string'
+					? /^(.+?)_/.exec(fieldNameString)
+					: null; 
+
+				const relatedTable = relatedTableMatch ? relatedTableMatch[1] : 'related records'; // Default fallback
+
+				const userMessage = `Cannot delete this Fuel because it is still used in ${relatedTable}. Please delete the associated ${relatedTable} entries first.`;
+
+				return response.status(409).json({ // 409 Conflict is the appropriate status code
+					error: userMessage,
+				});
+			}
+
+			case 'P2025': { // Record to delete does not exist
+				const modelName = error.meta?.modelName ?? 'Record';
+				if (typeof modelName === "string") {
+					return response.status(404).json({
+						error: `${modelName} not found.`,
+						// prismaCode: err.code, prismaMeta: err.meta
+					});
+				}
+				break;
+			}
+
+			default: {
+				// Handle other known Prisma errors generically
+				console.error('Unhandled Prisma Known Error Code:', error.code, error.meta);
+				return response.status(400).json({ // Use 400 Bad Request or 500 Internal Server Error
+					error: `A database error occurred. Code: ${error.code}`, // Provide less detail in production
+					// prismaCode: err.code,
+					// prismaMeta: err.meta,
+				});
+			}
+
+		}
 	}
 
 	if (error instanceof jwt.TokenExpiredError) {

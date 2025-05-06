@@ -103,11 +103,12 @@ const CreatableSelectInput = <T extends BaseOption>({
 
   const selectedValue = useMemo<SelectOption | null>(() => {
     const currentID = field.value;
+
     if (currentID === null || currentID === undefined || currentID === "") {
       return null;
     }
 
-    const currentIdStr = currentID.toString();
+    const currentIdStr = currentID;
 
     // check whether it's the just created option and return the label
     if (currentIdStr === justCreatedOption?.id.toString()) {

@@ -139,6 +139,33 @@ export const validateNewFuelSale = (data: unknown): NewFuelSale | undefined => {
 	return parsedData;
 };
 
+const NewTankSchema = z.object({
+	name: z.string(),
+	capacity: z.coerce.number()
+});
+
+export const validateNewTank = (
+	data: unknown
+): { name: string; capacity: number } | undefined => {
+	const parsedData = NewTankSchema.parse(data);
+
+	return parsedData;
+};
+
+const ExistingTankSchema = z.object({
+	id: z.coerce.number(),
+	name: z.string(),
+	capacity: z.coerce.number()
+});
+
+export const validateExistingTank = (
+	data: unknown
+): { id: number; name: string; capacity: number } | undefined => {
+	const parsedData = ExistingTankSchema.parse(data);
+
+	return parsedData;
+};
+
 const NewFuelSchema = z.object({
 	name: z.string().min(3),
 	purchase_price: createDecimalSchema(),
@@ -221,19 +248,6 @@ export const validateExistingDailySale = (
 	data: unknown
 ): DailySaleSummary | undefined => {
 	const parsedData = ExistingDailySaleSchema.parse(data);
-
-	return parsedData;
-};
-
-const FuelTankUpdateSchema = z.object({
-	id: z.coerce.number(),
-	quantity: z.coerce.number()
-});
-
-export const validateFuelTankUpdate = (
-	data: unknown
-): { id: number; quantity: number } | undefined => {
-	const parsedData = FuelTankUpdateSchema.parse(data);
 
 	return parsedData;
 };

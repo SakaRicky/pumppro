@@ -5,7 +5,6 @@ import {
 	validateNewFuelSale,
 	validateExistingFuelSale
 } from "../utils/validateData";
-import { DeleteFuelRequestBody } from "./fuel";
 import { SaleFilterCriteria } from "./sales";
 // import { createNotificationForAdmins } from "./utils/notification";
 
@@ -184,8 +183,12 @@ export const deleteFuelSale = async (
 	return res.sendStatus(200);
 };
 
+export interface DeleteFuelSalesRequestBody {
+	ids: number[]; // Assuming IDs are strings
+}
+
 export const deleteManyFuelSale = async (
-	req: Request<unknown, unknown, DeleteFuelRequestBody>,
+	req: Request<unknown, unknown, DeleteFuelSalesRequestBody>,
 	res: Response
 ) => {
 	const body = req.body;

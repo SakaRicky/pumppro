@@ -29,7 +29,8 @@
 	"edit_fuel": "Modifier Carburant",
 	"add_fuel": "Ajouter Carburant",
 	"delete_fuel": "Supprimer Carburant",
-	"load_fuel": "Charger Carburant",
+	"record_fuel": "Enregistrer Carburant",
 	"revenue": "Recettes",
-	"all_cat_revenue": "recettes toute categorie"
+	"all_cat_revenue": "recettes toute categorie",
+	"record_fuel_delivery": "Enregistrement de la livraison de carburant"
 }

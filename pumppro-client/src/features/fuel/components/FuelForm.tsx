@@ -8,7 +8,7 @@ import { useNotify } from "hooks/useNotify";
 import { forwardRef } from "react";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router-dom";
-import { Fuel, NewFuel } from "types";
+import { Fuel, FuelCategories, NewFuel } from "types";
 import * as yup from "yup";
 import AddIcon from "@mui/icons-material/Add";
 import CreatableSelectInput from "components/inputs/CreatableSelect";
@@ -19,6 +19,8 @@ import { useFuels } from "./hooks/useFuels";
 import { UseTanks } from "features/tank/hooks/useTank";
 import withAuth from "hoc/withAuth";
 import { saveTank } from "services/tank";
+import CloseIcon from "@mui/icons-material/Close";
+import { SelectInput } from "components/inputs/SelectInput";
 
 type FuelFormProps = {
   fuel?: Fuel;
@@ -46,6 +48,8 @@ const FuelForm = forwardRef(
       refetch: refetchTank,
     } = UseTanks();
 
+    console.log("🚀 ~ fuelsData:", fuelsData);
+
     const notify = useNotify();
 
     if (fuelsError) {
@@ -66,8 +70,16 @@ const FuelForm = forwardRef(
       quantity_theory: isEditMode ? fuel.quantity_theory : 0,
       quantity_actual: isEditMode ? fuel.quantity_actual : 0,
       description: isEditMode ? fuel.name : "",
+      fuel_type: isEditMode ? fuel.fuel_type : FuelCategories.FUEL,
       tank_id: isEditMode ? fuel.tank.id : 0,
     };
+
+    const fuelSelectOptions = [
+      { names: FuelCategories.FUEL, id: FuelCategories.FUEL },
+      { names: FuelCategories.GASOIL, id: FuelCategories.GASOIL },
+      { names: FuelCategories.GAZ, id: FuelCategories.GAZ },
+      { names: FuelCategories.PETROL, id: FuelCategories.PETROL },
+    ];
 
     const createProductValidationSchema = yup.object({
       name: yup.string().required("Names is required"),
@@ -101,6 +113,11 @@ const FuelForm = forwardRef(
       onMutate: (variables) => {
         return { successMessage: "Updated Product Successfully" };
       },
+      onError: (error: unknown) => {
+        if (error instanceof Error) {
+          notify("Fuel Update Error", error.message, "error");
+        }
+      },
     });
 
     const onNewFuelSubmit = async (data: NewFuel) => {
@@ -110,7 +127,9 @@ const FuelForm = forwardRef(
             ...data,
             id: fuel.id,
             created_at: fuel.created_at,
-            updatedAt: fuel.updated_at,
+            updated_at: fuel.updated_at,
+            tank: fuel.tank,
+            tank_id: fuel.tank.id,
           });
         } else {
           await createFuelMutation.mutateAsync(data);
@@ -141,8 +160,18 @@ const FuelForm = forwardRef(
           height: "80%",
           mt: "5rem",
           overflowY: "auto",
+          position: "relative",
         }}
       >
+        <CloseIcon
+          onClick={handleCloseModal}
+          sx={{
+            fontSize: 30,
+            position: "absolute",
+            right: "2rem",
+            top: "1rem",
+          }}
+        />
         <Typography variant="h2" fontSize="2rem" mb="2rem" textAlign="center">
           <FormattedMessage
             id="form.fuel.heading"
@@ -154,6 +183,7 @@ const FuelForm = forwardRef(
           validationSchema={createProductValidationSchema}
           validate={() => ({})}
           onSubmit={(values) => {
+            console.log("🚀 ~ values:", values);
             onNewFuelSubmit(values);
           }}
         >
@@ -213,7 +243,17 @@ const FuelForm = forwardRef(
                   name="selling_price"
                 />
               </Grid>
-
+              <Grid item xs={12}>
+                <SelectInput
+                  name="fuel_type"
+                  options={fuelSelectOptions}
+                  label="Fuel Type"
+                  value={{
+                    names: initialValues.fuel_type,
+                    id: initialValues.fuel_type,
+                  }}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextInput
                   type="text"

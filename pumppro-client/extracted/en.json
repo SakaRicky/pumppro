@@ -156,5 +156,8 @@
   },
   "workers": {
     "defaultMessage": "Workers"
+  },
+  "record_fuel_delivery": {
+    "defaultMessage": "Record Fuel Delivery"
   }
 }

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { validateFuelTankUpdate } from "../utils/validateData";
+import { validateExistingTank } from "../utils/validateData";
 import { NewTank } from "../types";
 
 const prisma = new PrismaClient();
@@ -38,7 +38,7 @@ export const saveTank = async (req: Request, res: Response) => {
 };
 
 export const updateTank = async (req: Request, res: Response) => {
-	const fuelUpdate = validateFuelTankUpdate(req.body);
+	const fuelUpdate = validateExistingTank(req.body);
 
 	console.log("fuelUpdate: ", fuelUpdate);
 
@@ -55,8 +55,8 @@ export const updateTank = async (req: Request, res: Response) => {
 	const updated = await prisma.fuel.update({
 		where: { id: fuelUpdate.id },
 		data: {
-			quantity_theory: fuel.quantity_theory.add(fuelUpdate.quantity),
-			quantity_actual: fuel.quantity_actual.add(fuelUpdate.quantity)
+			quantity_theory: fuel.quantity_theory.add(fuelUpdate.capacity),
+			quantity_actual: fuel.quantity_actual.add(fuelUpdate.capacity)
 		}
 	});
 	console.log("🚀 ~ file: fuel.ts:53 ~ updateFuel ~ updated:", updated);

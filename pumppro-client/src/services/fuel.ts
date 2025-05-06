@@ -25,12 +25,9 @@ export const saveFuel = async (fuel: NewFuel) => {
   }
 };
 
-export const updateFuel = async (
-  fuel: NewFuel & { id: number; created_at: Date; updatedAt: Date }
-) => {
+export const updateFuel = async (fuel: Fuel) => {
   try {
-    console.log("updating fuel service");
-    const res = await api.put("/fuel", fuel);
+    const res = await api.put("/fuel", { ...fuel });
     return res.data;
   } catch (error: any) {
     console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
@@ -53,15 +50,13 @@ export const refillFuel = async (fuel: { id: number; quantity: number }) => {
   }
 };
 
-export const deleteFuel = async (ids: number[]) => {
+export const deleteFuel = async (fuelID: number) => {
   console.log("deleting fuel service");
   try {
-    const res = await api.delete("/fuel", { data: { ids: ids } });
+    const res = await api.delete("/fuel", { data: { fuelID: fuelID } });
     return res.data;
   } catch (error: any) {
-    console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
-    if (error.response.status === 409) {
-      throw new Error(error.response.data.error);
-    }
+    console.log("🚀 ~ file: fuel.ts:13 ~ deleteFuel ~ error", error);
+    throw new Error(error.response.data.error);
   }
 };

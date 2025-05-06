@@ -22,8 +22,8 @@ export const SelectInput = ({
   const { setFieldValue } = useFormikContext();
 
   const [localValue, setLocalValue] = useState<
-    User | { names: string; id: string }
-  >();
+    User | { names: string; id: string } | undefined
+  >(value);
 
   const handleLocalChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

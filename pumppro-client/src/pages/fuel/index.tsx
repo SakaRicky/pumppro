@@ -4,8 +4,6 @@ import TankGauge from "features/fuel/components/TankGauge";
 import { Fuel, FuelCategories } from "types";
 import { RefillFuelForm } from "features/dashboard/components/RefillFuelForm";
 import MyDataGrid from "components/MyDataGrid";
-import { fuelTableColumns } from "features/fuel/components/FuelTableColumns";
-import { GridSelectionModel } from "@mui/x-data-grid";
 import { LoadingButton } from "@mui/lab";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,25 +16,26 @@ import { useNotify } from "hooks/useNotify";
 import FuelForm from "features/fuel/components/FuelForm";
 import withAuth from "hoc/withAuth";
 import { useFuels } from "features/fuel/components/hooks/useFuels";
+import { GridColDef } from "@mui/x-data-grid";
 
 export const getFuelFromFuels = (
   fuels: Fuel[] | undefined
 ): Fuel | undefined => {
-  const fuel = fuels?.find((f) => f.name === "Fuel");
+  const fuel = fuels?.find((f) => f.fuel_type === FuelCategories.FUEL);
   return fuel;
 };
 
 export const getGasoilFromFuels = (
   fuels: Fuel[] | undefined
 ): Fuel | undefined => {
-  const gasoil = fuels?.find((f) => f.name === "Gasoil");
+  const gasoil = fuels?.find((f) => f.fuel_type === FuelCategories.GASOIL);
   return gasoil;
 };
 
 export const getPetrolFromFuels = (
   fuels: Fuel[] | undefined
 ): Fuel | undefined => {
-  const petrol = fuels?.find((f) => f.name === "Petrol");
+  const petrol = fuels?.find((f) => f.fuel_type === FuelCategories.PETROL);
   return petrol;
 };
 
@@ -60,19 +59,122 @@ const Fuels = () => {
     refetch: refetchFuels,
   } = useFuels();
 
-  const [selectedFuelIDs, setSelectedFuelIDs] = useState<number[]>([]);
-
-  const fuelToEdit =
-    selectedFuelIDs.length === 1
-      ? fuels?.find((fuel) => fuel.id === selectedFuelIDs[0])
-      : undefined;
-
-  const [addFuelModal, setAddFuelModal] = useState(false);
+  const [addEditFuelModal, setAddEditFuelModal] = useState(false);
 
   const notify = useNotify();
 
-  const handleSelectedFuel = (fuelIDs: GridSelectionModel) => {
-    setSelectedFuelIDs(fuelIDs.map((id) => Number(id)));
+  const fuelTableColumns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Name",
+      width: 200,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      width: 200,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "quantity_actual",
+      headerName: "Phisical Quantity",
+      headerAlign: "center",
+      align: "center",
+      width: 200,
+    },
+    {
+      field: "quantity_theory",
+      headerName: "Theory Quantity",
+      headerAlign: "center",
+      align: "center",
+      width: 200,
+    },
+    {
+      field: "tank",
+      headerName: "Tank",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        // Gaz don't have a value for tank
+        if (params.value) {
+          return params.value.name || "";
+        } else {
+          return "";
+        }
+      },
+    },
+    {
+      field: "id",
+      headerName: "Action",
+      headerAlign: "center",
+      align: "center",
+      width: 400,
+      renderCell: (params) => {
+        return (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              p: "1rem 0.5rem",
+            }}
+          >
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button
+                endIcon={<EditIcon />}
+                sx={{
+                  backgroundColor: theme.palette.secondary.main,
+                  color: theme.palette.grey[50],
+
+                  "&:hover": {
+                    backgroundColor: theme.palette.secondary.dark,
+                  },
+                }}
+                onClick={() => handleFuelEdit(Number(params.id))}
+              >
+                <FormattedMessage id="edit_fuel" defaultMessage="Edit Fuel" />
+              </Button>
+              <LoadingButton
+                onClick={() => handleDeleteFuel(Number(params.id))}
+                loading={deleteFuelMutation.isLoading}
+                endIcon={<DeleteIcon />}
+                loadingPosition="end"
+                sx={{
+                  backgroundColor: theme.palette.error.main,
+                  color: theme.palette.grey[50],
+
+                  "&:hover": {
+                    backgroundColor: theme.palette.error.dark,
+                  },
+                }}
+              >
+                <FormattedMessage
+                  id="delete_fuel"
+                  defaultMessage="Delete Fuel"
+                />
+              </LoadingButton>
+            </Box>
+          </Box>
+        );
+      },
+    },
+  ];
+
+  const [selectedFuelID, setSelectedFuelID] = useState<number>();
+
+  const fuelToEdit = fuels?.find((f) => f.id === selectedFuelID);
+
+  const handleFuelEdit = (fuelID: number) => {
+    setAddEditFuelModal(true);
+    setSelectedFuelID(fuelID);
   };
 
   const deleteFuelMutation = useMutation({
@@ -83,17 +185,17 @@ const Fuels = () => {
     },
   });
 
-  const handleDeleteFuel = async () => {
+  const handleDeleteFuel = async (fuelIDToDelete: number) => {
     try {
-      await deleteFuelMutation.mutateAsync(selectedFuelIDs);
+      await deleteFuelMutation.mutateAsync(fuelIDToDelete);
       refetchFuels();
     } catch (error: any) {
       notify("Login Error", error.message, "error");
     }
   };
 
-  const handleCloseAddFuelModal = () => {
-    setAddFuelModal(false);
+  const handleCloseaddEditFuelModal = () => {
+    setAddEditFuelModal(false);
     refetchFuels();
   };
 
@@ -102,21 +204,25 @@ const Fuels = () => {
   const petrol = getPetrolFromFuels(fuels);
 
   return (
-    <Box sx={{ m: "1rem" }}>
+    <Box sx={{ m: "1rem", pb: "0.5rem" }}>
       <Modal
-        open={addFuelModal}
-        onClose={handleCloseAddFuelModal}
+        open={addEditFuelModal}
+        onClose={handleCloseaddEditFuelModal}
         aria-labelledby="Worker Form"
         aria-describedby="Form used to add or edit worker"
         sx={{
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
+          height: "60%",
+          width: { xs: "100%", lg: "50%" },
+          margin: "0 auto",
         }}
       >
         <>
           <FuelForm
             fuel={fuelToEdit}
-            handleCloseModal={handleCloseAddFuelModal}
+            handleCloseModal={handleCloseaddEditFuelModal}
           />
         </>
       </Modal>
@@ -140,24 +246,19 @@ const Fuels = () => {
           label="Petrol 15000L"
         />
       </Box>
+
       <Box
         sx={{
-          m: "1rem 0",
-          p: "1rem",
+          m: "0.5rem 0",
+          p: "0.5rem 1rem",
           boxShadow:
             "rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset",
         }}
       >
-        <Typography variant="h2" p={1} textAlign="center">
+        <Typography variant="h3">
           <FormattedMessage
-            id="fuel_state"
-            defaultMessage="Update Fuel States"
-          />
-        </Typography>
-        <Typography>
-          <FormattedMessage
-            id="amount_deleivered"
-            defaultMessage="Amount delivered"
+            id="record_fuel_delivery"
+            defaultMessage="Record Fuel Delivery"
           />
         </Typography>
         <Box m="1rem 0">
@@ -165,66 +266,10 @@ const Fuels = () => {
         </Box>
       </Box>
 
-      <Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {fuelToEdit ? (
-              <Button
-                endIcon={<EditIcon />}
-                sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.grey[50],
-
-                  "&:hover": {
-                    backgroundColor: theme.palette.secondary.dark,
-                  },
-                }}
-                onClick={() => setAddFuelModal(true)}
-              >
-                <FormattedMessage id="edit_fuel" defaultMessage="Edit Fuel" />
-              </Button>
-            ) : (
-              <Button
-                endIcon={<AddIcon />}
-                sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.grey[50],
-
-                  "&:hover": {
-                    backgroundColor: theme.palette.secondary.dark,
-                  },
-                }}
-                onClick={() => setAddFuelModal(true)}
-              >
-                <FormattedMessage id="add_fuel" defaultMessage="Add Fuel" />
-              </Button>
-            )}
-            {selectedFuelIDs?.length > 0 && (
-              <LoadingButton
-                onClick={handleDeleteFuel}
-                loading={deleteFuelMutation.isLoading}
-                endIcon={<DeleteIcon />}
-                loadingPosition="end"
-                sx={{
-                  backgroundColor: theme.palette.error.main,
-                  color: theme.palette.grey[50],
-
-                  "&:hover": {
-                    backgroundColor: theme.palette.error.dark,
-                  },
-                }}
-              >
-                <FormattedMessage
-                  id="delete_fuel"
-                  defaultMessage="Delete Fuel"
-                />
-              </LoadingButton>
-            )}
-          </Box>
-        </Box>
+      <Box sx={{ height: "42vh" }}>
         {fuels && (
           <MyDataGrid
-            handleSelected={handleSelectedFuel}
+            disableSelectionOnClick={true}
             columns={fuelTableColumns}
             isLoading={isLoading}
             rows={fuels}
@@ -232,6 +277,25 @@ const Fuels = () => {
             checkboxSelection
           />
         )}
+      </Box>
+      <Box sx={{ my: 2, display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          endIcon={<AddIcon />}
+          sx={{
+            backgroundColor: theme.palette.secondary.main,
+            color: theme.palette.grey[50],
+
+            "&:hover": {
+              backgroundColor: theme.palette.secondary.dark,
+            },
+          }}
+          onClick={() => {
+            setSelectedFuelID(0);
+            setAddEditFuelModal(true);
+          }}
+        >
+          <FormattedMessage id="add_fuel" defaultMessage="Add Fuel" />
+        </Button>
       </Box>
     </Box>
   );

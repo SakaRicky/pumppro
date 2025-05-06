@@ -168,7 +168,9 @@ export type Fuel = {
   quantity_actual: number;
   name: string;
   description: string;
+  fuel_type: FuelCategories;
   tank: Tank;
+  tank_id: number;
   created_at: Date;
   updated_at: Date;
 };

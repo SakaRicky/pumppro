@@ -214,17 +214,17 @@ const Fuels = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "60%",
-          width: { xs: "100%", lg: "50%" },
+          height: "90%",
+          width: { xs: "90%", lg: "50%" },
           margin: "0 auto",
         }}
       >
-        <>
+        <Box>
           <FuelForm
             fuel={fuelToEdit}
             handleCloseModal={handleCloseaddEditFuelModal}
           />
-        </>
+        </Box>
       </Modal>
       <Box sx={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
         <TankGauge

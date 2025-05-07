@@ -12,11 +12,14 @@ export const errorHandler = (
 	next: NextFunction
 ) => {
 	if (error instanceof ZodError) {
-		console.log(
-			"error happened in ZodError with error.errors: ",
-			error.message
-		);
-		return response.status(400).send({ error: error.message });
+		// Use Zod's flatten method
+        const flattenedErrors = error.flatten();
+
+        return response.status(400).json({
+            error: "Validation failed. Please correct the indicated fields.",
+            formErrors: flattenedErrors.formErrors, // Errors not tied to a field
+            fieldErrors: flattenedErrors.fieldErrors // Errors per field
+        });
 	}
 	if (error instanceof PrismaClientKnownRequestError) {
 		console.log(

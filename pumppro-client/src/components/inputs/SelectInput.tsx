@@ -1,29 +1,37 @@
 import React, { ChangeEvent, useState } from "react";
-import { Box, FormControl, MenuItem, TextField } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  TextField,
+  TextFieldProps,
+} from "@mui/material";
 import { useField, useFormikContext } from "formik";
-import { User } from "types";
 
-interface SelectInputProps {
+interface SelectInputProps<T> {
   name: string;
-  options: User[] | { names: string; id: string }[];
+  options: T[];
   label: string;
-  value?: User | { names: string; id: string };
-  handleChange?: (value: User | { names: string; id: string }) => void;
+  value?: T;
+  handleChange?: (value: T) => void;
 }
 
-export const SelectInput = ({
+interface BaseOption {
+  names: string;
+  id: string;
+}
+
+export const SelectInput = <T extends BaseOption>({
   name,
   options,
   label,
   value,
   handleChange,
-}: SelectInputProps) => {
+}: SelectInputProps<T>) => {
   const [field, meta] = useField(name);
   const { setFieldValue } = useFormikContext();
 
-  const [localValue, setLocalValue] = useState<
-    User | { names: string; id: string } | undefined
-  >(value);
+  const [localValue, setLocalValue] = useState<T | undefined>(value);
 
   const handleLocalChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -39,7 +47,7 @@ export const SelectInput = ({
     }
   };
 
-  const configSelectGroup: any = {
+  const configSelectGroup: TextFieldProps = {
     onBlur: field.onBlur,
     onChange:
       handleLocalChange !== undefined ? handleLocalChange : field.onChange,

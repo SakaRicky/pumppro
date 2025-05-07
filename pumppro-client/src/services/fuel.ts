@@ -1,5 +1,6 @@
 import { Fuel, NewFuel } from "types";
 import api from "./api";
+import { AxiosError } from "axios";
 
 export const getFuels = async (): Promise<Fuel[]> => {
   const res = await api.get<Fuel[]>("/fuel");
@@ -42,11 +43,15 @@ export const refillFuel = async (fuel: { id: number; quantity: number }) => {
     console.log("updating fuel service");
     const res = await api.patch("/fuel", fuel);
     return res.data;
-  } catch (error: any) {
-    console.log("🚀 ~ file: users.ts:13 ~ saveUser ~ error", error);
-    if (error.response.status === 409) {
-      throw new Error(error.response.data.error);
+  } catch (error: unknown) {
+    console.log("🚀 ~ file: users.ts:46 ~ refillFuel ~ error", error);
+    if (error instanceof AxiosError && error.response) {
+      if (error.response.status === 409) {
+        throw new Error(error.response.data.error);
+      }
     }
+
+    throw error;
   }
 };
 

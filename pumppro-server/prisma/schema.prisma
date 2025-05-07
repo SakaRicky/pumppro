@@ -148,8 +148,8 @@ model Fuel {
   name            String
   purchase_price  Decimal
   selling_price   Decimal
-  quantity_theory Decimal   @db.Decimal(10, 3)
-  quantity_actual Decimal   @db.Decimal(10, 3)
+  quantity_theory Int
+  quantity_actual Int
   description     String
   tank            Tank      @relation("FuelTank", fields: [tank_id], references: [id])
   tank_id         Int       @unique

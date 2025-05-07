@@ -11,7 +11,7 @@ import {
 	testApi
 } from "./helper/setupTestDB";
 import assert from "assert";
-import { getAllSales, getAllSalesDetails } from "./helper/testsHelperFunctions";
+import { getAllSales, getAllSalesDetails, ZodValidationError } from "./helper/testsHelperFunctions";
 import { Decimal } from "@prisma/client/runtime/library";
 import { NewSaleDetail } from "../types";
 
@@ -149,13 +149,17 @@ describe("Product Sales", () => {
 			// Since in this test I save a new daily sale
 			const allSales = await getAllSales();
 			
+			const error = response.body as ZodValidationError;
+
+			
 			assert.notStrictEqual(response.status, 200);
 			assert.strictEqual(
-				(response.body as { error: string }).error.includes("user_id"),
+				"user_id" in error.fieldErrors,
 				true
 			);
 			assert.strictEqual(allSales.length, initialProductsSoldInDB.length);
 		});
+			
 
 		test("should throw error and not save sale if user not in db", async () => {
 			saleDetailToSave.user_id = "a_user_id";
@@ -213,15 +217,15 @@ describe("Product Sales", () => {
 			const allSaleDetails = await getAllSalesDetails();
 
 			assert.notStrictEqual(response.status, 200);
-			assert.ok(
-				(response.body as { error: string }).error.includes(
-					"Number must be greater than 0", 
-				),
-				"Expected error message not found"
-			);
+
+			const error = response.body as ZodValidationError;
+			
+			assert("sale_details" in error.fieldErrors);
+			assert(error.fieldErrors.sale_details[0].includes("greater than 0"));
 			assert.strictEqual(allSales.length, initialProductsSoldInDB.length);
 			assert.strictEqual(allSaleDetails.length, initialSaleDetailsInDB.length);
 		});
+			
 
 		test("should throw error if no sale details are provided", async () => {
 			saleDetailToSave.sale_details = [];
@@ -237,12 +241,11 @@ describe("Product Sales", () => {
 			const allSaleDetails = await getAllSalesDetails();
 
 			assert.notStrictEqual(response.status, 200);
-			assert.ok(
-				(response.body as { error: string }).error.includes(
-					"Array must contain at least 1 element(s)"
-				),
-				"Expected error message not found"
-			);
+
+			const error = response.body as ZodValidationError;
+
+			assert("sale_details" in error.fieldErrors);
+			assert(error.fieldErrors.sale_details[0].includes("at least 1 element(s)"));
 			assert.strictEqual(allSales.length, initialProductsSoldInDB.length);
 			assert.strictEqual(allSaleDetails.length, initialSaleDetailsInDB.length);
 		});

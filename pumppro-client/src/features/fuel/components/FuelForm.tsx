@@ -48,8 +48,6 @@ const FuelForm = forwardRef(
       refetch: refetchTank,
     } = UseTanks();
 
-    console.log("🚀 ~ fuelsData:", fuelsData);
-
     const notify = useNotify();
 
     if (fuelsError) {
@@ -156,8 +154,8 @@ const FuelForm = forwardRef(
           boxShadow:
             "rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(4, 110, 174) 0px 0px 0px 3px",
           backgroundColor: theme.palette.background.alt,
-          width: "60%",
-          height: "80%",
+          width: "100%",
+          height: "100%",
           mt: "5rem",
           overflowY: "auto",
           position: "relative",

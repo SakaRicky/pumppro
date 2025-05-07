@@ -1,6 +1,12 @@
 import { DailySalesSummary, Sale, SaleDetail } from "@prisma/client";
 import prisma from "../../../client";
 
+export interface ZodValidationError {
+	error: string;
+	formErrors: string[];
+	fieldErrors: Record<string, string[]>
+}
+
 export const getAllDailySales = async (): Promise<DailySalesSummary[]> => {
 	return await prisma.dailySalesSummary.findMany({
 		select: {

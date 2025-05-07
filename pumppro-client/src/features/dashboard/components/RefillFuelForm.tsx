@@ -59,6 +59,11 @@ export const RefillFuelForm = ({ fuels, fetchFuels }: UpdateFuelFormProps) => {
     onMutate: (variables) => {
       return { successMessage: "Refilled was Successful" };
     },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        notify("Login Error", error.message, "error");
+      }
+    },
   });
 
   const saveFuelUpdate = async (

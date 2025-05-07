@@ -10,7 +10,8 @@ import {
 import assert from "assert";
 import {
 	getAllDailySales,
-	getDailySaleFromID
+	getDailySaleFromID,
+	ZodValidationError
 } from "./helper/testsHelperFunctions";
 import { DailySalesSummary } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -134,12 +135,18 @@ describe("Update an existing daily sale", () => {
 
 		const updatedDailySales = await getDailySaleFromID(dailySaleToUpdate.id);
 		assert.strictEqual(errorResponse.status, 400);
-		assert(
-			(errorResponse.body as { error: string }).error.includes(
-				"Invalid date"
-			),
-			"Error message should include 'Invalid date'"
-		);
+
+		const error = errorResponse.body as ZodValidationError;
+
+		console.log("🚀 ~ test ~ error:", error)
+
+		assert("user_id" in error.fieldErrors);
+		assert("date_of_sale_start" in error.fieldErrors);
+		assert("date_of_sale_stop" in error.fieldErrors);
+		assert("id" in error.fieldErrors);
+		assert("created_at" in error.fieldErrors);
+		assert("updated_at" in error.fieldErrors);
+		assert.equal(error.error, 'Validation failed. Please correct the indicated fields.');
 		assert(errorResponse.headers["content-type"], "application.json");
 		assert.notEqual(
 			updatedDailySales?.amount_given.toNumber(),

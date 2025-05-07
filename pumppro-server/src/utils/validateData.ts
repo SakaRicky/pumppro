@@ -166,12 +166,25 @@ export const validateExistingTank = (
 	return parsedData;
 };
 
+const FuelRefillSchema = z.object({
+	id: z.coerce.number(),
+	quantity: z.coerce.number()
+});
+
+export const validateExistingFuelRefill = (
+	data: unknown
+): { id: number; quantity: number } | undefined => {
+	const parsedData = FuelRefillSchema.parse(data);
+
+	return parsedData;
+};
+
 const NewFuelSchema = z.object({
 	name: z.string().min(3),
 	purchase_price: createDecimalSchema(),
 	selling_price: createDecimalSchema(),
-	quantity_theory: createDecimalSchema(),
-	quantity_actual: createDecimalSchema(),
+	quantity_theory: z.coerce.number(),
+	quantity_actual: z.coerce.number(),
 	fuel_type: z.enum([
 		FuelType.FUEL,
 		FuelType.GASOIL,

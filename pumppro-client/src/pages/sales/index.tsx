@@ -136,7 +136,7 @@ const Sales = () => {
   ) : (
     // Desktop view - This part was already correct as it returns a single <Box>
     <Box sx={{ p: 2, display: "flex", gap: "2rem" }}>
-      <Box sx={{ width: "55%" }}>
+      <Box sx={{ width: "55%", height: "60vh" }}>
         <Typography fontSize="3rem">
           <FormattedMessage id="sales" defaultMessage="Sales" />
         </Typography>

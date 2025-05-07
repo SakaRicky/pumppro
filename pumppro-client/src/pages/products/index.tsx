@@ -276,16 +276,18 @@ const Products = () => {
             )}
           </Box>
         </Box>
-        {data && (
-          <MyDataGrid
-            handleSelected={handleSelectedProducts}
-            columns={columns}
-            isLoading={isLoading}
-            rows={data}
-            searchInput
-            checkboxSelection
-          />
-        )}
+        <Box sx={{ height: "70vh" }}>
+          {data && (
+            <MyDataGrid
+              handleSelected={handleSelectedProducts}
+              columns={columns}
+              isLoading={isLoading}
+              rows={data}
+              searchInput
+              checkboxSelection
+            />
+          )}
+        </Box>
       </Box>
     </Box>
   );

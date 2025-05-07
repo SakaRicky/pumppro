@@ -186,11 +186,13 @@ const WorkersDailySales = ({
           Create Daily Sale
         </Button>
       </Box>
-      <MyDataGrid
-        isLoading={dailySaleIsLoading}
-        rows={dailySales || []}
-        columns={columns}
-      />
+      <Box sx={{ height: "60vh" }}>
+        <MyDataGrid
+          isLoading={dailySaleIsLoading}
+          rows={dailySales || []}
+          columns={columns}
+        />
+      </Box>
     </Box>
   );
 };

@@ -167,12 +167,14 @@ const SoldItems = ({
           </Typography>
         </Typography>
       </Box>
-      <MyDataGrid
-        columns={columns}
-        isLoading={isLoading}
-        rows={data || []}
-        checkboxSelection={false}
-      />
+      <Box sx={{ height: "60vh" }}>
+        <MyDataGrid
+          columns={columns}
+          isLoading={isLoading}
+          rows={data || []}
+          checkboxSelection={false}
+        />
+      </Box>
     </Box>
   );
 };

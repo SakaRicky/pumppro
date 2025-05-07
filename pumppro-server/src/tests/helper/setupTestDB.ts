@@ -12,6 +12,7 @@ import {
 	ProductCategory,
 	Sale,
 	SaleDetail,
+	Tank,
 	User
 } from "@prisma/client";
 import { getAllSalesDetails } from "./testsHelperFunctions";
@@ -43,9 +44,11 @@ export let initialProductCategories: ProductCategory[] = [];
 export let initialProducts: Product[] = [];
 export let initialProductsSoldInDB: Sale[] = [];
 export let initialSaleDetailsInDB: SaleDetail[] = [];
+export let initialTanksInDB: Tank[] = [];
 
 // This before is like beforeAll
 beforeEach(async () => {
+
 	const {
 		users,
 		initialProductCategoriesInDB,
@@ -62,6 +65,7 @@ beforeEach(async () => {
 	initialProducts = initialProductsInDB;
 	initialProductsSoldInDB = initialProductsSold;
 	initialSaleDetailsInDB = await getAllSalesDetails();
+	initialTanksInDB = createdTanks;
 
 	await AuthenticateTestUser(userToUseForTest);
 

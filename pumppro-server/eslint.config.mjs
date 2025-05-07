@@ -22,7 +22,8 @@ export default tseslint.config(
 	{
 		ignores: [
 			"node_modules/",
-			"dist/", // Or your build output folder
+			"dist/",
+			"public/",
 			"coverage/",
 			"*.config.js", // Can ignore explicitly if preferred over targeted config
 			"*.config.mjs"

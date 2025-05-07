@@ -24,7 +24,7 @@
 		/* Completeness */
 		// "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
 		"skipLibCheck": true /* Skip type checking all .d.ts files. */,
-		"outDir": "./build/",
+		"outDir": "./dist",
 		"typeRoots": ["./typings", "./node_modules/@types/"]
 	}
 }

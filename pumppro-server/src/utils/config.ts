@@ -1,22 +1,26 @@
 import dotenv from "dotenv";
 import path from 'path';
+import fs from 'fs';
 
-let envPath: string;
+if (process.env.NODE_ENV !== 'production') {
+	const envFileName = process.env.NODE_ENV === 'test'
+		? '.env.test'
+		: '.env.dev';
 
-if (process.env.NODE_ENV === "test") {
-	envPath = path.resolve(__dirname, '../../.env.test.local');
-} else if (process.env.NODE_ENV === "development") {
-    envPath = path.resolve(__dirname, '../../.env.dev');
+	const projectRoot = process.cwd();
+	console.log("🚀 ~ projectRoot:", projectRoot)
+	const envPath = path.resolve(projectRoot, envFileName);
+
+	// Check if the local .env file exists before trying to load it
+	if (fs.existsSync(envPath)) {
+		console.log(`Local environment detected. Loading environment variables from: ${envPath}`);
+		dotenv.config({ path: envPath });
+	} else {
+		console.warn(`Warning: Local environment file ${envPath} not found. Using default environment variables.`);
+	}
 } else {
-    envPath = path.resolve(__dirname, '../../.env.prod');
-}
-
-const dotenvResult = dotenv.config({ path: envPath, override: true });
-
-if (dotenvResult.error) {
-    console.warn(`Warning: dotenv could not load file ${envPath}: ${dotenvResult.error.message}`);
-} else {
-    console.log(`dotenv loaded environment variables from: ${envPath}`);
+	// In production (on Render), rely solely on variables set by the host environment
+	console.log('Production environment detected. Using system environment variables provided by host.');
 }
 
 interface Config {

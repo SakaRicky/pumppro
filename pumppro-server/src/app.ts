@@ -34,7 +34,6 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(
 	session({
 		secret: config.SESSION_SECRET,
@@ -48,7 +47,7 @@ app.use(setHeaders);
 
 app.use(requestLogger);
 
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.static(path.join(__dirname, "..", "..", 'public')));
 
 app.use("/api/auth", authRouter);
 
@@ -70,9 +69,10 @@ authenticatedApiRouter.use("/messages", messageNotificationsRoutes);
 
 app.use("/api", authenticatedApiRouter);
 
-app.use("*", (_req, res) => {
-	res.sendFile(path.join(__dirname, '..', 'dist', "index.html"));
-});
+app.get('*', (_req, res) => {
+	const filePath = path.join(__dirname, '..', "..", 'public', "index.html");
+	res.sendFile(filePath);
+  });
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

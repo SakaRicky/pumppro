@@ -11,6 +11,8 @@ export const errorHandler = (
 	response: Response,
 	next: NextFunction
 ) => {
+	console.log('--- ERROR HANDLER ENTERED ---'); // Add this log
+    console.error('Error caught by errorHandler:', error); // Log the specific error received
 	if (error instanceof ZodError) {
 		// Use Zod's flatten method
         const flattenedErrors = error.flatten();
@@ -73,15 +75,15 @@ export const errorHandler = (
 	}
 
 	if (error instanceof MulterError) {
-		console.log("🚀 ~ file: middleware.ts:96 ~ error", error);
+		console.log("🚀 ~ file: middleware.ts:78 ~ error", error);
 
 		return response.status(400).send({ error: error.code });
 	}
 
 	if (error instanceof Error) {
 		console.log(
-			"file errors/index.ts line 41 Error happened with message: ",
-			error.message
+			"file errors/index.ts line 81 Error happened with message: ",
+			error
 		);
 
 		return response.status(400).send({ error: error.message });

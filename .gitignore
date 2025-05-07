@@ -26,6 +26,7 @@ lerna-debug.log*
 # Ignore build output directories in subdirectories
 /pumppro-client/dist
 /pumppro-server/dist
+/pumppro-server/public
 
 # Build outputs
 /dist

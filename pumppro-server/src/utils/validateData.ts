@@ -205,7 +205,7 @@ export const validateExistingFuel = (data: unknown): Fuel | undefined => {
 	const ExistingFuelSchema = NewFuelSchema.extend({
 		id: z.coerce.number(),
 		created_at: z.coerce.date(),
-		updated_at: z.coerce.date()
+		updated_at: z.coerce.date().nullable()
 	});
 
 	const parsedData = ExistingFuelSchema.parse(data);

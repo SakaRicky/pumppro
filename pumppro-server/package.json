@@ -26,6 +26,7 @@
 		"lint": "eslint .",
 		"test": "cross-env NODE_ENV=test tsx --test src/tests/index.ts",
 		"build": "rimraf dist && tsc",
+		"build:sidepro": "cd .. & npm run build:integrated",
 		"start": "node dist/src/index.js",
 		"test_one_file": "cross-env NODE_ENV=test tsx --test src/tests/productSales.test.ts",
 		"studio_remote": "dotenv -e .env -- npx prisma studio",

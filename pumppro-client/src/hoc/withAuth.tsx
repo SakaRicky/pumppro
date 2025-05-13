@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { setLogedUser, useStateValue } from "state";
 import { useNavigate } from "react-router-dom";
 import { verifyAuthUser } from "services/auth";
-import { AuthError } from "errors/authError";
 import { useNotify } from "hooks/useNotify";
 import storage from "utils/storage";
+import { AuthError } from "errors/ApiErrors";
 
 function withAuth<T>(WrappedComponent: React.ComponentType<T>) {
   return function Authenticated(props: T) {

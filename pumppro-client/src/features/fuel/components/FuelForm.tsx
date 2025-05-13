@@ -1,8 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import TextInput from "components/inputs/TextInput";
-import { AuthError } from "errors/authError";
-import { UserError } from "errors/userError";
 import { Form, Formik } from "formik";
 import { useNotify } from "hooks/useNotify";
 import { forwardRef } from "react";
@@ -21,6 +19,8 @@ import withAuth from "hoc/withAuth";
 import { saveTank } from "services/tank";
 import CloseIcon from "@mui/icons-material/Close";
 import { SelectInput } from "components/inputs/SelectInput";
+import { AppError } from "errors/appError";
+import { AuthError } from "errors/ApiErrors";
 
 type FuelFormProps = {
   fuel?: Fuel;
@@ -133,14 +133,11 @@ const FuelForm = forwardRef(
           await createFuelMutation.mutateAsync(data);
         }
       } catch (error) {
-        if (error instanceof UserError) {
-          notify("Login Error", error.message, "error");
-        }
-        if (error instanceof Error) {
-          notify("Login Error", error.message, "error");
+        if (error instanceof AppError) {
+          notify("Create Fuel Error", error.message, "error");
         }
         if (error instanceof AuthError) {
-          notify("Login Error", error.message, "error");
+          notify("Unauthorized Access", error.message, "error");
           navigate("/login");
         }
       }

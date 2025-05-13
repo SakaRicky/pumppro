@@ -3,8 +3,6 @@ import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import TextInput from "components/inputs/TextInput";
 import { PreviewImage } from "components/PrevieImage";
-import { AuthError } from "errors/authError";
-import { UserError } from "errors/userError";
 import { Form, Formik } from "formik";
 import { useNotify } from "hooks/useNotify";
 import React, { forwardRef, useState } from "react";
@@ -20,6 +18,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import EditIcon from "@mui/icons-material/Edit";
 import { useMediaQuery } from "@mui/material";
 import { saveProductCategory } from "services/productCategory";
+import { AuthError } from "errors/ApiErrors";
 
 type ProductFormProps = {
   product?: Product;
@@ -90,6 +89,12 @@ const ProductForm = forwardRef(
       onMutate: (variables) => {
         return { successMessage: "Created Product Successfully" };
       },
+      onError: (error: unknown) => {
+        console.log("error: ", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occured.";
+        notify("Product Creation Error", errorMessage, "error");
+      },
     });
 
     const updateProductMutation = useMutation({
@@ -102,9 +107,11 @@ const ProductForm = forwardRef(
       onMutate: (variables) => {
         return { successMessage: "Updated Product Successfully" };
       },
-      onError: (error: any) => {
-        console.log("error: ", error.message);
-        notify("Login Error", error.message, "error");
+      onError: (error: unknown) => {
+        console.log("error: ", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occured.";
+        notify("Product Update Error", errorMessage, "error");
       },
     });
 
@@ -133,14 +140,11 @@ const ProductForm = forwardRef(
           await createProductMutation.mutateAsync(formData);
         }
       } catch (error) {
-        if (error instanceof UserError) {
-          notify("Login Error", error.message, "error");
-        }
         if (error instanceof Error) {
-          notify("Login Error", error.message, "error");
+          notify("Create Product Error", error.message, "error");
         }
         if (error instanceof AuthError) {
-          notify("Login Error", error.message, "error");
+          notify("Unauthorized Access", error.message, "error");
           navigate("/login");
         }
       }

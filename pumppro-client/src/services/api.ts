@@ -1,83 +1,157 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
-import { AuthError } from "errors/authError";
-import { BadRequestError } from "errors/badRequestError";
-import { ConnectionError } from "errors/connectionError";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import {
+  AuthError,
+  BadRequestError,
+  ConnectionError,
+  ForbiddenError,
+  NotFoundError,
+  ServerError,
+  // ValidationError, // If you have it
+} from "../errors/ApiErrors";
+import { AppError } from "../errors/appError";
 import storage from "utils/storage";
 
-interface ErrorData {
-  error: string;
-  status: number;
+interface ApiErrorData {
+  error: string; // This matches your backend: { error: "Only admin..." }
+  // If your backend can send more structured errors, define them here:
+  // e.g., message?: string; details?: Array<{ field: string, message: string }>;
 }
 
 // https://pumppro-server.onrender.com/
 // http://localhost:5001/
 // "http://10.0.0.73:5001/"
-export const api = axios.create({
+export const apiClient = axios.create({
   baseURL: "/api",
 });
 
-const requestInterceptor = (config: InternalAxiosRequestConfig) => {
-  // Get the token from storage (or wherever you store it)
-  const token = storage.getToken();
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = storage.getToken();
 
-  if (token) {
-    config.withCredentials = true;
-    config.headers.Authorization = `bearer ${token}`;
+    if (token) {
+      config.withCredentials = true;
+      config.headers.Authorization = `bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    // This typically won't be an AxiosError, but a general JS error during request setup
+    return Promise.reject(
+      new AppError({
+        name: "RequestSetupError",
+        message: "Error setting up request",
+        originalError: error,
+      })
+    );
   }
+);
 
-  return config;
-};
+// Response error interceptor
+const errorHandler = (axiosError: AxiosError<ApiErrorData>): Promise<never> => {
+  const originalRequest = axiosError.config; // Useful for retries or logging
 
-const successHandler = (response: AxiosResponse): AxiosResponse => {
-  return response;
-};
+  if (axiosError.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    const statusCode = axiosError.response.status;
+    const apiMessage =
+      axiosError.response.data?.error || // Your specific { error: "..." }
+      (axiosError.response.data as any)?.message || // A more generic { message: "..." }
+      axiosError.message; // Fallback to Axios's own message
 
-const errorHandler = (errorResponse: AxiosError<ErrorData>): Promise<never> => {
-  if (errorResponse.response) {
-    const message = errorResponse.response.data.error || errorResponse.message;
-    const responseErrorsMap: Record<number, () => Error | undefined> = {
-      400: () =>
-        new BadRequestError({
-          name: "BAD_REQUEST_ERROR",
-          message: message,
-        }),
-      401: () =>
-        new AuthError({
-          name: "AUTH_ERROR",
-          message: message,
-        }),
-    };
+    let customError: AppError;
 
-    const errorStatusCode = errorResponse.response.status;
-
-    const errorToThrow = responseErrorsMap[errorStatusCode];
-
-    if (errorToThrow) {
-      throw errorToThrow();
+    switch (statusCode) {
+      case 400:
+        // Here you could check if response.data has a specific structure for validation
+        // and throw a ValidationError instead.
+        // e.g. if (axiosError.response.data.details) {
+        //   throw new ValidationError({ message: "Validation failed", errors: axiosError.response.data.details, originalError: axiosError });
+        // }
+        customError = new BadRequestError({
+          message: apiMessage,
+          originalError: axiosError,
+        });
+        break;
+      case 401:
+        customError = new AuthError({
+          message: apiMessage,
+          originalError: axiosError,
+        });
+        break;
+      case 403:
+        customError = new ForbiddenError({
+          message: apiMessage,
+          originalError: axiosError,
+        });
+        break;
+      case 404:
+        customError = new NotFoundError({
+          message: apiMessage,
+          originalError: axiosError,
+        });
+        break;
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        customError = new ServerError({
+          message: "A server error occurred. Please try again later.",
+          originalError: axiosError,
+        });
+        break;
+      default:
+        customError = new AppError({
+          name: "UnknownApiError",
+          message: `An unexpected API error occurred (Status: ${statusCode}): ${apiMessage}`,
+          statusCode,
+          originalError: axiosError,
+        });
     }
-  } else if (errorResponse.request) {
-    console.log("Request Error Interceptors");
-
-    if (errorResponse.code === "ERR_NETWORK") {
-      throw new ConnectionError({
-        name: "Connection_Error",
-        message: "Couldn't connect to the server",
-      });
+    // Log the error with more details for developers
+    console.error(
+      `API Error: ${customError.name} (Status ${statusCode}) - ${customError.message}`,
+      {
+        request: originalRequest,
+        response: axiosError.response,
+        originalError: axiosError,
+      }
+    );
+    throw customError;
+  } else if (axiosError.request) {
+    // The request was made but no response was received
+    // `error.request` is an instance of XMLHttpRequest in the browser
+    let message = "The server did not respond. Please try again later.";
+    if (
+      axiosError.code === "ERR_NETWORK" ||
+      axiosError.message === "Network Error"
+    ) {
+      // 'Network Error' for older Axios
+      message =
+        "Network connection lost. Please check your internet connection.";
     }
+    console.error(
+      `Network/Request Error: ${axiosError.code} - ${axiosError.message}`,
+      { request: originalRequest, error: axiosError }
+    );
+    throw new ConnectionError({ message, originalError: axiosError });
   } else {
-    console.log("Error in api else", errorResponse);
-    console.log("Error in api else: message: ", errorResponse.message);
+    // Something happened in setting up the request that triggered an Error
+    console.error(`Client Setup Error: ${axiosError.message}`, {
+      error: axiosError,
+    });
+    throw new AppError({
+      name: "ClientSetupError",
+      message: `Error setting up request: ${axiosError.message}`,
+      originalError: axiosError,
+    });
   }
-
-  return Promise.reject(errorResponse);
 };
 
-api.interceptors.request.use(requestInterceptor);
+apiClient.interceptors.response.use(
+  (response) => response, // Directly return successful responses
+  errorHandler // Use the centralized error handler
+);
 
-api.interceptors.response.use(successHandler, errorHandler);
-
-export default api;
+export default apiClient;

@@ -1,7 +1,6 @@
 import React, { forwardRef, useState } from "react";
 import { useNotify } from "hooks/useNotify";
 import { saveUser, updateUser } from "services/users";
-import { UserError } from "errors/userError";
 import { Box, Button, Grid, useTheme } from "@mui/material";
 import { Typography } from "@mui/material";
 import { FormattedMessage } from "react-intl";
@@ -17,8 +16,9 @@ import { Form, Formik } from "formik";
 import DatePickerWrapper from "components/inputs/DatePickerWrapper";
 import FlexBetween from "components/FlexBetween";
 import { PreviewImage } from "components/PrevieImage";
-import { AuthError } from "errors/authError";
 import { useNavigate } from "react-router-dom";
+import { AppError } from "errors/appError";
+import { AuthError } from "errors/ApiErrors";
 
 type Props = {
   handleCloseModal: () => void;
@@ -161,7 +161,7 @@ const WorkerForm = forwardRef(
           setLoading(false);
         }
       } catch (error) {
-        if (error instanceof UserError) {
+        if (error instanceof AppError) {
           notify("Login Error", error.message, "error");
         }
         if (error instanceof Error) {

@@ -15,9 +15,9 @@ import { useMutation } from "@tanstack/react-query";
 import { saveSale } from "services/sales";
 import { useNotify } from "hooks/useNotify";
 import ShoppingCartFooter from "./ShoppingCartFooter";
-import { BadRequestError } from "errors/badRequestError";
 import { FormattedMessage } from "react-intl";
 import { clearCart, showDialog } from "state/reducer";
+import { BadRequestError } from "errors/ApiErrors";
 
 type ShoppingCartProps = {
   refetch: () => void;

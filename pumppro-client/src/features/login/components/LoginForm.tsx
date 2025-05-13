@@ -19,10 +19,9 @@ import { loginUser } from "services/auth";
 import { LoadingButton } from "@mui/lab";
 import SendIcon from "@mui/icons-material/Send";
 import { useNavigate } from "react-router-dom";
-import { AuthError } from "errors/authError";
 import { useNotify } from "hooks/useNotify";
 import storage from "utils/storage";
-import { ConnectionError } from "errors/connectionError";
+import { AuthError } from "errors/ApiErrors";
 
 const LoginForm = () => {
   const theme = useTheme();
@@ -77,13 +76,11 @@ const LoginForm = () => {
           navigate("/products");
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof AuthError) {
         notify("Login Error", error.message, "error");
       }
-      if (error instanceof ConnectionError) {
-        notify("Login Error", error.message, "error");
-      }
+
       setLoading(false);
     }
   };

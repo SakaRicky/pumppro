@@ -1,8 +1,7 @@
 import { Product } from "types";
 import api from "./api";
-import { AuthError } from "errors/authError";
-import { UserError } from "errors/userError";
-import { BadRequestError } from "errors/badRequestError";
+import { isAxiosError } from "axios";
+import { BadRequestError } from "errors/ApiErrors";
 
 export const saveProduct = async (newProduct: FormData) => {
   try {
@@ -30,6 +29,10 @@ export const getProducts = async (categoryID?: string): Promise<Product[]> => {
   return data;
 };
 
+interface ApiErrorResponse {
+  error: string;
+}
+
 export const updateProduct = async (updateProduct: FormData) => {
   try {
     const res = await api.put("/products", updateProduct, {
@@ -37,20 +40,43 @@ export const updateProduct = async (updateProduct: FormData) => {
     });
 
     return res.data;
-  } catch (error: any) {
-    if (error instanceof BadRequestError) {
-      throw error;
-    } else if (error.response.status === 401) {
-      throw new AuthError({
-        name: "AUTH_ERROR",
-        message: error.response.data.error,
-      });
+  } catch (error: unknown) {
+    console.log("🚀 ~ updateProduct ~ error:", error);
+    if (isAxiosError<ApiErrorResponse>(error)) {
+      // Now 'error' is typed as AxiosError<ApiErrorResponse>
+      // and error.response?.data will be typed as ApiErrorResponse | undefined
+
+      if (error.response) {
+        // error.response.data is now strongly typed as ApiErrorResponse
+        console.error("Status Code:", error.response.status);
+        console.error("API Error Message:", error.response.data.error); // Type-safe!
+        alert(`Error ${error.response.status}: ${error.response.data.error}`);
+      } else if (error.request) {
+        console.error("Network Error: No response received.", error.request);
+        alert("Network error. Please try again later.");
+      } else {
+        console.error("Error setting up request:", error.message);
+        alert("An error occurred while sending the request.");
+      }
     } else {
-      throw new UserError({
-        name: "USER_ERROR",
-        message: error.response.data.error,
-      });
+      console.error("An unexpected error occurred:", error);
+      alert("An unexpected error occurred.");
     }
+
+    throw error;
+    // if (error instanceof BadRequestError) {
+    //   throw error;
+    // } else if (error.response.status === 401) {
+    //   throw new AuthError({
+    //     name: "AUTH_ERROR",
+    //     message: error.response.data.error,
+    //   });
+    // } else {
+    //   throw new UserError({
+    //     name: "USER_ERROR",
+    //     message: error.response.data.error,
+    //   });
+    // }
   }
 };
 
@@ -59,16 +85,7 @@ export const deleteProduct = async (ids: string[]) => {
     const res = await api.delete("/products", { data: { ids: ids } });
 
     return res.data;
-  } catch (error: any) {
-    if (error.response.status === 409) {
-      throw new UserError({
-        name: "USER_ERROR",
-        message: error.response.data.error,
-      });
-    }
-    throw new UserError({
-      name: "USER_ERROR",
-      message: error.response.data.error,
-    });
+  } catch (error: unknown) {
+    throw error;
   }
 };

@@ -2,7 +2,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { MulterError } from "multer";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientInitializationError, PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ZodError } from "zod";
 
 export const errorHandler = (
@@ -22,6 +22,17 @@ export const errorHandler = (
             formErrors: flattenedErrors.formErrors, // Errors not tied to a field
             fieldErrors: flattenedErrors.fieldErrors // Errors per field
         });
+	}
+
+	if (error instanceof PrismaClientInitializationError) {
+		console.log(
+			"Error line 29 PrismaClientInitializationError with: ",
+			error
+		);
+
+		return response.status(500).json({ // 409 Conflict is the appropriate status code
+					error: "Server not running",
+				});
 	}
 	if (error instanceof PrismaClientKnownRequestError) {
 		console.log(
